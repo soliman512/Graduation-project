@@ -9,9 +9,18 @@ class Login_Stadiumonwer extends StatefulWidget {
 
 class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
   bool visiblePassword = true;
-  Icon unShowPassword = Icon(Icons.visibility, color: mainColor,);
-  Icon showPassword = Icon(Icons.visibility_off, color: mainColor,);
-  Icon showPasswordState = Icon(Icons.visibility, color: mainColor,);
+  Icon unShowPassword = Icon(
+    Icons.visibility,
+    color: mainColor,
+  );
+  Icon showPassword = Icon(
+    Icons.visibility_off,
+    color: mainColor,
+  );
+  Icon showPasswordState = Icon(
+    Icons.visibility,
+    color: mainColor,
+  );
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -31,8 +40,7 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
               onPressed: () {
                 Navigator.pushNamed(context, '/login_signup_player');
               },
-              icon: Image.asset(
-                  "assets/welcome_signup_login/imgs/back.png"),
+              icon: Image.asset("assets/welcome_signup_login/imgs/back.png"),
               color: Color(0xff000000),
             ),
             // icon: Image.asset("aassets/welcome_signup_login/imgs/ligh back.png"),
@@ -56,7 +64,7 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                 child: Column(
                   children: [
                     // title
-                   Add_AppName(
+                    Add_AppName(
                         font_size: 34.0,
                         align: TextAlign.center,
                         color: Colors.black),
@@ -107,9 +115,10 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                         onPressed: () {
                           setState(() {
                             visiblePassword = !visiblePassword;
-                            showPasswordState = showPasswordState == showPassword
-                                ? unShowPassword
-                                : showPassword;
+                            showPasswordState =
+                                showPasswordState == showPassword
+                                    ? unShowPassword
+                                    : showPassword;
                           });
                         },
                       ),
@@ -144,7 +153,10 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
 
                     //login
                     Create_GradiantGreenButton(
-                        title: 'Login', onButtonPressed: () {}),
+                        title: 'Login',
+                        onButtonPressed: () {
+                          Navigator.pushNamed(context, '/stdWon_addNewStadium');
+                        }),
                     SizedBox(
                       height: 40.0,
                     ),
@@ -212,10 +224,10 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                               ),
                               style: ButtonStyle(
                                   elevation: MaterialStateProperty.all(0),
-                                  backgroundColor:
-                                      MaterialStateProperty.all(Colors.transparent),
-                                  foregroundColor:
-                                      MaterialStateProperty.all(Color(0xffffffff))),
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Colors.transparent),
+                                  foregroundColor: MaterialStateProperty.all(
+                                      Color(0xffffffff))),
                             ),
                           ),
 
@@ -238,10 +250,10 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                               ),
                               style: ButtonStyle(
                                   elevation: MaterialStateProperty.all(0),
-                                  backgroundColor:
-                                      MaterialStateProperty.all(Colors.transparent),
-                                  foregroundColor:
-                                      MaterialStateProperty.all(Color(0xffffffff))),
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Colors.transparent),
+                                  foregroundColor: MaterialStateProperty.all(
+                                      Color(0xffffffff))),
                             ),
                           ),
 
@@ -263,10 +275,10 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                               ),
                               style: ButtonStyle(
                                   elevation: MaterialStateProperty.all(0),
-                                  backgroundColor:
-                                      MaterialStateProperty.all(Colors.transparent),
-                                  foregroundColor:
-                                      MaterialStateProperty.all(Color(0xffffffff))),
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Colors.transparent),
+                                  foregroundColor: MaterialStateProperty.all(
+                                      Color(0xffffffff))),
                             ),
                           ),
                         ],

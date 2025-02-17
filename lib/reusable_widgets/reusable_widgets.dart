@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// import '../main.dart';
 import '../../constants/constants.dart';
 
 //statful widget for the drawer
@@ -645,11 +644,6 @@ class Add_AppName extends StatelessWidget {
   }
 }
 
-
-
-
-
-
 // //Location
 
 // class Create_LocationInputs extends StatefulWidget {
@@ -954,3 +948,39 @@ class Add_AppName extends StatelessWidget {
 //     );
 //   }
 // }
+
+// required input
+
+class Create_RequiredInput extends StatelessWidget {
+  Widget add_prefix;
+  Widget? add_suffix = null;
+  Create_RequiredInput({
+    required this.add_prefix,
+    this.add_suffix,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      keyboardType: TextInputType.multiline,
+      maxLines: null,
+      style: TextStyle(
+        color: Colors.black,
+      ),
+      textAlign: TextAlign.center,
+      cursorColor: mainColor,
+      decoration: InputDecoration(
+        prefixIcon: add_prefix,
+        suffixIcon: add_suffix,
+        fillColor: Color(0xB0F2F2F2),
+        filled: true,
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: BorderSide(color: mainColor, width: 2.0)),
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(5.0),
+            borderSide: BorderSide(color: Colors.black38, width: 2.0)),
+      ),
+    );
+  }
+}
