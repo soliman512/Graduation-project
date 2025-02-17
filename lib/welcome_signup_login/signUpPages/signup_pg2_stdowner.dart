@@ -208,7 +208,7 @@ class _Signup_pg2_StdOwnerState extends State<Signup_pg2_StdOwner> {
                     Create_GradiantGreenButton(
                       title: 'Sign up',
                       onButtonPressed: () {
-                        Navigator.pushNamed(context, '/');
+                        Navigator.pushNamed(context, '/stdWon_addNewStadium');
                       },
                     ),
                   ],

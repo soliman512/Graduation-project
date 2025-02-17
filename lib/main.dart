@@ -8,6 +8,7 @@ import 'home_loves_tickets_top/tickets/Tickets.dart';
 // import 'payment_successful_check/check_animation.dart';
 import 'payment/payment.dart';
 import 'stadium_information_player_pg/stadium_information_player_pg.dart';
+import 'stdown_addNewStd/stdwon_addNewStadium.dart';
 import 'welcome_signup_login/Welcome.dart';
 import 'welcome_signup_login/login_signup page/login_signupPlayer.dart';
 import 'welcome_signup_login/login_signup page/login_signupStdOwner.dart';
@@ -90,6 +91,11 @@ class MyApp extends StatelessWidget {
         '/stadium_information_player_pg': (context) => Stadium_info_playerPG(),
 //payment
         '/payment': (context) => Payment(),
+
+
+
+// stadium owner
+        '/stdWon_addNewStadium' : (context) => AddNewStadium(),
       },
     );
   }

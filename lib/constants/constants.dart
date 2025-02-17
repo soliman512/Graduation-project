@@ -18,6 +18,11 @@ Image logo = Image.asset('../../assets/welcome_signup_login/imgs/logo.png',
 Image big_logo = Image.asset('../../assets/welcome_signup_login/imgs/logo.png',
     fit: BoxFit.cover, width: 158.0, height: 158.0);
 
+Image add_logo(double logoSize) {
+  return Image.asset('../../assets/welcome_signup_login/imgs/logo.png',
+      fit: BoxFit.cover, width: logoSize, height: logoSize);
+}
+
 //background image
 Image backgroundImage = Image.asset(
     '../../assets/welcome_signup_login/imgs/welcome.jpg',
@@ -131,7 +136,14 @@ Map<String, List<String>> egyptGovernoratesAndCenters = {
   'Port Said': ['Port Fouad', 'El Arab', 'El Manakh', 'El Dawahy'],
   'Luxor': ['Luxor', 'Armant', 'Esna', 'Tiba'],
   'Aswan': ['Aswan', 'Edfu', 'Kom Ombo', 'Nasr El Nuba'],
-  'Asyut': ['Asyut', 'Dairut', 'Manfalut', 'Abnub', 'New Assiut City', 'Abo Teej'],
+  'Asyut': [
+    'Asyut',
+    'Dairut',
+    'Manfalut',
+    'Abnub',
+    'New Assiut City',
+    'Abo Teej'
+  ],
   'Beheira': ['Damanhour', 'Kafr El Dawwar', 'Rashid', 'Edku'],
   'Beni Suef': ['Beni Suef', 'Nasser', 'Ihnasia', 'Biba'],
   'Dakahlia': ['Mansoura', 'Talkha', 'Mit Ghamr', 'Dekernes'],
@@ -157,4 +169,3 @@ List<String>? placesOfCityOnSelected;
 String? citySelected;
 String? placeSelected;
 TextEditingController neighborhoodEnterd = TextEditingController();
-
