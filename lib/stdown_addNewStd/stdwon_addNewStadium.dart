@@ -168,11 +168,18 @@ class _AddNewStadiumState extends State<AddNewStadium> {
 
                   //stadium price
                   Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 5.0),
-                      child: Create_RequiredInput(
-                        add_prefix: Image.asset(
-                            'assets/stdowner_addNewStadium/imgs/price.png'),
-                      )),
+                    padding: EdgeInsets.symmetric(horizontal: 5.0),
+                    child: Create_RequiredInput(
+                      add_prefix: Image.asset(
+                          'assets/stdowner_addNewStadium/imgs/price.png'),
+                      add_suffix: Text('.LE',
+                          style: TextStyle(
+                              color: mainColor,
+                              fontSize: 18.0,
+                              fontFamily: 'eras-itc-bold',
+                              fontWeight: FontWeight.w800)),
+                    ),
+                  ),
                   SizedBox(
                     height: 32.0,
                   ),
@@ -209,68 +216,71 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                             fontSize: 18.0,
                             fontWeight: FontWeight.w700),
                       ),
-                      Wrap(
-                        children: [
-                          //avilable
-                          Container(
-                              padding: EdgeInsets.symmetric(vertical: 2.0),
-                              decoration: BoxDecoration(
-                                color: waterAvilable,
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(10.0),
-                                    bottomLeft: Radius.circular(10.0)),
-                              ),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  isAvilable_Water = true;
-                                  setState(() {
-                                    waterAvilable = mainColor;
-                                    waterNotAvilable = Color(0xff929292);
-                                  });
-                                },
-                                child: Text(
-                                  'Avilable',
-                                  style: TextStyle(fontSize: 14.0),
+                      Container(
+                        width: 200.0,
+                        child: Row(
+                          children: [
+                            //avilable
+                            Container(
+                                padding: EdgeInsets.symmetric(vertical: 4.0),
+                                decoration: BoxDecoration(
+                                  color: waterAvilable,
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(10.0),
+                                      bottomLeft: Radius.circular(10.0)),
                                 ),
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Colors.transparent),
-                                  foregroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Colors.white),
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    isAvilable_Water = true;
+                                    setState(() {
+                                      waterAvilable = mainColor;
+                                      waterNotAvilable = Color(0xff929292);
+                                    });
+                                  },
+                                  child: Text(
+                                    'Avilable',
+                                    style: TextStyle(fontSize: 14.0),
+                                  ),
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.transparent),
+                                    foregroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.white),
+                                  ),
+                                )),
+                            SizedBox(width: 6.0),
+                            // not avilable
+                            Container(
+                                padding: EdgeInsets.symmetric(vertical: 4.0),
+                                decoration: BoxDecoration(
+                                  color: waterNotAvilable,
+                                  borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(10.0),
+                                      bottomRight: Radius.circular(10.0)),
                                 ),
-                              )),
-                          SizedBox(width: 6.0),
-                          // not avilable
-                          Container(
-                              padding: EdgeInsets.symmetric(vertical: 2.0),
-                              decoration: BoxDecoration(
-                                color: waterNotAvilable,
-                                borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(10.0),
-                                    bottomRight: Radius.circular(10.0)),
-                              ),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  isAvilable_Water = false;
-                                  setState(() {
-                                    waterAvilable = Color(0xff929292);
-                                    waterNotAvilable = mainColor;
-                                  });
-                                },
-                                child: Text('Not Avilable',
-                                    style: TextStyle(fontSize: 14.0)),
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Colors.transparent),
-                                  foregroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Colors.white),
-                                ),
-                              )),
-                        ],
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    isAvilable_Water = false;
+                                    setState(() {
+                                      waterAvilable = Color(0xff929292);
+                                      waterNotAvilable = mainColor;
+                                    });
+                                  },
+                                  child: Text('Not Avilable',
+                                      style: TextStyle(fontSize: 14.0)),
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.transparent),
+                                    foregroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.white),
+                                  ),
+                                )),
+                          ],
+                        ),
                       )
                     ],
                   ),
@@ -288,75 +298,78 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                             fontSize: 18.0,
                             fontWeight: FontWeight.w700),
                       ),
-                      Wrap(
-                        children: [
-                          //avilable
-                          Container(
-                              padding: EdgeInsets.symmetric(vertical: 2.0),
-                              decoration: BoxDecoration(
-                                color: TrackAvilable,
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(10.0),
-                                    bottomLeft: Radius.circular(10.0)),
-                              ),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  isAvilable_Track = true;
-                                  setState(() {
-                                    TrackAvilable = mainColor;
-                                    TrackNotAvilable = Color(0xff929292);
-                                  });
-                                },
-                                child: Text(
-                                  'Avilable',
-                                  style: TextStyle(fontSize: 14.0),
+                      Container(
+                        width: 200.0,
+                        child: Row(
+                          children: [
+                            //avilable
+                            Container(
+                                padding: EdgeInsets.symmetric(vertical: 4.0),
+                                decoration: BoxDecoration(
+                                  color: TrackAvilable,
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(10.0),
+                                      bottomLeft: Radius.circular(10.0)),
                                 ),
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Colors.transparent),
-                                  foregroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Colors.white),
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    isAvilable_Track = true;
+                                    setState(() {
+                                      TrackAvilable = mainColor;
+                                      TrackNotAvilable = Color(0xff929292);
+                                    });
+                                  },
+                                  child: Text(
+                                    'Avilable',
+                                    style: TextStyle(fontSize: 14.0),
+                                  ),
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.transparent),
+                                    foregroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.white),
+                                  ),
+                                )),
+                            SizedBox(width: 6.0),
+                            // not avilable
+                            Container(
+                                padding: EdgeInsets.symmetric(vertical: 4.0),
+                                decoration: BoxDecoration(
+                                  color: TrackNotAvilable,
+                                  borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(10.0),
+                                      bottomRight: Radius.circular(10.0)),
                                 ),
-                              )),
-                          SizedBox(width: 6.0),
-                          // not avilable
-                          Container(
-                              padding: EdgeInsets.symmetric(vertical: 2.0),
-                              decoration: BoxDecoration(
-                                color: TrackNotAvilable,
-                                borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(10.0),
-                                    bottomRight: Radius.circular(10.0)),
-                              ),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  isAvilable_Track = false;
-                                  setState(() {
-                                    TrackAvilable = Color(0xff929292);
-                                    TrackNotAvilable = mainColor;
-                                  });
-                                },
-                                child: Text('Not Avilable',
-                                    style: TextStyle(fontSize: 14.0)),
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Colors.transparent),
-                                  foregroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Colors.white),
-                                ),
-                              )),
-                        ],
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    isAvilable_Track = false;
+                                    setState(() {
+                                      TrackAvilable = Color(0xff929292);
+                                      TrackNotAvilable = mainColor;
+                                    });
+                                  },
+                                  child: Text('Not Avilable',
+                                      style: TextStyle(fontSize: 14.0)),
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.transparent),
+                                    foregroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.white),
+                                  ),
+                                )),
+                          ],
+                        ),
                       )
                     ],
                   ),
                   SizedBox(
                     height: 20.0,
                   ),
-                  //track
+                  //grass
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -367,68 +380,75 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                             fontSize: 18.0,
                             fontWeight: FontWeight.w700),
                       ),
-                      Wrap(
-                        children: [
-                          //avilable
-                          Container(
-                              padding: EdgeInsets.symmetric(vertical: 2.0),
-                              decoration: BoxDecoration(
-                                color: GrassAvilable,
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(10.0),
-                                    bottomLeft: Radius.circular(10.0)),
-                              ),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  isAvilable_Grass = true;
-                                  setState(() {
-                                    GrassAvilable = mainColor;
-                                    GrassNotAvilable = Color(0xff929292);
-                                  });
-                                },
-                                child: Text(
-                                  'Avilable',
-                                  style: TextStyle(fontSize: 14.0),
-                                ),
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Colors.transparent),
-                                  foregroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Colors.white),
-                                ),
-                              )),
-                          SizedBox(width: 6.0),
-                          // not avilable
-                          Container(
-                              padding: EdgeInsets.symmetric(vertical: 2.0),
-                              decoration: BoxDecoration(
-                                color: GrassNotAvilable,
-                                borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(10.0),
-                                    bottomRight: Radius.circular(10.0)),
-                              ),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  isAvilable_Grass = false;
-                                  setState(() {
-                                    GrassAvilable = Color(0xff929292);
-                                    GrassNotAvilable = mainColor;
-                                  });
-                                },
-                                child: Text('Not Avilable',
-                                    style: TextStyle(fontSize: 14.0)),
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Colors.transparent),
-                                  foregroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Colors.white),
-                                ),
-                              )),
-                        ],
+                      Container(
+                        width: 200.0,
+                        child: Row(
+                          children: [
+                            //avilable
+                            Expanded(
+                              child: Container(
+                                  padding: EdgeInsets.symmetric(vertical: 4.0),
+                                  decoration: BoxDecoration(
+                                    color: GrassAvilable,
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(10.0),
+                                        bottomLeft: Radius.circular(10.0)),
+                                  ),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      isAvilable_Grass = true;
+                                      setState(() {
+                                        GrassAvilable = mainColor;
+                                        GrassNotAvilable = Color(0xff929292);
+                                      });
+                                    },
+                                    child: Text(
+                                      'Normal',
+                                      style: TextStyle(fontSize: 14.0),
+                                    ),
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.transparent),
+                                      foregroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.white),
+                                    ),
+                                  )),
+                            ),
+                            SizedBox(width: 6.0),
+                            // industry
+                            Expanded(
+                              child: Container(
+                                  padding: EdgeInsets.symmetric(vertical: 4.0),
+                                  decoration: BoxDecoration(
+                                    color: GrassNotAvilable,
+                                    borderRadius: BorderRadius.only(
+                                        topRight: Radius.circular(10.0),
+                                        bottomRight: Radius.circular(10.0)),
+                                  ),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      isAvilable_Grass = false;
+                                      setState(() {
+                                        GrassAvilable = Color(0xff929292);
+                                        GrassNotAvilable = mainColor;
+                                      });
+                                    },
+                                    child: Text('Industry',
+                                        style: TextStyle(fontSize: 14.0)),
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.transparent),
+                                      foregroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.white),
+                                    ),
+                                  )),
+                            ),
+                          ],
+                        ),
                       )
                     ],
                   ),
@@ -453,7 +473,8 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                           child: TextField(
                             keyboardType: TextInputType.number,
                             textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.black, fontSize: 18.0),
+                            style:
+                                TextStyle(color: Colors.black, fontSize: 18.0),
                             cursorColor: mainColor,
                             decoration: InputDecoration(
                               fillColor: Color(0x8FF2F2F2),
@@ -491,7 +512,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                       Expanded(
                           child: ElevatedButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, '/');
+                          Navigator.pushNamed(context, '/login_stadium');
                         },
                         child: Text(
                           'Discard',
@@ -520,7 +541,9 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                       Expanded(
                         flex: 2,
                         child: Create_GradiantGreenButton(
-                          onButtonPressed: () {},
+                          onButtonPressed: () {
+                            Navigator.pushNamed(context, '/stdown_editStadium');
+                          },
                           title: 'Post',
                         ),
                       )
