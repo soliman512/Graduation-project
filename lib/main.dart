@@ -1,6 +1,7 @@
 import 'dart:html';
 
 import 'package:flutter/material.dart';
+import 'package:welcome_signup_login/Edit_Stadium_stdOwner/EditStadium_stdowner.dart';
 
 import 'home_loves_tickets_top/home/Home.dart';
 import 'home_loves_tickets_top/loves/Favourites.dart';
@@ -96,6 +97,7 @@ class MyApp extends StatelessWidget {
 
 // stadium owner
         '/stdWon_addNewStadium' : (context) => AddNewStadium(),
+        '/stdown_editStadium' : (context) => EditStadium_stdown(),
       },
     );
   }

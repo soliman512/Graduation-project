@@ -30,7 +30,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
             child: CircleAvatar(
               radius: 60.0,
               backgroundImage: AssetImage(
-                  '../../../assets/home_loves_tickets_top/imgs/person_2.png'),
+                  'assets/home_loves_tickets_top/imgs/person_2.png'),
               backgroundColor: Colors.grey[300],
             ),
           ),
@@ -109,7 +109,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
               title: Row(
                 children: [
                   Image.asset(
-                    '../../../assets/home_loves_tickets_top/imgs/Vector_drawerHome.png',
+                    'assets/home_loves_tickets_top/imgs/Vector_drawerHome.png',
                     width: 24.0,
                   ),
                   SizedBox(
@@ -147,7 +147,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
               title: Row(
                 children: [
                   Image.asset(
-                    '../../../assets/home_loves_tickets_top/imgs/Vector_drawerProfile.png',
+                    'assets/home_loves_tickets_top/imgs/Vector_drawerProfile.png',
                     width: 24.0,
                   ),
                   SizedBox(
@@ -225,7 +225,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
               title: Row(
                 children: [
                   Image.asset(
-                    '../../../assets/home_loves_tickets_top/imgs/vector_drawerLog_out.png',
+                    'assets/home_loves_tickets_top/imgs/vector_drawerLog_out.png',
                     width: 24.0,
                   ),
                   SizedBox(
@@ -251,7 +251,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
                   child: Center(
                     // top: 0,
                     child: Image.asset(
-                      '../../../assets/home_loves_tickets_top/imgs/ball.png',
+                      'assets/home_loves_tickets_top/imgs/ball.png',
                       width: 238.0,
                     ),
                   ),
@@ -297,7 +297,7 @@ class _Create_AppBarState extends State<Create_AppBar> {
               });
             },
             icon: Image.asset(
-                "../../assets/home_loves_tickets_top/imgs/bars.png"),
+                "assets/home_loves_tickets_top/imgs/bars.png"),
             iconSize: 24.0,
           );
         }),
@@ -312,7 +312,7 @@ class _Create_AppBarState extends State<Create_AppBar> {
               Navigator.pushNamed(context, '/Welcome');
             },
             icon: Image.asset(
-                "../../assets/home_loves_tickets_top/imgs/notifications.png"),
+                "assets/home_loves_tickets_top/imgs/notifications.png"),
             iconSize: 24.0,
           ),
         )
@@ -739,7 +739,7 @@ class Add_AppName extends StatelessWidget {
 //                               ],
 //                             ),
 //                             child: Image.asset(
-//                               '../../../assets/home_loves_tickets_top/imgs/city_Vector.png',
+//                               'assets/home_loves_tickets_top/imgs/city_Vector.png',
 //                               fit: BoxFit.contain,
 //                             ),
 //                           ),
@@ -811,7 +811,7 @@ class Add_AppName extends StatelessWidget {
 //                                   ],
 //                                 ),
 //                                 child: Image.asset(
-//                                   '../../../assets/home_loves_tickets_top/imgs/stash_pin-place.png',
+//                                   'assets/home_loves_tickets_top/imgs/stash_pin-place.png',
 //                                   fit: BoxFit.contain,
 //                                 ),
 //                               ),
@@ -884,7 +884,7 @@ class Add_AppName extends StatelessWidget {
 //                                   ],
 //                                 ),
 //                                 child: Image.asset(
-//                                   '../../../assets/home_loves_tickets_top/imgs/nighborhood.png',
+//                                   'assets/home_loves_tickets_top/imgs/nighborhood.png',
 //                                   fit: BoxFit.contain,
 //                                 ),
 //                               ),
@@ -971,7 +971,7 @@ class Create_RequiredInput extends StatelessWidget {
       cursorColor: mainColor,
       decoration: InputDecoration(
         prefixIcon: add_prefix,
-        suffixIcon: add_suffix,
+        suffix: add_suffix,
         fillColor: Color(0xB0F2F2F2),
         filled: true,
         focusedBorder: OutlineInputBorder(
