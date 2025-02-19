@@ -79,24 +79,27 @@ class _EditStadium_stdownState extends State<EditStadium_stdown> {
               child: Wrap(
                 spacing: 10.0,
                 children: [
-                  Container(
-                    height: 150.0,
-                    width: 150.0,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      gradient: greenGradientColor,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                            'assets/editstadium_stdown/imgs/addNewImg.png'),
-                        Text('add new Image',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.w200)),
-                      ],
+                  GestureDetector(
+                    onTap: () {},
+                    child: Container(
+                      height: 150.0,
+                      width: 150.0,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.0),
+                        gradient: greenGradientColor,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                              'assets/editstadium_stdown/imgs/addNewImg.png'),
+                          Text('add new Image',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w200)),
+                        ],
+                      ),
                     ),
                   ),
                 ],

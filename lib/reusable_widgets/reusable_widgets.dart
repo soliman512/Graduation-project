@@ -29,8 +29,8 @@ class _Create_DrawerState extends State<Create_Drawer> {
             ),
             child: CircleAvatar(
               radius: 60.0,
-              backgroundImage: AssetImage(
-                  'assets/home_loves_tickets_top/imgs/person_2.png'),
+              backgroundImage:
+                  AssetImage('assets/home_loves_tickets_top/imgs/person_2.png'),
               backgroundColor: Colors.grey[300],
             ),
           ),
@@ -296,8 +296,7 @@ class _Create_AppBarState extends State<Create_AppBar> {
                 Scaffold.of(context).openDrawer();
               });
             },
-            icon: Image.asset(
-                "assets/home_loves_tickets_top/imgs/bars.png"),
+            icon: Image.asset("assets/home_loves_tickets_top/imgs/bars.png"),
             iconSize: 24.0,
           );
         }),
@@ -954,19 +953,19 @@ class Add_AppName extends StatelessWidget {
 class Create_RequiredInput extends StatelessWidget {
   Widget add_prefix;
   Widget? add_suffix = null;
+  TextInputType textInputType;
   Create_RequiredInput({
     required this.add_prefix,
     this.add_suffix,
+    required this.textInputType,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
-      keyboardType: TextInputType.multiline,
+      keyboardType: textInputType,
       maxLines: null,
-      style: TextStyle(
-        color: Colors.black,
-      ),
+      style: TextStyle(color: Colors.black),
       textAlign: TextAlign.center,
       cursorColor: mainColor,
       decoration: InputDecoration(
