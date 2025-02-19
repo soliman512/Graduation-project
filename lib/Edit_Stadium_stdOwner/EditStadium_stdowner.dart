@@ -80,7 +80,9 @@ class _EditStadium_stdownState extends State<EditStadium_stdown> {
                 spacing: 10.0,
                 children: [
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushNamed(context, '/no_internetConnection');
+                    },
                     child: Container(
                       height: 150.0,
                       width: 150.0,

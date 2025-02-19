@@ -70,6 +70,7 @@ flutter:
     - assets/payment/imgs/
     - assets/stdowner_addNewStadium/imgs/
     - assets/editstadium_stdown/imgs/
+    - assets/no_internet_connection/imgs/
     - assets/sharedBackground.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
