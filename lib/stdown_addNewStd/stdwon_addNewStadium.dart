@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:graduation_project_lastversion/constants/constants.dart';
 import 'package:graduation_project_lastversion/reusable_widgets/reusable_widgets.dart';
-import 'package:progressive_time_picker/progressive_time_picker.dart';
+import 'package:day_night_time_picker/day_night_time_picker.dart';
 
 class AddNewStadium extends StatefulWidget {
   const AddNewStadium({Key? key}) : super(key: key);
@@ -14,7 +14,7 @@ class AddNewStadium extends StatefulWidget {
 }
 
 class _AddNewStadiumState extends State<AddNewStadium> {
-  
+  //time work
   List<Map> selectDays = [
     {'day': 'Saturday', 'isSelected': false},
     {'day': 'Sunday', 'isSelected': false},
@@ -26,6 +26,9 @@ class _AddNewStadiumState extends State<AddNewStadium> {
   ];
 
   List<String> daysSelected = [];
+
+  String? timeStart;
+  String? timeEnd;
 
   // location visiblity and visibl of items on location
   bool visibleOfLocation = false;
@@ -627,7 +630,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                     ),
                   ),
                   SizedBox(height: 80.0),
-                  // select time:
+                  // select days:
                   Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
@@ -646,9 +649,8 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-
-                  SizedBox(height: 20.0),
-
+                  SizedBox(height: 10.0),
+                  //work time
                   Center(
                     child: GridView.builder(
                       shrinkWrap: true,
@@ -656,7 +658,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         crossAxisSpacing: 4.0,
-                        mainAxisSpacing: 4.0,
+                        mainAxisSpacing: 8.0,
                         childAspectRatio: 4,
                       ),
                       itemCount: selectDays.length,
@@ -677,10 +679,10 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                             decoration: BoxDecoration(
                               color: Color(0xC7FFFFFF),
                               border: Border.all(color: mainColor, width: 1.0),
-                              borderRadius: BorderRadius.circular(10.0),
+                              borderRadius: BorderRadius.circular(5.0),
                             ),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
                                   selectDays[i]['day'],
@@ -692,9 +694,14 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                                 ),
                                 Visibility(
                                   visible: selectDays[i]['isSelected'],
-                                  child: Icon(
-                                    Icons.check_circle_outline_outlined,
-                                    color: mainColor,
+                                  child: Row(
+                                    children: [
+                                      SizedBox(width: 4.0),
+                                      Icon(
+                                        Icons.check_circle_rounded,
+                                        color: mainColor,
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
@@ -704,16 +711,39 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                       },
                     ),
                   ),
-
+                  SizedBox(height: 10.0),
+                  //selct time:
                   SizedBox(height: 40.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Expanded(
                         child: TextField(
+                          keyboardType: TextInputType.none,
                           onTap: () {
-                            // use time picker
+                            Navigator.of(context).push(
+                              showPicker(
+                                context: context,
+                                value: Time(hour: 7, minute: 00),
+                                sunrise: TimeOfDay(
+                                  hour: 6,
+                                  minute: 0,
+                                ), // optional
+                                sunset: TimeOfDay(
+                                  hour: 18,
+                                  minute: 0,
+                                ), // optional
+                                duskSpanInMinutes: 120, // optional
+                                onChange: (value) {
+                                  setState(() {
+                                    timeStart =
+                                        '${value.hourOfPeriod.toString().padLeft(2, '0')} : ${value.minute.toString().padLeft(2, '0')} ${value.period == DayPeriod.am ? 'AM' : 'PM'}';
+                                  });
+                                },
+                              ),
+                            );
                           },
+                          controller: TextEditingController(text: timeStart),
                           readOnly: true,
                           textAlign: TextAlign.center,
                           decoration: InputDecoration(
@@ -722,7 +752,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                               color: mainColor,
                             ),
                             labelText: 'start on',
-                            labelStyle: TextStyle(fontSize: 20.0),
+                            labelStyle: TextStyle(fontSize: 22.0),
                             floatingLabelStyle: TextStyle(
                               color: mainColor,
                               fontSize: 18.0,
@@ -744,10 +774,33 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                           ),
                         ),
                       ),
+                      SizedBox(width: 10.0),
                       Expanded(
                         child: TextField(
+                          keyboardType: TextInputType.none,
+                          controller: TextEditingController(text: timeEnd),
                           onTap: () {
-                            // use time picker
+                            Navigator.of(context).push(
+                              showPicker(
+                                context: context,
+                                value: Time(hour: 12, minute: 00),
+                                sunrise: TimeOfDay(
+                                  hour: 6,
+                                  minute: 0,
+                                ), // optional
+                                sunset: TimeOfDay(
+                                  hour: 18,
+                                  minute: 0,
+                                ), // optional
+                                duskSpanInMinutes: 120, // optional
+                                onChange: (value) {
+                                  setState(() {
+                                    timeEnd =
+                                        '${value.hourOfPeriod.toString().padLeft(2, '0')} : ${value.hourOfPeriod.toString().padLeft(2, '0')} ${value.period == DayPeriod.am ? 'AM' : 'PM'}';
+                                  });
+                                },
+                              ),
+                            );
                           },
                           readOnly: true,
                           textAlign: TextAlign.center,
@@ -781,9 +834,10 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                       ),
                     ],
                   ),
+                  SizedBox(height: 40.0),
                   //post, discard
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
                         child: ElevatedButton(
@@ -821,7 +875,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                         flex: 2,
                         child: Create_GradiantGreenButton(
                           onButtonPressed: () {
-                            Navigator.pushNamed(context, '/stdown_editStadium');
+                            Navigator.pushNamed(context, '/stdOwn_workTime');
                           },
                           title: 'Post',
                         ),
