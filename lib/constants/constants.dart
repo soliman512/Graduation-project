@@ -12,20 +12,20 @@ const LinearGradient greenGradientColor = LinearGradient(
   ],
 );
 //logo
-Image logo = Image.asset('../../assets/welcome_signup_login/imgs/logo.png',
+Image logo = Image.asset('assets/welcome_signup_login/imgs/logo.png',
     fit: BoxFit.cover, width: 90.0, height: 90.0);
 
-Image big_logo = Image.asset('../../assets/welcome_signup_login/imgs/logo.png',
+Image big_logo = Image.asset('assets/welcome_signup_login/imgs/logo.png',
     fit: BoxFit.cover, width: 158.0, height: 158.0);
 
 Image add_logo(double logoSize) {
-  return Image.asset('../../assets/welcome_signup_login/imgs/logo.png',
+  return Image.asset('assets/welcome_signup_login/imgs/logo.png',
       fit: BoxFit.cover, width: logoSize, height: logoSize);
 }
 
 //background image
 Image backgroundImage = Image.asset(
-    '../../assets/welcome_signup_login/imgs/welcome.jpg',
+    'assets/welcome_signup_login/imgs/Welcome.jpg',
     fit: BoxFit.cover,
     width: 90.0,
     height: 90.0);
@@ -34,7 +34,7 @@ Image backgroundImage = Image.asset(
 Opacity backgroundImage_balls = Opacity(
     opacity: 0.08,
     child: Image.asset(
-      '../../../assets/sharedBackground.png',
+      'assets/sharedBackground.png',
       fit: BoxFit.fill,
     ));
 
@@ -55,7 +55,7 @@ List drawerOptions = [
   // 0 : Home
   {
     'icon': Image.asset(
-        '../../../assets/home_loves_tickets_top/imgs/Vector_drawerHome.png'),
+        'assets/home_loves_tickets_top/imgs/Vector_drawerHome.png'),
     'title': Text(
       'Home',
       style: TextStyle(color: Colors.black, fontSize: 18.0),
@@ -65,7 +65,7 @@ List drawerOptions = [
   // 1 : Profile
   {
     'icon': Image.asset(
-        '../../../assets/home_loves_tickets_top/imgs/Vector_drawerProfile.png'),
+        'assets/home_loves_tickets_top/imgs/Vector_drawerProfile.png'),
     'title': Text(
       'Profile',
       style: TextStyle(color: Colors.black, fontSize: 18.0),
@@ -75,7 +75,7 @@ List drawerOptions = [
   // 2 : Settings
   {
     'icon': Image.asset(
-        '../../../assets/home_loves_tickets_top/imgs/vector_drawerSettings.png'),
+        'assets/home_loves_tickets_top/imgs/vector_drawerSettings.png'),
     'title': Text(
       'Settings',
       style: TextStyle(color: Colors.black, fontSize: 18.0),
@@ -85,7 +85,7 @@ List drawerOptions = [
   // 3 : Log out
   {
     'icon': Image.asset(
-        '../../../assets/home_loves_tickets_top/imgs/vector_drawerLog_out.png'),
+        'assets/home_loves_tickets_top/imgs/vector_drawerLog_out.png'),
     'title': Text(
       'Log out',
       style: TextStyle(color: Colors.black, fontSize: 18.0),

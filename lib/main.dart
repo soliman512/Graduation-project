@@ -8,6 +8,7 @@ import 'package:graduation_project_lastversion/no_internetConnection/no_internet
 import 'package:graduation_project_lastversion/payment/payment.dart';
 import 'package:graduation_project_lastversion/stadium_information_player_pg/stadium_information_player_pg.dart';
 import 'package:graduation_project_lastversion/stdown_addNewStd/stdwon_addNewStadium.dart';
+import 'package:graduation_project_lastversion/stdown_addNewStd/testNewStadium.dart';
 import 'package:graduation_project_lastversion/welcome_signup_login/Welcome.dart';
 import 'package:graduation_project_lastversion/welcome_signup_login/login_signup%20page/login_signupPlayer.dart';
 import 'package:graduation_project_lastversion/welcome_signup_login/login_signup%20page/login_signupStdOwner.dart';
@@ -90,6 +91,7 @@ class MyApp extends StatelessWidget {
 
 // stadium owner
         '/stdWon_addNewStadium' : (context) => AddNewStadium(),
+        '/testNewStd' : (context) => TestNewStadium(),
         '/stdown_editStadium' : (context) => EditStadium_stdown(),
 
 
