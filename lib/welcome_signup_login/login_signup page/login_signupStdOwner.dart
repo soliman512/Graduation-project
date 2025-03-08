@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../constants/constants.dart';
-import '../../reusable_widgets/reusable_widgets.dart';
+import 'package:graduation_project_lastversion/constants/constants.dart';
+import 'package:graduation_project_lastversion/reusable_widgets/reusable_widgets.dart';
 
 class Login_Signup_stdOwner extends StatelessWidget {
   @override

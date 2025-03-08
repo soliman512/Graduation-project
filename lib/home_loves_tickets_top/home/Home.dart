@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import '../../../reusable_widgets/reusable_widgets.dart';
-import '../../../constants/constants.dart';
+import 'package:graduation_project_lastversion/reusable_widgets/reusable_widgets.dart';
+import 'package:graduation_project_lastversion/constants/constants.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -144,12 +143,12 @@ class _HomeState extends State<Home> {
                               ),
                               suffixIcon: ElevatedButton(
                                   style: ButtonStyle(
-                                      shape: MaterialStateProperty.all(
+                                      shape: WidgetStateProperty.all(
                                           CircleBorder()),
                                       backgroundColor:
-                                          MaterialStateProperty.all(
+                                          WidgetStateProperty.all(
                                               mainColor),
-                                      padding: MaterialStateProperty.all(
+                                      padding: WidgetStateProperty.all(
                                           EdgeInsets.zero)),
                                   onPressed: () {},
                                   child: Image.asset(
@@ -192,20 +191,20 @@ class _HomeState extends State<Home> {
                                     },
                                     style: ButtonStyle(
                                       elevation:
-                                          MaterialStateProperty.all(0.0),
+                                          WidgetStateProperty.all(0.0),
                                       backgroundColor:
-                                          MaterialStateProperty.all(
+                                          WidgetStateProperty.all(
                                               Colors.transparent),
                                       foregroundColor:
-                                          MaterialStateProperty.all(
+                                          WidgetStateProperty.all(
                                               mainColor),
-                                      side: MaterialStateProperty.all(
+                                      side: WidgetStateProperty.all(
                                         BorderSide(
                                             color: mainColor,
                                             width: 1,
                                             style: BorderStyle.solid),
                                       ),
-                                      shape: MaterialStateProperty.all(
+                                      shape: WidgetStateProperty.all(
                                           RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(
@@ -286,20 +285,20 @@ class _HomeState extends State<Home> {
                                     },
                                     style: ButtonStyle(
                                       elevation:
-                                          MaterialStateProperty.all(0.0),
+                                          WidgetStateProperty.all(0.0),
                                       backgroundColor:
-                                          MaterialStateProperty.all(
+                                          WidgetStateProperty.all(
                                               Colors.transparent),
                                       foregroundColor:
-                                          MaterialStateProperty.all(
+                                          WidgetStateProperty.all(
                                               mainColor),
-                                      side: MaterialStateProperty.all(
+                                      side: WidgetStateProperty.all(
                                         BorderSide(
                                             color: mainColor,
                                             width: 1,
                                             style: BorderStyle.solid),
                                       ),
-                                      shape: MaterialStateProperty.all(
+                                      shape: WidgetStateProperty.all(
                                           RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(
@@ -370,20 +369,20 @@ class _HomeState extends State<Home> {
                                 onPressed: () {},
                                 style: ButtonStyle(
                                   elevation:
-                                      MaterialStateProperty.all(0.0),
+                                      WidgetStateProperty.all(0.0),
                                   backgroundColor:
-                                      MaterialStateProperty.all(
+                                      WidgetStateProperty.all(
                                           Colors.transparent),
                                   foregroundColor:
-                                      MaterialStateProperty.all(
+                                      WidgetStateProperty.all(
                                           mainColor),
-                                  side: MaterialStateProperty.all(
+                                  side: WidgetStateProperty.all(
                                     BorderSide(
                                         color: mainColor,
                                         width: 1,
                                         style: BorderStyle.solid),
                                   ),
-                                  shape: MaterialStateProperty.all(
+                                  shape: WidgetStateProperty.all(
                                       RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(
@@ -419,20 +418,20 @@ class _HomeState extends State<Home> {
                                 onPressed: () {},
                                 style: ButtonStyle(
                                   elevation:
-                                      MaterialStateProperty.all(0.0),
+                                      WidgetStateProperty.all(0.0),
                                   backgroundColor:
-                                      MaterialStateProperty.all(
+                                      WidgetStateProperty.all(
                                           Colors.transparent),
                                   foregroundColor:
-                                      MaterialStateProperty.all(
+                                      WidgetStateProperty.all(
                                           mainColor),
-                                  side: MaterialStateProperty.all(
+                                  side: WidgetStateProperty.all(
                                     BorderSide(
                                         color: mainColor,
                                         width: 1,
                                         style: BorderStyle.solid),
                                   ),
-                                  shape: MaterialStateProperty.all(
+                                  shape: WidgetStateProperty.all(
                                       RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(

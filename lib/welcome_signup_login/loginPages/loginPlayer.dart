@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:graduation_project_lastversion/constants/constants.dart';
-import '../../reusable_widgets/reusable_widgets.dart';
+import 'package:graduation_project_lastversion/reusable_widgets/reusable_widgets.dart';
 
 class Login_player extends StatefulWidget {
   @override
@@ -121,17 +121,17 @@ class _Login_playerState extends State<Login_player> {
                     //forgot
                     Container(
                       alignment: Alignment.centerLeft,
-                      margin: EdgeInsets.fromLTRB(23, 20, 0, 0),
+                      margin: EdgeInsets.fromLTRB(10, 10, 0, 0),
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.pushNamed(context, '/Recorve_account');
                         },
                         style: ButtonStyle(
-                            elevation: MaterialStateProperty.all(0),
+                            elevation: WidgetStateProperty.all(0),
                             backgroundColor:
-                                MaterialStateProperty.all(Colors.transparent),
+                                WidgetStateProperty.all(Colors.transparent),
                             foregroundColor:
-                                MaterialStateProperty.all(Color(0xffffffff))),
+                                WidgetStateProperty.all(Color(0xffffffff))),
                         child: Text("Forgot your password ?",
                             style: TextStyle(
                                 color: Color(0xff004FFB),
@@ -143,7 +143,7 @@ class _Login_playerState extends State<Login_player> {
                     ),
 
                     SizedBox(
-                      height: 56,
+                      height: 40,
                     ),
                     //login
                     Create_GradiantGreenButton(
@@ -160,7 +160,7 @@ class _Login_playerState extends State<Login_player> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          color: Color(0xD7000000),
+                          color: mainColor,
                           // thickness: 1,
                           // indent: 16.0,
                           // endIndent: 30.0,
@@ -177,7 +177,7 @@ class _Login_playerState extends State<Login_player> {
                           ),
                         ),
                         Container(
-                          color: Color(0xD7000000),
+                          color: mainColor,
                           // thickness: 1,
                           // indent: 16.0,
                           // endIndent: 30.0,
@@ -217,10 +217,10 @@ class _Login_playerState extends State<Login_player> {
                                 "assets/welcome_signup_login/imgs/google.png",
                               ),
                               style: ButtonStyle(
-                                  elevation: MaterialStateProperty.all(0),
-                                  backgroundColor: MaterialStateProperty.all(
+                                  elevation: WidgetStateProperty.all(0),
+                                  backgroundColor: WidgetStateProperty.all(
                                       Colors.transparent),
-                                  foregroundColor: MaterialStateProperty.all(
+                                  foregroundColor: WidgetStateProperty.all(
                                       Color(0xffffffff))),
                             ),
                           ),
@@ -229,7 +229,7 @@ class _Login_playerState extends State<Login_player> {
                           Container(
                             width: 80.0,
                             // margin: EdgeInsets.only(left: 20.0),
-                            padding: EdgeInsets.all(5.0),
+                            // padding: EdgeInsets.all(5.0),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(
@@ -243,10 +243,10 @@ class _Login_playerState extends State<Login_player> {
                                 "assets/welcome_signup_login/imgs/icons8-twitter-100.png",
                               ),
                               style: ButtonStyle(
-                                  elevation: MaterialStateProperty.all(0),
-                                  backgroundColor: MaterialStateProperty.all(
+                                  elevation: WidgetStateProperty.all(0),
+                                  backgroundColor: WidgetStateProperty.all(
                                       Colors.transparent),
-                                  foregroundColor: MaterialStateProperty.all(
+                                  foregroundColor: WidgetStateProperty.all(
                                       Color(0xffffffff))),
                             ),
                           ),
@@ -268,10 +268,10 @@ class _Login_playerState extends State<Login_player> {
                                 "assets/welcome_signup_login/imgs/facebook.png",
                               ),
                               style: ButtonStyle(
-                                  elevation: MaterialStateProperty.all(0),
-                                  backgroundColor: MaterialStateProperty.all(
+                                  elevation: WidgetStateProperty.all(0),
+                                  backgroundColor: WidgetStateProperty.all(
                                       Colors.transparent),
-                                  foregroundColor: MaterialStateProperty.all(
+                                  foregroundColor: WidgetStateProperty.all(
                                       Color(0xffffffff))),
                             ),
                           ),

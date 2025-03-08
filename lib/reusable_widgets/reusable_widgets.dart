@@ -18,9 +18,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
       margin: EdgeInsets.only(right: 112.0),
       child: Column(
         children: [
-          SizedBox(
-            height: 50.0,
-          ),
+          SizedBox(height: 50.0),
           //user image
           Container(
             decoration: BoxDecoration(
@@ -29,47 +27,37 @@ class _Create_DrawerState extends State<Create_Drawer> {
             ),
             child: CircleAvatar(
               radius: 60.0,
-              backgroundImage:
-                  AssetImage('assets/home_loves_tickets_top/imgs/person_2.png'),
+              backgroundImage: AssetImage(
+                'assets/home_loves_tickets_top/imgs/person_2.png',
+              ),
               backgroundColor: Colors.grey[300],
             ),
           ),
-          SizedBox(
-            height: 20.0,
-          ),
+          SizedBox(height: 20.0),
 
           //username and line
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               //first line
-              Container(
-                height: 2.0,
-                color: mainColor,
-                width: 40.0,
-              ),
+              Container(height: 2.0, color: mainColor, width: 40.0),
               //username
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 10.0),
                 child: Text(
                   'Belal_789',
                   style: TextStyle(
-                      color: Colors.black,
-                      fontFamily: 'eras-itc-bold',
-                      fontSize: 24.0),
+                    color: Colors.black,
+                    fontFamily: 'eras-itc-bold',
+                    fontSize: 24.0,
+                  ),
                 ),
               ),
               //second line
-              Container(
-                height: 2.0,
-                color: mainColor,
-                width: 40.0,
-              ),
+              Container(height: 2.0, color: mainColor, width: 40.0),
             ],
           ),
-          SizedBox(
-            height: 10.0,
-          ),
+          SizedBox(height: 10.0),
           //email
           Text(
             'belal789@gmail.com',
@@ -81,9 +69,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
             ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(
-            height: 70.0,
-          ),
+          SizedBox(height: 70.0),
           //options:
           // 0 : Home option
           Container(
@@ -103,8 +89,9 @@ class _Create_DrawerState extends State<Create_Drawer> {
                 width: drawerOptions[0]['widtOfOption'],
                 height: 10.0,
                 decoration: BoxDecoration(
-                    gradient: greenGradientColor,
-                    borderRadius: BorderRadius.circular(50.0)),
+                  gradient: greenGradientColor,
+                  borderRadius: BorderRadius.circular(50.0),
+                ),
               ),
               title: Row(
                 children: [
@@ -112,9 +99,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
                     'assets/home_loves_tickets_top/imgs/Vector_drawerHome.png',
                     width: 24.0,
                   ),
-                  SizedBox(
-                    width: 20.0,
-                  ),
+                  SizedBox(width: 20.0),
                   Text(
                     'Home',
                     style: TextStyle(color: Colors.black, fontSize: 18.0),
@@ -141,8 +126,9 @@ class _Create_DrawerState extends State<Create_Drawer> {
                 width: drawerOptions[1]['widtOfOption'],
                 height: 10.0,
                 decoration: BoxDecoration(
-                    gradient: greenGradientColor,
-                    borderRadius: BorderRadius.circular(50.0)),
+                  gradient: greenGradientColor,
+                  borderRadius: BorderRadius.circular(50.0),
+                ),
               ),
               title: Row(
                 children: [
@@ -150,9 +136,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
                     'assets/home_loves_tickets_top/imgs/Vector_drawerProfile.png',
                     width: 24.0,
                   ),
-                  SizedBox(
-                    width: 20.0,
-                  ),
+                  SizedBox(width: 20.0),
                   Text(
                     'Profile',
                     style: TextStyle(color: Colors.black, fontSize: 18.0),
@@ -179,16 +163,15 @@ class _Create_DrawerState extends State<Create_Drawer> {
                 width: drawerOptions[2]['widtOfOption'],
                 height: 10.0,
                 decoration: BoxDecoration(
-                    gradient: greenGradientColor,
-                    borderRadius: BorderRadius.circular(50.0)),
+                  gradient: greenGradientColor,
+                  borderRadius: BorderRadius.circular(50.0),
+                ),
               ),
               title: Row(
                 children: [
                   drawerOptions[2]['icon'],
-                  SizedBox(
-                    width: 20.0,
-                  ),
-                  drawerOptions[2]['title']
+                  SizedBox(width: 20.0),
+                  drawerOptions[2]['title'],
                 ],
               ),
             ),
@@ -228,9 +211,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
                     'assets/home_loves_tickets_top/imgs/vector_drawerLog_out.png',
                     width: 24.0,
                   ),
-                  SizedBox(
-                    width: 20.0,
-                  ),
+                  SizedBox(width: 20.0),
                   Text(
                     'Log out',
                     style: TextStyle(color: Colors.black, fontSize: 18.0),
@@ -258,7 +239,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -270,9 +251,7 @@ class Create_AppBar extends StatefulWidget implements PreferredSizeWidget {
   Size get preferredSize => Size.fromHeight(80.0);
 
   final RichText title;
-  Create_AppBar({
-    required this.title,
-  });
+  Create_AppBar({required this.title});
 
   @override
   State<Create_AppBar> createState() => _Create_AppBarState();
@@ -283,26 +262,28 @@ class _Create_AppBarState extends State<Create_AppBar> {
   Widget build(BuildContext context) {
     return AppBar(
       toolbarHeight: 80.0,
-// foregroundColor: Color(0xFFFFFFFF),
+      // foregroundColor: Color(0xFFFFFFFF),
       elevation: 0,
       backgroundColor: Color(0xFFFFFFFF),
-//bars
+      //bars
       leading: Container(
         margin: EdgeInsets.only(left: 10.0),
-        child: Builder(builder: (context) {
-          return IconButton(
-            onPressed: () {
-              setState(() {
-                Scaffold.of(context).openDrawer();
-              });
-            },
-            icon: Image.asset("assets/home_loves_tickets_top/imgs/bars.png"),
-            iconSize: 24.0,
-          );
-        }),
+        child: Builder(
+          builder: (context) {
+            return IconButton(
+              onPressed: () {
+                setState(() {
+                  Scaffold.of(context).openDrawer();
+                });
+              },
+              icon: Image.asset("assets/home_loves_tickets_top/imgs/bars.png"),
+              iconSize: 24.0,
+            );
+          },
+        ),
       ),
 
-// notifications
+      // notifications
       actions: [
         Container(
           margin: EdgeInsets.only(right: 10.0),
@@ -311,13 +292,14 @@ class _Create_AppBarState extends State<Create_AppBar> {
               Navigator.pushNamed(context, '/Welcome');
             },
             icon: Image.asset(
-                "assets/home_loves_tickets_top/imgs/notifications.png"),
+              "assets/home_loves_tickets_top/imgs/notifications.png",
+            ),
             iconSize: 24.0,
           ),
-        )
+        ),
       ],
 
-//title "vamonos"
+      //title "vamonos"
       title: widget.title,
 
       centerTitle: true,
@@ -377,13 +359,8 @@ Widget buildCard({
                       Icon(Icons.star, color: Color(0xffFFCC00), size: 15),
                       SizedBox(width: 1),
                       Icon(Icons.star, color: Color(0xffFFCC00), size: 15),
-                      SizedBox(
-                        width: 1,
-                      ),
-                      Text(
-                        "5.5",
-                        style: TextStyle(fontSize: 12),
-                      )
+                      SizedBox(width: 1),
+                      Text("5.5", style: TextStyle(fontSize: 12)),
                     ],
                   ),
                   Padding(
@@ -419,11 +396,7 @@ Widget buildCard({
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.location_on,
-                      size: 13,
-                      color: Colors.grey,
-                    ),
+                    Icon(Icons.location_on, size: 13, color: Colors.grey),
                     SizedBox(width: 5),
                     Text(
                       location,
@@ -436,9 +409,7 @@ Widget buildCard({
                 ),
               ),
             ),
-            SizedBox(
-              height: 14,
-            )
+            SizedBox(height: 14),
           ],
         ),
       ),
@@ -454,8 +425,10 @@ class Create_GradiantGreenButton extends StatefulWidget {
 
   final String title;
   final VoidCallback onButtonPressed;
-  Create_GradiantGreenButton(
-      {required this.title, required this.onButtonPressed});
+  Create_GradiantGreenButton({
+    required this.title,
+    required this.onButtonPressed,
+  });
 }
 
 class _Create_GradiantGreenButtonState
@@ -468,8 +441,9 @@ class _Create_GradiantGreenButtonState
       // bottom: 124.0,
       // left: 30,
       decoration: BoxDecoration(
-          gradient: greenGradientColor,
-          borderRadius: BorderRadius.circular(10.0)),
+        gradient: greenGradientColor,
+        borderRadius: BorderRadius.circular(10.0),
+      ),
       child: ElevatedButton(
         onPressed: widget.onButtonPressed,
         child: Text(
@@ -487,9 +461,9 @@ class _Create_GradiantGreenButtonState
           // shape: MaterialStateProperty.all(
           //     RoundedRectangleBorder(
           //         borderRadius: BorderRadius.circular(15))),
-          backgroundColor: MaterialStateProperty.all(Colors.transparent),
-          foregroundColor: MaterialStateProperty.all(Color(0xFFFFFFFF)),
-          shadowColor: MaterialStateProperty.all(Colors.transparent),
+          backgroundColor: WidgetStateProperty.all(Colors.transparent),
+          foregroundColor: WidgetStateProperty.all(Color(0xFFFFFFFF)),
+          shadowColor: WidgetStateProperty.all(Colors.transparent),
           // padding: MaterialStateProperty.all(EdgeInsets.all(5)),
         ),
       ),
@@ -510,7 +484,9 @@ class Create_WhiteButton extends StatelessWidget {
       // bottom: 192.0,
       // left: 30,
       decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(10.0)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10.0),
+      ),
       child: ElevatedButton(
         onPressed: onButtonPressed,
         child: Text(
@@ -527,9 +503,9 @@ class Create_WhiteButton extends StatelessWidget {
           // shape: MaterialStateProperty.all(
           //     RoundedRectangleBorder(
           //         borderRadius: BorderRadius.circular(15))),
-          backgroundColor: MaterialStateProperty.all(Colors.transparent),
-          foregroundColor: MaterialStateProperty.all(Color(0xff006607)),
-          shadowColor: MaterialStateProperty.all(Colors.transparent),
+          backgroundColor: WidgetStateProperty.all(Colors.transparent),
+          foregroundColor: WidgetStateProperty.all(Color(0xff006607)),
+          shadowColor: WidgetStateProperty.all(Colors.transparent),
 
           // padding: MaterialStateProperty.all(EdgeInsets.all(5)),
         ),
@@ -574,40 +550,39 @@ class _Create_InputState extends State<Create_Input> {
       width: double.infinity,
       height: 44.0,
       child: TextField(
-          controller: TextEditingController(text: widget.initValue),
-          onTap: widget.on_tap,
-          readOnly: widget.isReadOnly,
-          style: TextStyle(
-              color: Color(0xFF000000),
-              fontSize: 18.0,
-              fontWeight: FontWeight.w400),
-          keyboardType: widget.keyboardType,
-          textInputAction: widget.textInputAction,
-          obscureText: widget.isPassword,
-          cursorColor: mainColor,
-          decoration: InputDecoration(
-            focusColor: mainColor,
-            focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: mainColor,
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(15)),
-            prefixIcon: widget.addPrefixIcon,
-            suffixIcon: widget.addSuffixIcon,
-            contentPadding: EdgeInsets.symmetric(vertical: 5),
-            hintText: widget.hintText,
-            hintStyle: TextStyle(
-                color: Color(0x4F000000),
-                fontSize: 20.0,
-                fontWeight: FontWeight.w400),
-            border: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Color(0x4F000000),
-                  width: 1.0,
-                ),
-                borderRadius: BorderRadius.circular(10)),
-          )),
+        controller: TextEditingController(text: widget.initValue),
+        onTap: widget.on_tap,
+        readOnly: widget.isReadOnly,
+        style: TextStyle(
+          color: Color(0xFF000000),
+          fontSize: 18.0,
+          fontWeight: FontWeight.w400,
+        ),
+        keyboardType: widget.keyboardType,
+        textInputAction: widget.textInputAction,
+        obscureText: widget.isPassword,
+        cursorColor: mainColor,
+        decoration: InputDecoration(
+          focusColor: mainColor,
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: mainColor, width: 2),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          prefixIcon: widget.addPrefixIcon,
+          suffixIcon: widget.addSuffixIcon,
+          contentPadding: EdgeInsets.symmetric(vertical: 5),
+          hintText: widget.hintText,
+          hintStyle: TextStyle(
+            color: Color(0x4F000000),
+            fontSize: 20.0,
+            fontWeight: FontWeight.w400,
+          ),
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0x4F000000), width: 1.0),
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -629,10 +604,11 @@ class Add_AppName extends StatelessWidget {
       textAlign: TextAlign.center,
       text: TextSpan(
         style: TextStyle(
-            fontFamily: "eras-itc-bold",
-            fontWeight: FontWeight.w900,
-            color: color,
-            fontSize: font_size),
+          fontFamily: "eras-itc-bold",
+          fontWeight: FontWeight.w900,
+          color: color,
+          fontSize: font_size,
+        ),
         children: [
           TextSpan(text: "V"),
           TextSpan(text: "á", style: TextStyle(color: mainColor)),
@@ -642,7 +618,7 @@ class Add_AppName extends StatelessWidget {
     );
   }
 }
-
+                        
 // //Location
 /*
 
@@ -957,38 +933,55 @@ class Create_RequiredInput extends StatelessWidget {
   final bool? isReadOnly;
   final String? initValue;
   final VoidCallback? onTap;
+  final ValueChanged<String>? onChange;
   final TextInputType textInputType;
+  final String lableText;
   Create_RequiredInput({
     required this.add_prefix,
-    this.add_suffix,
     required this.textInputType,
+    required this.lableText,
+    this.add_suffix,
     this.isReadOnly,
     this.initValue,
     this.onTap,
+    this.onChange,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      onChanged: onChange,
       onTap: onTap,
       controller: TextEditingController(text: initValue),
       keyboardType: textInputType,
       readOnly: isReadOnly ?? false,
       maxLines: null,
-      style: TextStyle(color: Colors.black),
-      textAlign: TextAlign.center,
+      style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0)),
+      // textAlign: TextAlign.center,
       cursorColor: mainColor,
       decoration: InputDecoration(
+        labelText: lableText,
+        labelStyle: TextStyle(
+          color: Color.fromARGB(75, 0, 0, 0),
+          fontSize: 15.0,
+        ),
+        floatingLabelStyle: TextStyle(color: mainColor, fontSize: 16.0),
+        floatingLabelAlignment: FloatingLabelAlignment.center,
         prefixIcon: add_prefix,
         suffix: add_suffix,
-        fillColor: Color(0xB0F2F2F2),
+        fillColor: Color.fromARGB(255, 255, 255, 255),
         filled: true,
         focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15.0),
-            borderSide: BorderSide(color: mainColor, width: 2.0)),
+          borderRadius: BorderRadius.circular(15.0),
+          borderSide: BorderSide(color: mainColor, width: 2.0),
+        ),
         border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            borderSide: BorderSide(color: Colors.black38, width: 2.0)),
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide(
+            color: Color.fromARGB(75, 0, 0, 0),
+            width: 1.0,
+          ),
+        ),
       ),
     );
   }

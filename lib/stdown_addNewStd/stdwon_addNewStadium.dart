@@ -1,10 +1,12 @@
 import 'dart:io';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:graduation_project_lastversion/stdown_addNewStd/testNewStadium.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:graduation_project_lastversion/constants/constants.dart';
 import 'package:graduation_project_lastversion/reusable_widgets/reusable_widgets.dart';
 import 'package:day_night_time_picker/day_night_time_picker.dart';
+import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 
 class AddNewStadium extends StatefulWidget {
   const AddNewStadium({Key? key}) : super(key: key);
@@ -14,6 +16,26 @@ class AddNewStadium extends StatefulWidget {
 }
 
 class _AddNewStadiumState extends State<AddNewStadium> {
+  // Text controllers for inputs
+  final TextEditingController stadiumNameController = TextEditingController();
+  final TextEditingController stadiumPriceController = TextEditingController();
+  final TextEditingController stadiumDescriptionController =
+      TextEditingController();
+  final TextEditingController stadiumCapacityController =
+      TextEditingController();
+  final TextEditingController stadiumLocationController =
+      TextEditingController();
+
+  @override
+  void dispose() {
+    stadiumNameController.dispose();
+    stadiumPriceController.dispose();
+    stadiumDescriptionController.dispose();
+    stadiumCapacityController.dispose();
+    stadiumLocationController.dispose();
+    super.dispose();
+  }
+
   //time work
   List<Map> selectDays = [
     {'day': 'Saturday', 'isSelected': false},
@@ -77,22 +99,16 @@ class _AddNewStadiumState extends State<AddNewStadium> {
 
   //water
   bool isWaterAvailable = true;
-  double moveToRight_Water = 0;
-  double waterSelector = 130.0;
   //track
-  bool isTrackAvailable = true;
-  double moveToRight_Track = 0;
-  double trackSelector = 130.0;
+  bool isTrackAvailable = false;
   //grass
-  bool isGrassAvailable = true;
-  double moveToRight_Grass = 0;
-  double grassSelector = 130.0;
+  bool isGrassNormal = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        toolbarHeight: 80.0,
+        toolbarHeight: 40.0,
         centerTitle: true,
 
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
@@ -116,19 +132,23 @@ class _AddNewStadiumState extends State<AddNewStadium> {
       ),
       body: Stack(
         children: [
-          backgroundImage_balls,
+          Opacity(child: backgroundImage_balls, opacity: 0.2),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Images*',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.w600,
+                  SizedBox(height: 30.0),
+                  Center(
+                    child: Text(
+                      'Images',
+                      style: TextStyle(
+                        color: const Color.fromARGB(76, 0, 0, 0),
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                   SizedBox(height: 8.0),
@@ -138,9 +158,9 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                     padding: EdgeInsets.all(8.0),
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Color(0x8FF2F2F2),
+                      color: Colors.white.withOpacity(0.8),
                       borderRadius: BorderRadius.circular(10.0),
-                      border: Border.all(color: mainColor, width: 2.0),
+                      border: Border.all(color: mainColor, width: 1.0),
                     ),
                     child:
                         selectedImages.isEmpty
@@ -196,524 +216,435 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                                     childAspectRatio: 1.0,
                                   ),
                               itemBuilder: (BuildContext context, int index) {
-                                return Image.file(selectedImages[index]);
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  child: Image.file(
+                                    selectedImages[index],
+                                    fit: BoxFit.cover,
+                                  ),
+                                );
                               },
                             ),
                   ),
 
-                  SizedBox(height: 32.0),
-                  Text(
-                    'Stadium Name*',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SizedBox(height: 8.0),
+                  SizedBox(height: 40.0),
 
                   //stadium name
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 5.0),
-                    child: Create_RequiredInput(
-                      textInputType: TextInputType.text,
-                      add_prefix: Image.asset(
-                        'assets/stdowner_addNewStadium/imgs/sign.png',
-                      ),
+                  Create_RequiredInput(
+                    onChange: (value) {
+                      stadiumNameController.text = value;
+                    },
+                    initValue: stadiumNameController.text,
+                    lableText: 'Stadium Name',
+                    textInputType: TextInputType.text,
+                    add_prefix: Image.asset(
+                      'assets/stdowner_addNewStadium/imgs/sign.png',
                     ),
                   ),
                   SizedBox(height: 32.0),
-                  Text(
-                    'Stadium Location*',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SizedBox(height: 8.0),
 
                   //stadium location
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 5.0),
-                    child: Create_RequiredInput(
-                      onTap: () {
-                        setState(() {
-                          visibleOfLocation = true;
-                        });
-                      },
-                      initValue: Location,
-                      isReadOnly: true,
-                      textInputType: TextInputType.text,
-                      add_prefix: Image.asset(
-                        'assets/stdowner_addNewStadium/imgs/location.png',
-                      ),
+                  Create_RequiredInput(
+                    // initValue: stadiumLocationController.text,
+                    onChange: (value) {
+                      Location = value;
+                    },
+                    onTap: () {
+                      setState(() {
+                        visibleOfLocation = true;
+                      });
+                    },
+                    lableText: 'Stadium Location',
+                    initValue: Location,
+                    isReadOnly: true,
+                    textInputType: TextInputType.text,
+                    add_prefix: Image.asset(
+                      'assets/stdowner_addNewStadium/imgs/location.png',
                     ),
                   ),
                   SizedBox(height: 32.0),
-                  Text(
-                    'Set Price*',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SizedBox(height: 8.0),
-
                   //stadium price
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 5.0),
-                    child: Create_RequiredInput(
-                      textInputType: TextInputType.number,
-                      add_prefix: Image.asset(
-                        'assets/stdowner_addNewStadium/imgs/price.png',
-                      ),
-                      add_suffix: Text(
-                        '.LE',
-                        style: TextStyle(
-                          color: mainColor,
-                          fontSize: 18.0,
-                          fontFamily: 'eras-itc-bold',
-                          fontWeight: FontWeight.w800,
-                        ),
+                  Create_RequiredInput(
+                    onChange: (value) {
+                      stadiumPriceController.text = value;
+                    },
+                    initValue: stadiumPriceController.text,
+                    lableText: 'Set Price',
+                    textInputType: TextInputType.number,
+                    add_prefix: Image.asset(
+                      'assets/stdowner_addNewStadium/imgs/price.png',
+                    ),
+                    add_suffix: Text(
+                      '.LE',
+                      style: TextStyle(
+                        color: mainColor,
+                        fontSize: 18.0,
+                        fontFamily: 'eras-itc-bold',
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ),
                   SizedBox(height: 32.0),
 
                   //stadium description
-                  Text(
-                    'Description*',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.w600,
+                  Create_RequiredInput(
+                    onChange: (value) {
+                      stadiumDescriptionController.text = value;
+                    },
+                    initValue: stadiumDescriptionController.text,
+                    lableText: 'Description',
+                    textInputType: TextInputType.text,
+                    add_prefix: Image.asset(
+                      'assets/stdowner_addNewStadium/imgs/desc.png',
                     ),
                   ),
-                  SizedBox(height: 8.0),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 5.0),
-                    child: Create_RequiredInput(
-                      textInputType: TextInputType.text,
-                      add_prefix: Image.asset(
-                        'assets/stdowner_addNewStadium/imgs/desc.png',
-                      ),
+
+                  SizedBox(height: 32.0),
+                  //capacity
+                  Create_RequiredInput(
+                    onChange: (value) {
+                      stadiumCapacityController.text = value;
+                    },
+                    initValue: stadiumCapacityController.text,
+                    lableText: 'Capacity',
+                    textInputType: TextInputType.number,
+                    add_prefix: Icon(
+                      Icons.group,
+                      color: const Color.fromARGB(255, 0, 156, 39),
                     ),
                   ),
-                  SizedBox(height: 40.0),
-                  //water
-                  Center(
-                    child: Text(
-                      'Water',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: 'eras-itc-bold',
+                  SizedBox(height: 60.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Divider(color: Colors.black, thickness: 1.0),
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  SizedBox(height: 8.0),
-                  Center(
-                    child: Container(
-                      width: 260,
-                      height: 40.0,
-                      // margin: EdgeInsets.symmetric(horizontal: 30.0),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[400],
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Stack(
-                        children: [
-                          AnimatedPositioned(
-                            duration: Duration(milliseconds: 300),
-                            curve: Curves.easeInOut, // make it smoothly
-                            left: isWaterAvailable ? 0 : 120,
-                            child: Container(
-                              width: waterSelector,
-                              height: 40.0,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                gradient: greenGradientColor,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black38,
-                                    blurRadius: 10.0,
-                                    offset: Offset(0.0, 0.0),
-                                  ),
-                                ],
-                              ),
-                            ),
+                      SizedBox(width: 2.0),
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          'Features',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: mainColor,
+                            fontFamily: 'eras-itc-demi',
                           ),
-                          Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      isWaterAvailable = true;
-                                      waterSelector = 130.0;
-                                    });
-                                  },
-                                  child: Text(
-                                    'Available',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14.0,
-                                    ),
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      isWaterAvailable = false;
-                                      waterSelector = 140.0;
-                                    });
-                                  },
-                                  child: Padding(
-                                    padding: EdgeInsets.only(left: 8.0),
-                                    child: Text(
-                                      'Not Available',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14.0,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                  SizedBox(height: 20.0),
-                  // track
-                  Center(
-                    child: Text(
-                      'Track',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: 'eras-itc-bold',
+                      SizedBox(width: 2.0),
+                      Expanded(
+                        flex: 3,
+                        child: Divider(color: Colors.black, thickness: 1.0),
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  SizedBox(height: 8.0),
-                  Center(
-                    child: Container(
-                      width: 260,
-                      height: 40.0,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[400],
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Stack(
-                        children: [
-                          AnimatedPositioned(
-                            duration: Duration(milliseconds: 300),
-                            curve: Curves.easeInOut, // make it smoothly
-                            left: isTrackAvailable ? 0 : 120,
-                            child: Container(
-                              width: trackSelector,
-                              height: 40.0,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                gradient: greenGradientColor,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black38,
-                                    blurRadius: 10.0,
-                                    offset: Offset(0.0, 0.0),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      isTrackAvailable = true;
-                                      trackSelector = 130.0;
-                                    });
-                                  },
-                                  child: Text(
-                                    'Available',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14.0,
-                                    ),
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      isTrackAvailable = false;
-                                      trackSelector = 140.0;
-                                    });
-                                  },
-                                  child: Padding(
-                                    padding: EdgeInsets.only(left: 8.0),
-                                    child: Text(
-                                      'Not Available',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14.0,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20.0),
-                  //grass
-                  Center(
-                    child: Text(
-                      'Grass',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: 'eras-itc-bold',
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  SizedBox(height: 8.0),
-                  Center(
-                    child: Container(
-                      width: 260,
-                      height: 40.0,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[400],
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Stack(
-                        children: [
-                          AnimatedPositioned(
-                            duration: Duration(milliseconds: 300),
-                            curve: Curves.easeInOut, // make it smoothly
-                            left: isGrassAvailable ? 0 : 120,
-                            child: Container(
-                              width: grassSelector,
-                              height: 40.0,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                gradient: greenGradientColor,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black38,
-                                    blurRadius: 10.0,
-                                    offset: Offset(0.0, 0.0),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      isGrassAvailable = true;
-                                      grassSelector = 130.0;
-                                    });
-                                  },
-                                  child: Padding(
-                                    padding: EdgeInsets.only(right: 24.0),
-                                    child: Text(
-                                      'Normal',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14.0,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      isGrassAvailable = false;
-                                      grassSelector = 140.0;
-                                    });
-                                  },
-                                  child: Padding(
-                                    padding: EdgeInsets.only(left: 8.0),
-                                    child: Text(
-                                      'Industry',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14.0,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    ],
                   ),
                   SizedBox(height: 20.0),
 
-                  //Capacity
-                  Center(
-                    child: Text(
-                      'Capacity',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 8.0),
-                  Center(
-                    child: Container(
-                      width: double.infinity,
-                      height: 40.0,
-                      margin: EdgeInsets.symmetric(horizontal: 30.0),
-                      child: TextField(
-                        keyboardType: TextInputType.number,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w700,
-                        ),
-                        cursorColor: mainColor,
-                        decoration: InputDecoration(
-                          fillColor: Color(0xC4FFFFFF),
-                          filled: true,
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 10.0,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black38,
-                              width: 2.0,
-                            ),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15.0),
-                            borderSide: BorderSide(
-                              color: mainColor,
-                              width: 2.0,
-                            ),
-                          ),
-                          hintText: 'Enter Capacity',
-                          hintStyle: TextStyle(color: Colors.grey),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 80.0),
-                  // select days:
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.symmetric(
-                        horizontal: BorderSide(color: mainColor, width: 2.0),
-                      ),
-                    ),
-                    child: Text(
-                      'Work Time',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20.0,
-                        fontFamily: 'eras-itc-bold',
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  SizedBox(height: 10.0),
-                  //work time
-                  Center(
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 4.0,
-                        mainAxisSpacing: 8.0,
-                        childAspectRatio: 4,
-                      ),
-                      itemCount: selectDays.length,
-                      itemBuilder: (BuildContext context, int i) {
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectDays[i]['isSelected'] =
-                                  !selectDays[i]['isSelected'];
-                              if (selectDays[i]['isSelected'] == true) {
-                                daysSelected.add(selectDays[i]['day']);
-                              } else {
-                                daysSelected.remove(selectDays[i]['day']);
-                              }
-                            });
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Color(0xC7FFFFFF),
-                              border: Border.all(color: mainColor, width: 1.0),
-                              borderRadius: BorderRadius.circular(5.0),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  selectDays[i]['day'],
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16.0,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                Visibility(
-                                  visible: selectDays[i]['isSelected'],
-                                  child: Row(
-                                    children: [
-                                      SizedBox(width: 4.0),
-                                      Icon(
-                                        Icons.check_circle_rounded,
-                                        color: mainColor,
-                                      ),
-                                    ],
-                                  ),
+                  Wrap(
+                    spacing: 4.0,
+                    runSpacing: 8.0,
+                    // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      //water
+                      Center(
+                        child: Container(
+                          width: 240.0,
+                          child: AnimatedToggleSwitch<bool>.dual(
+                            current: isWaterAvailable,
+                            first: false,
+                            second: true,
+                            spacing: 45.0,
+                            animationDuration: Duration(milliseconds: 500),
+                            style: const ToggleStyle(
+                              borderColor: Colors.transparent,
+                              indicatorColor: Colors.white,
+                              backgroundColor: Colors.black,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  spreadRadius: 1.0,
+                                  blurRadius: 2.0,
+                                  offset: Offset(0.0, 0.0),
                                 ),
                               ],
                             ),
+                            customStyleBuilder: (context, local, global) {
+                              if (global.position <= 0) {
+                                return ToggleStyle(
+                                  backgroundColor: Colors.white,
+                                );
+                              }
+                              return ToggleStyle(
+                                backgroundGradient: greenGradientColor,
+                              );
+                            },
+                            borderWidth: 6.0,
+                            height: 60.0,
+                            loadingIconBuilder:
+                                (context, global) => CupertinoActivityIndicator(
+                                  color: Color.lerp(
+                                    Colors.grey,
+                                    mainColor,
+                                    global.position,
+                                  ),
+                                ),
+                            onChanged:
+                                (value) =>
+                                    setState(() => isWaterAvailable = value),
+
+                            iconBuilder:
+                                (value) =>
+                                    value
+                                        ? Image.asset(
+                                          'assets/stdowner_addNewStadium/imgs/avi_water.png',
+                                        )
+                                        : Image.asset(
+                                          'assets/stdowner_addNewStadium/imgs/no_avi_water.png',
+                                        ),
+                            textBuilder:
+                                (value) =>
+                                    value
+                                        ? Center(
+                                          child: Text(
+                                            'Water is Available',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontFamily: 'eras-itc-bold',
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        )
+                                        : Center(
+                                          child: Text(
+                                            'Water not available',
+                                            style: TextStyle(
+                                              fontFamily: 'eras-itc-bold',
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
                           ),
-                        );
-                      },
-                    ),
+                        ),
+                      ),
+                      SizedBox(height: 12.0),
+                      // track
+                      Center(
+                        child: Container(
+                          width: 240.0,
+                          child: AnimatedToggleSwitch<bool>.dual(
+                            current: isTrackAvailable,
+                            first: false,
+                            second: true,
+                            spacing: 45.0,
+                            animationDuration: Duration(milliseconds: 500),
+                            style: const ToggleStyle(
+                              borderColor: Colors.transparent,
+                              indicatorColor: Colors.white,
+                              backgroundColor: Colors.black,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  spreadRadius: 1.0,
+                                  blurRadius: 2.0,
+                                  offset: Offset(0.0, 0.0),
+                                ),
+                              ],
+                            ),
+                            customStyleBuilder: (context, local, global) {
+                              if (global.position <= 0) {
+                                return ToggleStyle(
+                                  backgroundColor: const Color.fromARGB(
+                                    255,
+                                    255,
+                                    255,
+                                    255,
+                                  ),
+                                );
+                              }
+                              return ToggleStyle(
+                                backgroundGradient: greenGradientColor,
+                              );
+                            },
+                            borderWidth: 6.0,
+                            height: 60.0,
+                            loadingIconBuilder:
+                                (context, global) => CupertinoActivityIndicator(
+                                  color: Color.lerp(
+                                    Colors.grey,
+                                    mainColor,
+                                    global.position,
+                                  ),
+                                ),
+                            onChanged:
+                                (value) =>
+                                    setState(() => isTrackAvailable = value),
+
+                            iconBuilder:
+                                (value) =>
+                                    value
+                                        ? Image.asset(
+                                          'assets/stdowner_addNewStadium/imgs/avi_track1.png',
+                                        )
+                                        : Image.asset(
+                                          'assets/stdowner_addNewStadium/imgs/notAvi_track.png',
+                                        ),
+                            textBuilder:
+                                (value) =>
+                                    value
+                                        ? Center(
+                                          child: Text(
+                                            'Available Track',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontFamily: 'eras-itc-bold',
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        )
+                                        : Center(
+                                          child: Text(
+                                            'Unavailable Track',
+                                            style: TextStyle(
+                                              fontFamily: 'eras-itc-bold',
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 12.0),
+                      //grass
+                      Center(
+                        child: Container(
+                          width: 240.0,
+                          child: AnimatedToggleSwitch<bool>.dual(
+                            current: isGrassNormal,
+                            first: false,
+                            second: true,
+                            spacing: 45.0,
+                            animationDuration: Duration(milliseconds: 300),
+                            style: const ToggleStyle(
+                              borderColor: Colors.transparent,
+                              indicatorColor: Colors.white,
+                              backgroundColor: Colors.black,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  spreadRadius: 1.0,
+                                  blurRadius: 2.0,
+                                  offset: Offset(0.0, 0.0),
+                                ),
+                              ],
+                            ),
+                            customStyleBuilder: (context, local, global) {
+                              if (global.position <= 0) {
+                                return ToggleStyle(
+                                  backgroundColor: Colors.white,
+                                );
+                              }
+                              return ToggleStyle(
+                                backgroundGradient: greenGradientColor,
+                              );
+                            },
+                            borderWidth: 6.0,
+                            height: 60.0,
+                            loadingIconBuilder:
+                                (context, global) => CupertinoActivityIndicator(
+                                  color: Color.lerp(
+                                    const Color.fromARGB(255, 158, 158, 158),
+                                    mainColor,
+                                    global.position,
+                                  ),
+                                ),
+                            onChanged:
+                                (value) =>
+                                    setState(() => isGrassNormal = value),
+
+                            iconBuilder:
+                                (value) =>
+                                    value
+                                        ? Image.asset(
+                                          'assets/stdowner_addNewStadium/imgs/normal_grass.png',
+                                          width: 40.0,
+                                        )
+                                        : Image.asset(
+                                          'assets/stdowner_addNewStadium/imgs/industry_grass.png',
+                                          width: 40.0,
+                                        ),
+                            textBuilder:
+                                (value) =>
+                                    value
+                                        ? Center(
+                                          child: Text(
+                                            'Industry Grass',
+                                            style: TextStyle(
+                                              color: const Color.fromARGB(
+                                                255,
+                                                255,
+                                                255,
+                                                255,
+                                              ),
+                                              fontFamily: 'eras-itc-bold',
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        )
+                                        : Center(
+                                          child: Text(
+                                            'Normal Grass',
+                                            style: TextStyle(
+                                              color: const Color.fromARGB(
+                                                255,
+                                                0,
+                                                0,
+                                                0,
+                                              ),
+
+                                              fontFamily: 'eras-itc-bold',
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 10.0),
+
+                  SizedBox(height: 20.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Divider(color: Colors.black, thickness: 1.0),
+                      ),
+                      SizedBox(width: 2.0),
+                      Expanded(
+                        flex: 1,
+                        child: Text(
+                          'Work Schduale',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: mainColor,
+                            fontFamily: 'eras-itc-demi',
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 2.0),
+                      Expanded(
+                        flex: 1,
+                        child: Divider(color: Colors.black, thickness: 1.0),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20.0),
                   //selct time:
-                  SizedBox(height: 40.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -743,34 +674,50 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                               ),
                             );
                           },
+                          style: TextStyle(
+                            color: mainColor,
+                            fontSize: 18.0,
+                            fontFamily: 'eras-itc-demi',
+                          ),
                           controller: TextEditingController(text: timeStart),
                           readOnly: true,
                           textAlign: TextAlign.center,
                           decoration: InputDecoration(
-                            prefixIcon: Icon(
-                              Icons.access_time,
-                              color: mainColor,
-                            ),
-                            labelText: 'start on',
-                            labelStyle: TextStyle(fontSize: 22.0),
+                            labelText: 'start from',
+                            labelStyle: TextStyle(fontSize: 16.0),
+                            floatingLabelAlignment:
+                                FloatingLabelAlignment.center,
                             floatingLabelStyle: TextStyle(
-                              color: mainColor,
+                              color: const Color.fromARGB(255, 0, 0, 0),
                               fontSize: 18.0,
                             ),
+                            fillColor: Colors.white60,
+                            filled: true,
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
-                                color: Colors.black12,
+                                color: const Color.fromARGB(186, 0, 0, 0),
                                 width: 1.0,
                               ),
-                              borderRadius: BorderRadius.circular(10.0),
+                              borderRadius: BorderRadius.circular(12.0),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                 color: mainColor,
                                 width: 2.0,
                               ),
-                              borderRadius: BorderRadius.circular(15.0),
+                              borderRadius: BorderRadius.circular(10.0),
                             ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 10.0),
+                      Center(
+                        child: Text(
+                          'TO',
+                          style: TextStyle(
+                            color: mainColor,
+                            fontSize: 18.0,
+                            fontFamily: 'eras-itc-demi',
                           ),
                         ),
                       ),
@@ -783,7 +730,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                             Navigator.of(context).push(
                               showPicker(
                                 context: context,
-                                value: Time(hour: 12, minute: 00),
+                                value: Time(hour: 23, minute: 00),
                                 sunrise: TimeOfDay(
                                   hour: 6,
                                   minute: 0,
@@ -796,43 +743,122 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                                 onChange: (value) {
                                   setState(() {
                                     timeEnd =
-                                        '${value.hourOfPeriod.toString().padLeft(2, '0')} : ${value.hourOfPeriod.toString().padLeft(2, '0')} ${value.period == DayPeriod.am ? 'AM' : 'PM'}';
+                                        '${value.hourOfPeriod.toString().padLeft(2, '0')} : ${value.minute.toString().padLeft(2, '0')} ${value.period == DayPeriod.am ? 'AM' : 'PM'}';
                                   });
                                 },
                               ),
                             );
                           },
+                          style: TextStyle(
+                            color: mainColor,
+                            fontSize: 18.0,
+                            fontFamily: 'eras-itc-demi',
+                          ),
                           readOnly: true,
                           textAlign: TextAlign.center,
                           decoration: InputDecoration(
-                            prefixIcon: Icon(
-                              Icons.access_time_filled_sharp,
-                              color: mainColor,
-                            ),
                             labelText: 'End on',
-                            labelStyle: TextStyle(fontSize: 20.0),
+                            labelStyle: TextStyle(fontSize: 16.0),
+                            floatingLabelAlignment:
+                                FloatingLabelAlignment.center,
                             floatingLabelStyle: TextStyle(
-                              color: mainColor,
+                              color: const Color.fromARGB(255, 0, 0, 0),
                               fontSize: 18.0,
                             ),
+                            fillColor: Colors.white60,
+                            filled: true,
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
-                                color: Colors.black12,
+                                color: const Color.fromARGB(186, 0, 0, 0),
                                 width: 1.0,
                               ),
-                              borderRadius: BorderRadius.circular(10.0),
+                              borderRadius: BorderRadius.circular(12.0),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                 color: mainColor,
                                 width: 2.0,
                               ),
-                              borderRadius: BorderRadius.circular(15.0),
+                              borderRadius: BorderRadius.circular(10.0),
                             ),
                           ),
                         ),
                       ),
                     ],
+                  ),
+                  SizedBox(height: 40.0),
+                  //work time
+                  Center(
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 1,
+                        crossAxisSpacing: 10.0,
+                        mainAxisSpacing: 10.0,
+                        childAspectRatio: 8.0,
+                      ),
+                      itemCount: selectDays.length,
+                      itemBuilder: (BuildContext context, int i) {
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectDays[i]['isSelected'] =
+                                  !selectDays[i]['isSelected'];
+                              if (selectDays[i]['isSelected'] == true) {
+                                daysSelected.add(selectDays[i]['day']);
+                              } else {
+                                daysSelected.remove(selectDays[i]['day']);
+                              }
+                            });
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color:
+                                  selectDays[i]['isSelected']
+                                      ? const Color.fromARGB(94, 123, 209, 126)
+                                      : Color.fromARGB(255, 255, 255, 255),
+                              border: Border.all(
+                                color: mainColor,
+                                width: selectDays[i]['isSelected'] ? 4.0 : 1.0,
+                              ),
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SizedBox(width: 6.0),
+                                Text(
+                                  selectDays[i]['day'],
+                                  style: TextStyle(
+                                    color: const Color.fromARGB(
+                                      255,
+                                      0,
+                                      105,
+                                      26,
+                                    ),
+                                    fontSize: 14.0,
+                                    fontFamily: 'eras-itc-demi',
+                                  ),
+                                ),
+                                Visibility(
+                                  visible: selectDays[i]['isSelected'],
+                                  child: Row(
+                                    children: [
+                                      SizedBox(width: 4.0),
+                                      Image.asset(
+                                        'assets/stdowner_addNewStadium/imgs/Maskgroup.png',
+                                      ),
+                                      SizedBox(width: 20.0),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ),
                   SizedBox(height: 40.0),
                   //post, discard
@@ -848,25 +874,26 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                             'Discard',
                             style: TextStyle(
                               fontSize: 16.0,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           style: ButtonStyle(
-                            // padding: MaterialStateProperty.all<EdgeInsets>(
-                            //     EdgeInsets.symmetric(vertical: 16.0)),
-                            backgroundColor: MaterialStateProperty.all<Color>(
+                            padding: WidgetStateProperty.all<EdgeInsets>(
+                              EdgeInsets.symmetric(vertical: 8.0),
+                            ),
+                            backgroundColor: WidgetStateProperty.all<Color>(
                               Colors.white,
                             ),
-                            foregroundColor: MaterialStateProperty.all<Color>(
+                            foregroundColor: WidgetStateProperty.all<Color>(
                               Colors.red,
                             ),
-                            shape: MaterialStateProperty.all(
+                            shape: WidgetStateProperty.all(
                               RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10.0),
                                 side: BorderSide(color: Colors.red, width: 2.0),
                               ),
                             ),
-                            elevation: MaterialStateProperty.all<double>(0.0),
+                            elevation: WidgetStateProperty.all<double>(0.0),
                           ),
                         ),
                       ),
@@ -875,7 +902,26 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                         flex: 2,
                         child: Create_GradiantGreenButton(
                           onButtonPressed: () {
-                            Navigator.pushNamed(context, '/stdOwn_workTime');
+                            Stadium newStadium = new Stadium(
+                              title: stadiumNameController.text,
+                              price: stadiumPriceController.text,
+                              description: stadiumDescriptionController.text,
+                              capacity: stadiumCapacityController.text,
+
+                              location: Location ?? 'not set',
+                              timeStart: timeStart.toString(),
+                              timeEnd: timeEnd.toString(),
+                              days: daysSelected,
+                              isWaterAvailable: isWaterAvailable,
+                              isTrackAvailable: isTrackAvailable,
+                              isGrassNormal: isGrassNormal,
+                              selectedImages:
+                                  selectedImages
+                                      .map((file) => XFile(file.path))
+                                      .toList(),
+                            );
+                            stadiums.add(newStadium);
+                            Navigator.pushNamed(context, '/testNewStd');
                           },
                           title: 'Post',
                         ),
