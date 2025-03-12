@@ -16,6 +16,7 @@ class AddNewStadium extends StatefulWidget {
 }
 
 class _AddNewStadiumState extends State<AddNewStadium> {
+  final bool isDaysOpend = false;
   // Text controllers for inputs
   final TextEditingController stadiumNameController = TextEditingController();
   final TextEditingController stadiumPriceController = TextEditingController();
@@ -216,14 +217,19 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                                     childAspectRatio: 1.0,
                                   ),
                               itemBuilder: (BuildContext context, int index) {
-                                return Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  child: Image.file(
-                                    selectedImages[index],
-                                    fit: BoxFit.cover,
-                                  ),
+                                return Stack(
+                                  children: [
+                                    
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10.0),
+                                      ),
+                                      child: Image.file(
+                                        selectedImages[index],
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ],
                                 );
                               },
                             ),
@@ -871,7 +877,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                             Navigator.pushNamed(context, '/login_stadium');
                           },
                           child: Text(
-                            'Discard',
+                            'discard',
                             style: TextStyle(
                               fontSize: 16.0,
                               fontWeight: FontWeight.w600,
@@ -902,26 +908,31 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                         flex: 2,
                         child: Create_GradiantGreenButton(
                           onButtonPressed: () {
-                            Stadium newStadium = new Stadium(
-                              title: stadiumNameController.text,
-                              price: stadiumPriceController.text,
-                              description: stadiumDescriptionController.text,
-                              capacity: stadiumCapacityController.text,
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (BuildContext context) => EditStadium(
+                                      title: stadiumNameController.text,
+                                      price: stadiumPriceController.text,
+                                      description:
+                                          stadiumDescriptionController.text,
+                                      capacity: stadiumCapacityController.text,
 
-                              location: Location ?? 'not set',
-                              timeStart: timeStart.toString(),
-                              timeEnd: timeEnd.toString(),
-                              days: daysSelected,
-                              isWaterAvailable: isWaterAvailable,
-                              isTrackAvailable: isTrackAvailable,
-                              isGrassNormal: isGrassNormal,
-                              selectedImages:
-                                  selectedImages
-                                      .map((file) => XFile(file.path))
-                                      .toList(),
+                                      location: Location ?? 'not set',
+                                      timeStart: timeStart.toString(),
+                                      timeEnd: timeEnd.toString(),
+                                      days: daysSelected,
+                                      isWaterAvailable: isWaterAvailable,
+                                      isTrackAvailable: isTrackAvailable,
+                                      isGrassNormal: isGrassNormal,
+                                      selectedImages:
+                                          selectedImages
+                                              .map((file) => XFile(file.path))
+                                              .toList(),
+                                    ),
+                              ),
                             );
-                            stadiums.add(newStadium);
-                            Navigator.pushNamed(context, '/testNewStd');
                           },
                           title: 'Post',
                         ),

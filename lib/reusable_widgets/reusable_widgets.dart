@@ -1,3 +1,4 @@
+import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_lastversion/constants/constants.dart';
 
@@ -525,6 +526,7 @@ class Create_Input extends StatefulWidget {
   final bool isReadOnly;
   final VoidCallback? on_tap;
   final String? initValue;
+  final ChangeCallback? onChange;
   Create_Input({
     this.addPrefixIcon,
     this.addSuffixIcon,
@@ -532,6 +534,7 @@ class Create_Input extends StatefulWidget {
     required this.isPassword,
     required this.keyboardType,
     required this.textInputAction,
+   this.onChange,
     this.isReadOnly = false,
     this.on_tap,
     this.initValue,
@@ -550,6 +553,7 @@ class _Create_InputState extends State<Create_Input> {
       width: double.infinity,
       height: 44.0,
       child: TextField(
+        onChanged: widget.onChange ?? (value){},
         controller: TextEditingController(text: widget.initValue),
         onTap: widget.on_tap,
         readOnly: widget.isReadOnly,
@@ -618,7 +622,7 @@ class Add_AppName extends StatelessWidget {
     );
   }
 }
-                        
+
 // //Location
 /*
 
@@ -986,3 +990,14 @@ class Create_RequiredInput extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+//end
