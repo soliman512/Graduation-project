@@ -21,22 +21,25 @@ class _EditStadium_stdownState extends State<EditStadium_stdown> {
         elevation: 0.0,
         title: RichText(
           text: TextSpan(
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 24.0,
-                  fontFamily: 'eras-itc-bold'),
-              children: [
-                TextSpan(text: 'E', style: TextStyle(color: mainColor)),
-                TextSpan(text: 'dit'),
-                TextSpan(text: ' S', style: TextStyle(color: mainColor)),
-                TextSpan(text: 'Tadium'),
-              ]),
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 24.0,
+              fontFamily: 'eras-itc-bold',
+            ),
+            children: [
+              TextSpan(text: 'E', style: TextStyle(color: mainColor)),
+              TextSpan(text: 'dit'),
+              TextSpan(text: ' S', style: TextStyle(color: mainColor)),
+              TextSpan(text: 'Tadium'),
+            ],
+          ),
         ),
         leading: IconButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/stdWon_addNewStadium');
-            },
-            icon: Image.asset('assets/welcome_signup_login/imgs/back.png')),
+          onPressed: () {
+            Navigator.pushNamed(context, '/stdWon_addNewStadium');
+          },
+          icon: Image.asset('assets/welcome_signup_login/imgs/back.png'),
+        ),
         actions: [
           Container(
             margin: EdgeInsets.fromLTRB(0.0, 25.0, 10.0, 25.0),
@@ -44,18 +47,18 @@ class _EditStadium_stdownState extends State<EditStadium_stdown> {
             height: 30.0,
             width: 60.0,
             decoration: BoxDecoration(
-                gradient: greenGradientColor,
-                borderRadius: BorderRadius.circular(5.0)),
+              gradient: greenGradientColor,
+              borderRadius: BorderRadius.circular(5.0),
+            ),
             child: SingleChildScrollView(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Center(
-                    child: Text('Save',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14.0,
-                        )),
+                    child: Text(
+                      'Save',
+                      style: TextStyle(color: Colors.white, fontSize: 14.0),
+                    ),
                   ),
                   Image.asset('assets/editstadium_stdown/imgs/bi_save.png'),
                 ],
@@ -64,6 +67,7 @@ class _EditStadium_stdownState extends State<EditStadium_stdown> {
           ),
         ],
       ),
+
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -94,19 +98,23 @@ class _EditStadium_stdownState extends State<EditStadium_stdown> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Image.asset(
-                              'assets/editstadium_stdown/imgs/addNewImg.png'),
-                          Text('add new Image',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.w200)),
+                            'assets/editstadium_stdown/imgs/addNewImg.png',
+                          ),
+                          Text(
+                            'add new Image',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w200,
+                            ),
+                          ),
                         ],
                       ),
                     ),
                   ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
