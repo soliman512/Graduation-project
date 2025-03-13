@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:graduation_project_lastversion/stdown_addNewStd/testNewStadium.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:graduation_project_lastversion/constants/constants.dart';
 import 'package:graduation_project_lastversion/reusable_widgets/reusable_widgets.dart';
 import 'package:day_night_time_picker/day_night_time_picker.dart';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
+import 'package:graduation_project_lastversion/stadiums/stadiums.dart';
 
 class AddNewStadium extends StatefulWidget {
   const AddNewStadium({Key? key}) : super(key: key);
@@ -219,10 +219,11 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                               itemBuilder: (BuildContext context, int index) {
                                 return Stack(
                                   children: [
-                                    
                                     Container(
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10.0),
+                                        borderRadius: BorderRadius.circular(
+                                          10.0,
+                                        ),
                                       ),
                                       child: Image.file(
                                         selectedImages[index],
@@ -908,31 +909,86 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                         flex: 2,
                         child: Create_GradiantGreenButton(
                           onButtonPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (BuildContext context) => EditStadium(
-                                      title: stadiumNameController.text,
-                                      price: stadiumPriceController.text,
-                                      description:
-                                          stadiumDescriptionController.text,
-                                      capacity: stadiumCapacityController.text,
-
-                                      location: Location ?? 'not set',
-                                      timeStart: timeStart.toString(),
-                                      timeEnd: timeEnd.toString(),
-                                      days: daysSelected,
-                                      isWaterAvailable: isWaterAvailable,
-                                      isTrackAvailable: isTrackAvailable,
-                                      isGrassNormal: isGrassNormal,
-                                      selectedImages:
-                                          selectedImages
-                                              .map((file) => XFile(file.path))
-                                              .toList(),
+                            if (stadiumNameController.text.isEmpty ||
+                                stadiumPriceController.text.isEmpty ||
+                                stadiumDescriptionController.text.isEmpty ||
+                                stadiumCapacityController.text.isEmpty ||
+                                Location!.isEmpty ||
+                                timeStart.toString().isEmpty ||
+                                timeEnd.toString().isEmpty ||
+                                daysSelected.isEmpty ||
+                                selectedImages.isEmpty) {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text('Incomplete Data'),
+                                    content: Text(
+                                      'Please fill all the required fields.',
                                     ),
-                              ),
-                            );
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text(
+                                          'OK',
+                                          style: TextStyle(color: mainColor),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            } else {
+                              bool stadiumExists = stadiums.any((stadium) =>
+                                  stadium.title == stadiumNameController.text &&
+                                  stadium.location == Location);
+                              if (stadiumExists) {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Stadium Already Exists'),
+                                      content: Text(
+                                          'A stadium with the same name and location already exists. Please add a new one.'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text(
+                                            'OK',
+                                            style: TextStyle(color: mainColor),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              } else {
+                                stadiums.add(
+                                  AddStadium(
+                                    title: stadiumNameController.text,
+                                    price: stadiumPriceController.text,
+                                    description:
+                                        stadiumDescriptionController.text,
+                                    capacity: stadiumCapacityController.text,
+                                    location: Location ?? 'not set',
+                                    timeStart: timeStart.toString(),
+                                    timeEnd: timeEnd.toString(),
+                                    daysSelected: daysSelected,
+                                    isWaterAvailable: isWaterAvailable,
+                                    isTrackAvailable: isTrackAvailable,
+                                    isGrassNormal: isGrassNormal,
+                                    selectedImages: selectedImages
+                                        .map((file) => XFile(file.path))
+                                        .toList(),
+                                  ),
+                                );
+                                Navigator.pushNamed(context, '/homeStd');
+                              }
+                            }
                           },
                           title: 'Post',
                         ),
