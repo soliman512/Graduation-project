@@ -7,47 +7,24 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_lastversion/constants/constants.dart';
 import 'package:graduation_project_lastversion/reusable_widgets/reusable_widgets.dart';
-import 'package:image_picker/image_picker.dart';
-
-class Stadium {}
+import 'package:graduation_project_lastversion/stadiums/stadiums.dart';
 
 // ignore: must_be_immutable
 class EditStadium extends StatefulWidget {
-  final String title;
-  final String location;
-  final String price;
-  final String description;
-  final String capacity;
-  late final bool isWaterAvailable;
-  late final bool isTrackAvailable;
-  late final bool isGrassNormal;
-  late final String timeStart;
-  late final String timeEnd;
-  final List<String> days;
-  final List<XFile> selectedImages;
-
-  EditStadium({
-    required this.title,
-    required this.location,
-    required this.price,
-    required this.description,
-    required this.capacity,
-    required this.isWaterAvailable,
-    required this.isTrackAvailable,
-    required this.isGrassNormal,
-    required this.timeStart,
-    required this.timeEnd,
-    required this.days,
-    required this.selectedImages,
-  });
-
+  final AddStadium stadium;
+  EditStadium({required this.stadium});
   @override
   State<EditStadium> createState() => _EditStadiumState();
 }
 
 class _EditStadiumState extends State<EditStadium> {
+  double heightOfDays = 0.0;
+  double rotationOfDaysArrow = 0.0;
+
+  List<String> daysSelected = [];
   @override
   Widget build(BuildContext context) {
+    bool isDaysOpend = false;
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 80.0,
@@ -114,6 +91,20 @@ class _EditStadiumState extends State<EditStadium> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
+              SizedBox(height: 30.0),
+              Center(
+                child: Text(
+                  'Edit Images',
+                  style: TextStyle(
+                    color: const Color.fromARGB(76, 0, 0, 0),
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              SizedBox(height: 8.0),
+
               //images
               Container(
                 width: double.infinity,
@@ -124,30 +115,28 @@ class _EditStadiumState extends State<EditStadium> {
                   borderRadius: BorderRadius.circular(10.0),
                   border: Border.all(color: mainColor, width: 1.0),
                 ),
-                child: GridView.builder(
-                  itemCount: widget.selectedImages.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 4.0,
-                    mainAxisSpacing: 4.0,
-                    childAspectRatio: 1.0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
-                  itemBuilder: (BuildContext context, int index) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Image.file(
-                        File(widget.selectedImages[index].path),
-                        fit: BoxFit.cover,
-                      ),
-                    );
-                  },
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: widget.stadium.selectedImages.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.file(
+                          File(widget.stadium.selectedImages[index].path),
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
               SizedBox(height: 40.0),
               Create_RequiredInput(
-                initValue: widget.title,
+                initValue: widget.stadium.title,
                 lableText: 'Stadium Name',
                 textInputType: TextInputType.text,
                 add_prefix: Image.asset(
@@ -160,7 +149,7 @@ class _EditStadiumState extends State<EditStadium> {
               Create_RequiredInput(
                 // initValue: stadiumLocationController.text,
                 lableText: 'Stadium Location',
-                initValue: widget.location,
+                initValue: widget.stadium.location,
                 isReadOnly: true,
                 textInputType: TextInputType.text,
                 add_prefix: Image.asset(
@@ -170,7 +159,7 @@ class _EditStadiumState extends State<EditStadium> {
               SizedBox(height: 32.0),
               //stadium price
               Create_RequiredInput(
-                initValue: widget.price,
+                initValue: widget.stadium.price,
                 lableText: 'Set Price',
                 textInputType: TextInputType.number,
                 add_prefix: Image.asset(
@@ -190,7 +179,7 @@ class _EditStadiumState extends State<EditStadium> {
 
               //stadium description
               Create_RequiredInput(
-                initValue: widget.description,
+                initValue: widget.stadium.description,
                 lableText: 'Description',
                 textInputType: TextInputType.text,
                 add_prefix: Image.asset(
@@ -201,7 +190,7 @@ class _EditStadiumState extends State<EditStadium> {
               SizedBox(height: 32.0),
               //capacity
               Create_RequiredInput(
-                initValue: widget.capacity,
+                initValue: widget.stadium.capacity,
                 lableText: 'Capacity',
                 textInputType: TextInputType.number,
                 add_prefix: Icon(
@@ -214,14 +203,14 @@ class _EditStadiumState extends State<EditStadium> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Expanded(
-                    flex: 3,
+                    flex: 2,
                     child: Divider(color: Colors.black, thickness: 1.0),
                   ),
                   SizedBox(width: 2.0),
                   Expanded(
                     flex: 2,
                     child: Text(
-                      'Features',
+                      'Edit Features',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: mainColor,
@@ -231,7 +220,7 @@ class _EditStadiumState extends State<EditStadium> {
                   ),
                   SizedBox(width: 2.0),
                   Expanded(
-                    flex: 3,
+                    flex: 2,
                     child: Divider(color: Colors.black, thickness: 1.0),
                   ),
                 ],
@@ -248,7 +237,7 @@ class _EditStadiumState extends State<EditStadium> {
                     child: Container(
                       width: 240.0,
                       child: AnimatedToggleSwitch<bool>.dual(
-                        current: widget.isWaterAvailable,
+                        current: widget.stadium.isWaterAvailable,
                         first: false,
                         second: true,
                         spacing: 45.0,
@@ -285,8 +274,9 @@ class _EditStadiumState extends State<EditStadium> {
                               ),
                             ),
                         onChanged:
-                            (value) =>
-                                setState(() => widget.isWaterAvailable = value),
+                            (value) => setState(
+                              () => widget.stadium.isWaterAvailable = value,
+                            ),
 
                         iconBuilder:
                             (value) =>
@@ -328,7 +318,7 @@ class _EditStadiumState extends State<EditStadium> {
                     child: Container(
                       width: 240.0,
                       child: AnimatedToggleSwitch<bool>.dual(
-                        current: widget.isTrackAvailable,
+                        current: widget.stadium.isTrackAvailable,
                         first: false,
                         second: true,
                         spacing: 45.0,
@@ -372,8 +362,9 @@ class _EditStadiumState extends State<EditStadium> {
                               ),
                             ),
                         onChanged:
-                            (value) =>
-                                setState(() => widget.isTrackAvailable = value),
+                            (value) => setState(
+                              () => widget.stadium.isTrackAvailable = value,
+                            ),
 
                         iconBuilder:
                             (value) =>
@@ -415,7 +406,7 @@ class _EditStadiumState extends State<EditStadium> {
                     child: Container(
                       width: 240.0,
                       child: AnimatedToggleSwitch<bool>.dual(
-                        current: widget.isGrassNormal,
+                        current: widget.stadium.isGrassNormal,
                         first: false,
                         second: true,
                         spacing: 45.0,
@@ -452,8 +443,9 @@ class _EditStadiumState extends State<EditStadium> {
                               ),
                             ),
                         onChanged:
-                            (value) =>
-                                setState(() => widget.isGrassNormal = value),
+                            (value) => setState(
+                              () => widget.stadium.isGrassNormal = value,
+                            ),
 
                         iconBuilder:
                             (value) =>
@@ -518,7 +510,7 @@ class _EditStadiumState extends State<EditStadium> {
                   Expanded(
                     flex: 1,
                     child: Text(
-                      'Work Schduale',
+                      'Edit Work Schduale',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: mainColor,
@@ -551,7 +543,7 @@ class _EditStadiumState extends State<EditStadium> {
                             duskSpanInMinutes: 120, // optional
                             onChange: (value) {
                               setState(() {
-                                widget.timeStart =
+                                widget.stadium.timeStart =
                                     '${value.hourOfPeriod.toString().padLeft(2, '0')} : ${value.minute.toString().padLeft(2, '0')} ${value.period == DayPeriod.am ? 'AM' : 'PM'}';
                               });
                             },
@@ -563,7 +555,9 @@ class _EditStadiumState extends State<EditStadium> {
                         fontSize: 18.0,
                         fontFamily: 'eras-itc-demi',
                       ),
-                      controller: TextEditingController(text: widget.timeStart),
+                      controller: TextEditingController(
+                        text: widget.stadium.timeStart,
+                      ),
                       readOnly: true,
                       textAlign: TextAlign.center,
                       decoration: InputDecoration(
@@ -605,7 +599,9 @@ class _EditStadiumState extends State<EditStadium> {
                   Expanded(
                     child: TextField(
                       keyboardType: TextInputType.none,
-                      controller: TextEditingController(text: widget.timeEnd),
+                      controller: TextEditingController(
+                        text: widget.stadium.timeEnd,
+                      ),
                       onTap: () {
                         Navigator.of(context).push(
                           showPicker(
@@ -616,7 +612,7 @@ class _EditStadiumState extends State<EditStadium> {
                             duskSpanInMinutes: 120, // optional
                             onChange: (value) {
                               setState(() {
-                                widget.timeEnd =
+                                widget.stadium.timeEnd =
                                     '${value.hourOfPeriod.toString().padLeft(2, '0')} : ${value.minute.toString().padLeft(2, '0')} ${value.period == DayPeriod.am ? 'AM' : 'PM'}';
                               });
                             },
@@ -731,6 +727,148 @@ class _EditStadiumState extends State<EditStadium> {
               //   ),
               // ),
               // SizedBox(height: 40.0),
+
+              //days
+              Column(
+                children: [
+                  //button
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        heightOfDays = heightOfDays == 0.0 ? 500.0 : 0.0;
+                        rotationOfDaysArrow =
+                            rotationOfDaysArrow == 0.0 ? 0.5 : 0.0;
+                      });
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      height: 50.0,
+                      decoration: BoxDecoration(
+                        gradient: greenGradientColor,
+                        // color: Colors.white.withOpacity(0.8),
+                        borderRadius: BorderRadius.circular(10.0),
+                        border: Border.all(color: mainColor, width: 1.0),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            'change work days',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                              fontFamily: 'eras-itc-demi',
+                            ),
+                          ),
+
+                          AnimatedRotation(
+                            duration: Duration(milliseconds: 300),
+                            turns: rotationOfDaysArrow,
+                            child: Icon(
+                              Icons.keyboard_arrow_down_rounded,
+                              color: const Color.fromARGB(255, 255, 255, 255),
+                              size: 40.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10.0),
+                  // days
+                  // AnimatedContainer(
+                  //   duration: Duration(milliseconds: 300),
+
+                  //   width: double.infinity,
+                  //   height: heightOfDays,
+                  //   padding: EdgeInsets.all(8.0),
+                  //   decoration: BoxDecoration(
+                  //     color: Colors.white.withOpacity(0.8),
+                  //     borderRadius: BorderRadius.circular(10.0),
+                  //     border: Border.all(color: mainColor, width: 1.0),
+                  //   ),
+                  //   child: Center(
+                  //     child: GridView.builder(
+                  //       shrinkWrap: true,
+                  //       physics: NeverScrollableScrollPhysics(),
+                  //       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  //         crossAxisCount: 1,
+                  //         crossAxisSpacing: 10.0,
+                  //         mainAxisSpacing: 10.0,
+                  //         childAspectRatio: 8.0,
+                  //       ),
+                  //       itemCount: selectDays.length,
+                  //       itemBuilder: (BuildContext context, int i) {
+                  //         return GestureDetector(
+                  //           onTap: () {
+                  //             setState(() {
+                  //               selectDays[i]['isSelected'] =
+                  //                   !selectDays[i]['isSelected'];
+                  //               if (selectDays[i]['isSelected'] == true) {
+                  //                 daysSelected.add(selectDays[i]['day']);
+                  //               } else {
+                  //                 daysSelected.remove(selectDays[i]['day']);
+                  //               }
+                  //             });
+                  //           },
+                  //           child: Container(
+                  //             decoration: BoxDecoration(
+                  //               color:
+                  //                   selectDays[i]['isSelected']
+                  //                       ? const Color.fromARGB(
+                  //                         94,
+                  //                         123,
+                  //                         209,
+                  //                         126,
+                  //                       )
+                  //                       : Color.fromARGB(255, 255, 255, 255),
+                  //               border: Border.all(
+                  //                 color: mainColor,
+                  //                 width:
+                  //                     selectDays[i]['isSelected'] ? 4.0 : 1.0,
+                  //               ),
+                  //               borderRadius: BorderRadius.circular(5.0),
+                  //             ),
+                  //             child: Row(
+                  //               mainAxisAlignment:
+                  //                   MainAxisAlignment.spaceBetween,
+                  //               children: [
+                  //                 SizedBox(width: 6.0),
+                  //                 Text(
+                  //                   selectDays[i]['day'],
+                  //                   style: TextStyle(
+                  //                     color: const Color.fromARGB(
+                  //                       255,
+                  //                       0,
+                  //                       105,
+                  //                       26,
+                  //                     ),
+                  //                     fontSize: 14.0,
+                  //                     fontFamily: 'eras-itc-demi',
+                  //                   ),
+                  //                 ),
+                  //                 Visibility(
+                  //                   visible: selectDays[i]['isSelected'],
+                  //                   child: Row(
+                  //                     children: [
+                  //                       SizedBox(width: 4.0),
+                  //                       Image.asset(
+                  //                         'assets/stdowner_addNewStadium/imgs/Maskgroup.png',
+                  //                       ),
+                  //                       SizedBox(width: 20.0),
+                  //                     ],
+                  //                   ),
+                  //                 ),
+                  //               ],
+                  //             ),
+                  //           ),
+                  //         );
+                  //       },
+                  //     ),
+                  //   ),
+                  // ),
+                ],
+              ),
             ],
           ),
         ),

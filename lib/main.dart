@@ -5,6 +5,7 @@ import 'package:graduation_project_lastversion/home_loves_tickets_top/tickets/Ti
 import 'package:graduation_project_lastversion/no_internetConnection/no_internetConnection.dart';
 import 'package:graduation_project_lastversion/payment/payment.dart';
 import 'package:graduation_project_lastversion/stadium_information_player_pg/stadium_information_player_pg.dart';
+import 'package:graduation_project_lastversion/stdown_addNewStd/homeStdTest.dart';
 import 'package:graduation_project_lastversion/stdown_addNewStd/stdwon_addNewStadium.dart';
 import 'package:graduation_project_lastversion/welcome_signup_login/Welcome.dart';
 import 'package:graduation_project_lastversion/welcome_signup_login/login_signup%20page/login_signupPlayer.dart';
@@ -87,7 +88,7 @@ class MyApp extends StatelessWidget {
         // stadium owner
         '/stdWon_addNewStadium': (context) => AddNewStadium(),
         // '/editStadium': (context) => EditStadium(),
-        // '/stdown_editStadium': (context) => EditStadium_stdown(),
+        '/homeStd': (context) => HomeStdTest(),
 
         //no internet connection
         '/no_internetConnection': (context) => NoInternetConnection(),
