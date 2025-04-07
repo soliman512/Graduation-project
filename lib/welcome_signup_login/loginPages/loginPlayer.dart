@@ -22,9 +22,7 @@ class _Login_playerState extends State<Login_player> {
       isLoading = true;
     });
     try {
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailController.text, password: passwordController.text);
-      showSnackBar(context, "Done ...");
+      showSnackBar(context, "login successfully");
       Navigator.pushNamed(context, '/home');
     } on FirebaseAuthException catch (e) {
       String errorMessage;
@@ -80,7 +78,7 @@ class _Login_playerState extends State<Login_player> {
                 )),
             leading: IconButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/login_signup_player');
+                Navigator.pushNamed(context, '/Welcome');
               },
               icon: Image.asset("assets/welcome_signup_login/imgs/back.png"),
               color: Color(0xff000000),
@@ -99,346 +97,337 @@ class _Login_playerState extends State<Login_player> {
                   )),
             ],
           ),
-          body: SingleChildScrollView(
-            child: Stack(
-              children: [
-                backgroundImage_balls,
-                SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      // title
-                      Add_AppName(
-                          font_size: 34.0,
-                          align: TextAlign.center,
-                          color: Colors.black),
-                      //specific user
-                      Text("player",
-                          style: TextStyle(
-                            color: Color(0xB6000000),
-                            // fontFamily: "eras-itc-bold",
-                            fontWeight: FontWeight.w200,
+          body: Stack(
+            children: [
+              backgroundImage_balls,
+              SingleChildScrollView(
+                child: Column(
+                  children: [
+                    //logo
+                    add_logo(80.0),
+                    // title
+                    Add_AppName(
+                        font_size: 34.0,
+                        align: TextAlign.center,
+                        color: Colors.black),
+                    //specific user
+                    Text("player",
+                        style: TextStyle(
+                          color: Color(0xB6000000),
+                          fontFamily: "eras-itc-light",
+                          fontWeight: FontWeight.w200,
+                          fontSize: 20.0,
+                        )),
+                    //just for space
+                    SizedBox(
+                      height: 60.0,
+                    ),
+          
+                    //email address
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 32.0),
+                      color: Color(0xC7FFFFFF),
+                      width: double.infinity,
+                      height: 44.0,
+                      child: TextField(
+                        controller: emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
+                        obscureText: false,
+                        cursorColor: mainColor,
+                        decoration: InputDecoration(
+                          focusColor: mainColor,
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: mainColor,
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.account_circle_outlined,
+                            color: mainColor,
+                          ),
+                          contentPadding: EdgeInsets.symmetric(vertical: 5),
+                          hintText: "Email Address",
+                          hintStyle: TextStyle(
+                            color: Color(0x4F000000),
                             fontSize: 20.0,
-                          )),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      //logo
-                      logo,
-                      //just for space
-                      SizedBox(
-                        height: 52.0,
-                      ),
-
-                      //email address
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: 18.0),
-                        color: Color(0xC7FFFFFF),
-                        width: double.infinity,
-                        height: 44.0,
-                        child: TextField(
-                          controller: emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          textInputAction: TextInputAction.next,
-                          obscureText: false,
-                          cursorColor: mainColor,
-                          decoration: InputDecoration(
-                            focusColor: mainColor,
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: mainColor,
-                                width: 2,
-                              ),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            prefixIcon: Icon(
-                              Icons.account_circle_outlined,
-                              color: mainColor,
-                            ),
-                            contentPadding: EdgeInsets.symmetric(vertical: 5),
-                            hintText: "Email Address",
-                            hintStyle: TextStyle(
+                            fontWeight: FontWeight.w400,
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
                               color: Color(0x4F000000),
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.w400,
+                              width: 1.0,
                             ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color(0x4F000000),
-                                width: 1.0,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                       ),
-                      //just for space
-                      SizedBox(
-                        height: 30.0,
-                      ),
-                      //password
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: 18.0),
-                        color: Color(0xC7FFFFFF),
-                        width: double.infinity,
-                        height: 44.0,
-                        child: TextField(
-                          controller: passwordController,
-                          keyboardType: TextInputType.text,
-                          textInputAction: TextInputAction.done,
-                          obscureText: visiblePassword,
-                          cursorColor: mainColor,
-                          decoration: InputDecoration(
-                            focusColor: mainColor,
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: mainColor,
-                                width: 2,
-                              ),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            prefixIcon: Icon(
-                              Icons.password_rounded,
+                    ),
+                    //just for space
+                    SizedBox(
+                      height: 26.0,
+                    ),
+                    //password
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 32.0),
+                      color: Color(0xC7FFFFFF),
+                      width: double.infinity,
+                      height: 44.0,
+                      child: TextField(
+                        controller: passwordController,
+                        keyboardType: TextInputType.text,
+                        textInputAction: TextInputAction.done,
+                        obscureText: visiblePassword,
+                        cursorColor: mainColor,
+                        decoration: InputDecoration(
+                          focusColor: mainColor,
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
                               color: mainColor,
+                              width: 2,
                             ),
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  if (showPasswordState == unShowPassword) {
-                                    showPasswordState = showPassword;
-                                    visiblePassword = true;
-                                  } else {
-                                    showPasswordState = unShowPassword;
-                                    visiblePassword = false;
-                                  }
-                                });
-                              },
-                              icon: showPasswordState,
-                              color: mainColor,
-                            ),
-                            contentPadding: EdgeInsets.symmetric(vertical: 5),
-                            hintText: "Password",
-                            hintStyle: TextStyle(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.password_rounded,
+                            color: mainColor,
+                          ),
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                if (showPasswordState == unShowPassword) {
+                                  showPasswordState = showPassword;
+                                  visiblePassword = true;
+                                } else {
+                                  showPasswordState = unShowPassword;
+                                  visiblePassword = false;
+                                }
+                              });
+                            },
+                            icon: showPasswordState,
+                            color: mainColor,
+                          ),
+                          contentPadding: EdgeInsets.symmetric(vertical: 5),
+                          hintText: "Password",
+                          hintStyle: TextStyle(
+                            color: Color(0x4F000000),
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
                               color: Color(0x4F000000),
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.w400,
+                              width: 1.0,
                             ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color(0x4F000000),
-                                width: 1.0,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                       ),
-
-                      //forgot
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        margin: EdgeInsets.fromLTRB(23, 20, 0, 0),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/Recorve_account');
-                          },
-                          style: ButtonStyle(
-                              elevation: MaterialStateProperty.all(0),
-                              backgroundColor:
-                                  MaterialStateProperty.all(Colors.transparent),
-                              foregroundColor:
-                                  MaterialStateProperty.all(Color(0xffffffff))),
-                          child: Text("Forgot your password ?",
-                              style: TextStyle(
-                                  color: Color(0xff004FFB),
-                                  fontFamily: "eras-itc-demi",
-                                  decoration: TextDecoration.underline,
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 12.0)),
-                        ),
-                      ),
-
-                      SizedBox(
-                        height: 56,
-                      ),
-//login
-                      Container(
-                        width: 300.0,
-                        height: 40.0,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Color(0xff005706),
-                              Color(0xff007211),
-                              Color(0xff00911E),
-                              Color(0xff00B92E),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            await signIn();
-                            if (!mounted) return;
-                          },
-                          child: isLoading
-                              ? CircularProgressIndicator(
-                                  color: Colors.white,
-                                )
-                              : Text(
-                                  "Login",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Color(0xffffffff),
-                                    fontFamily: "eras-itc-bold",
-                                    fontSize: 24.0,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                                ),
-                          style: ButtonStyle(
+                    ),
+          
+                    //forgot
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      margin: EdgeInsets.fromLTRB(20, 20, 0, 0),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/Recorve_account');
+                        },
+                        style: ButtonStyle(
+                            elevation: WidgetStateProperty.all(0),
                             backgroundColor:
-                                MaterialStateProperty.all(Colors.transparent),
+                                WidgetStateProperty.all(Colors.transparent),
                             foregroundColor:
-                                MaterialStateProperty.all(Color(0xFFFFFFFF)),
-                            shadowColor:
-                                MaterialStateProperty.all(Colors.transparent),
-                          ),
-                        ),
+                                WidgetStateProperty.all(Color(0xffffffff))),
+                        child: Text("Forgot your password ?",
+                            style: TextStyle(
+                                color: Color(0xff004FFB),
+                                fontFamily: "eras-itc-demi",
+                                decoration: TextDecoration.underline,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 12.0)),
                       ),
-                      SizedBox(
-                        height: 40.0,
-                      ),
-                      // or line
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            color: Color(0xD7000000),
-                            // thickness: 1,
-                            // indent: 16.0,
-                            // endIndent: 30.0,
-                            height: 1.0,
-                            width: 145.0,
-                          ),
-                          Container(
-                            margin: EdgeInsets.symmetric(horizontal: 10.0),
-                            child: Text(
-                              'OR',
-                              style: TextStyle(
-                                  color: Color(0xff00B92E),
-                                  fontFamily: 'eras-itc-demi'),
-                            ),
-                          ),
-                          Container(
-                            color: Color(0xD7000000),
-                            // thickness: 1,
-                            // indent: 16.0,
-                            // endIndent: 30.0,
-                            height: 1.0,
-                            width: 145.0,
-                          ),
-                        ],
-                      ),
-
-                      SizedBox(
-                        height: 30.0,
-                      ),
-
-                      //another ways to login
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: 30.0),
-                        width: double.infinity,
-                        alignment: Alignment.center,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          // spacing: ,
-                          children: [
-                            //google
-                            Container(
-                              width: 100.0,
-                              // margin: EdgeInsets.only(left: 20.0),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Color(0xFFFF0000),
-                                  width: 2,
+                    ),
+          
+                    SizedBox(
+                      height: 54,
+                    ),
+//login
+                    SizedBox(
+                      height: 50.0,
+                      child: Create_GradiantGreenButton(
+                        content: isLoading
+                            ? CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                            : Text(
+                                "Login",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Color(0xffffffff),
+                                  fontFamily: "eras-itc-bold",
+                                  fontSize: 24.0,
+                                  fontWeight: FontWeight.w900,
                                 ),
                               ),
+                        onButtonPressed: () async {
+                          await signIn();
+                          if (!mounted) return;
+                        },
+                      ),
+                    ),
+          
+                    SizedBox(
+                      height: 26.0,
+                    ),
+                    // or line
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          color: Color(0xD7000000),
+                          // thickness: 1,
+                          // indent: 16.0,
+                          // endIndent: 30.0,
+                          height: 1.0,
+                          width: 145.0,
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 10.0),
+                          child: Text(
+                            'OR',
+                            style: TextStyle(
+                                color: Color(0xff00B92E),
+                                fontFamily: 'eras-itc-demi'),
+                          ),
+                        ),
+                        Container(
+                          color: Color(0xD7000000),
+                          // thickness: 1,
+                          // indent: 16.0,
+                          // endIndent: 30.0,
+                          height: 1.0,
+                          width: 145.0,
+                        ),
+                      ],
+                    ),
+          
+                    SizedBox(
+                      height: 30.0,
+                    ),
+          
+                    //another ways to login
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 34.0),
+                      width: double.infinity,
+                      // alignment: Alignment.center,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        // spacing: ,
+                        children: [
+                          //google
+                          Expanded(
+                            child: SizedBox(
+                              height: 60.0,
                               child: ElevatedButton(
                                 onPressed: () {
                                   googleSignInProvider.googleLogin();
                                 },
-                                child: Image.asset(
-                                  "assets/welcome_signup_login/imgs/google.png",
+                                child: Wrap(
+                                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Image.asset(
+                                        "assets/welcome_signup_login/imgs/google.png",
+                                        width: 32.0),
+                                    Text('google',
+                                        style: TextStyle(
+                                            color: Color(0xFFFF3D00),
+                                            fontSize: 18.0)),
+                                  ],
                                 ),
                                 style: ButtonStyle(
-                                    elevation: MaterialStateProperty.all(0),
-                                    backgroundColor: MaterialStateProperty.all(
-                                        Colors.transparent),
-                                    foregroundColor: MaterialStateProperty.all(
-                                        Color(0xffffffff))),
-                              ),
-                            ),
-
-                            //twitter
-                            Container(
-                              width: 80.0,
-                              // margin: EdgeInsets.only(left: 20.0),
-                              padding: EdgeInsets.all(5.0),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Color(0xFF000000),
-                                  width: 2,
+                                  elevation: WidgetStateProperty.all(2),
+                                  backgroundColor: WidgetStateProperty.all(
+                                      const Color.fromARGB(
+                                          255, 255, 255, 255)),
+                                  shape: WidgetStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(30),
+                                          bottomLeft: Radius.circular(30)),
+                                    ),
+                                  ),
                                 ),
                               ),
+                            ),
+                          ),
+                          SizedBox(width: 6.0),
+                          //facebook
+                          Expanded(
+                            child: SizedBox(
+                              height: 60.0,
                               child: ElevatedButton(
                                 onPressed: () {},
-                                child: Image.asset(
-                                  "assets/welcome_signup_login/imgs/icons8-twitter-100.png",
+                                child: Wrap(
+                                  children: [
+                                    Image.asset(
+                                      "assets/welcome_signup_login/imgs/facebook.png",
+                                      width: 32.0,
+                                    ),
+                                    Text('facebook',
+                                        style: TextStyle(
+                                            color: Color(0xFF0680DD),
+                                            fontSize: 18.0)),
+                                  ],
                                 ),
                                 style: ButtonStyle(
-                                    elevation: MaterialStateProperty.all(0),
-                                    backgroundColor: MaterialStateProperty.all(
-                                        Colors.transparent),
-                                    foregroundColor: MaterialStateProperty.all(
-                                        Color(0xffffffff))),
-                              ),
-                            ),
-
-                            //facebook
-                            Container(
-                              width: 100.0,
-                              // margin: EdgeInsets.only(left: 20.0),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Color(0xFF0077FF),
-                                  width: 2,
+                                  elevation: WidgetStateProperty.all(2),
+                                  backgroundColor: WidgetStateProperty.all(
+                                      const Color.fromARGB(
+                                          255, 255, 255, 255)),
+                                  shape: WidgetStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.only(
+                                          topRight: Radius.circular(30),
+                                          bottomRight: Radius.circular(30)),
+                                    ),
+                                  ),
                                 ),
                               ),
-                              child: ElevatedButton(
-                                onPressed: () {},
-                                child: Image.asset(
-                                  "assets/welcome_signup_login/imgs/facebook.png",
-                                ),
-                                style: ButtonStyle(
-                                    elevation: MaterialStateProperty.all(0),
-                                    backgroundColor: MaterialStateProperty.all(
-                                        Colors.transparent),
-                                    foregroundColor: MaterialStateProperty.all(
-                                        Color(0xffffffff))),
-                              ),
                             ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 60.0),
+                    //don't have account
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('don\'t have account? ',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.w300)),
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/sign_up_pg1_player');
+                            },
+                            child: Text('sign up',
+                                style: TextStyle(
+                                  color: mainColor,
+                                  fontSize: 16.0,
+                                )))
+                      ],
+                    )
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           )),
     );
   }

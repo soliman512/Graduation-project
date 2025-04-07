@@ -119,9 +119,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all(Color(0xff00911E)),
-                      padding: MaterialStateProperty.all(EdgeInsets.all(12)),
-                      shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                          WidgetStateProperty.all(Color(0xff00911E)),
+                      padding: WidgetStateProperty.all(EdgeInsets.all(12)),
+                      shape: WidgetStateProperty.all(RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8))),
                     ),
                     child: Text(

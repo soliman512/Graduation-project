@@ -392,11 +392,11 @@ class _Recorve_AccountState extends State<Recorve_Account> {
                               // shape: MaterialStateProperty.all(RoundedRectangleBorder(
                               //     borderRadius: BorderRadius.circular(15))),
                               backgroundColor:
-                                  MaterialStateProperty.all(Colors.transparent),
+                                  WidgetStateProperty.all(Colors.transparent),
                               foregroundColor:
-                                  MaterialStateProperty.all(Color(0xFFFFFFFF)),
+                                  WidgetStateProperty.all(Color(0xFFFFFFFF)),
                               shadowColor:
-                                  MaterialStateProperty.all(Colors.transparent),
+                                  WidgetStateProperty.all(Colors.transparent),
 
                               // padding: MaterialStateProperty.all(EdgeInsets.all(5)),
                             ),

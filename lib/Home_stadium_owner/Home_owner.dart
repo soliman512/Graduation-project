@@ -1,32 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:graduation_project_main/constants/constants.dart';
-
-import '../../main.dart';
-
+import 'dart:io';
 class Home_Owner extends StatefulWidget {
   @override
   State<Home_Owner> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home_Owner> {
-  Widget buildCard({
-    required BuildContext context,
-    required String title,
-    required String location,
-    required String imageUrl,
-    required String price,
-  }) {
+/*
+name -- price
+location -- rating
+*/
+
+class StadiumCard extends StatelessWidget {
+  final String title;
+  final String location;
+  // final String imageUrl;
+  final String price;
+  final int rating;
+  final List<File> selectedImages;
+
+ StadiumCard({
+    Key? key,
+    required this.title,
+    required this.location,
+    // required this.imageUrl,
+    required this.price,
+    required this.rating,
+    required this.selectedImages,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        
+      },
       child: Container(
-        width: 360.0,
+        width: double.infinity,
+        margin: EdgeInsets.symmetric(horizontal: 2.0),
         child: Card(
+          color: Colors.white,
           margin: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
           elevation: 4,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
-            side: BorderSide(color: mainColor, width: 2),
+            side: BorderSide(
+                color: const Color.fromARGB(255, 255, 255, 255), width: 2),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -35,209 +54,132 @@ class _HomeState extends State<Home_Owner> {
                 width: double.infinity,
                 height: 130.0,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10)),
                   child: Image.asset(
-                    imageUrl,
+                    selectedImages[0].path,
                     width: double.infinity,
                     fit: BoxFit.cover,
                   ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text(
-                            title,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontFamily: "eras-itc-bold",
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
+              SizedBox(
+                height: 12.0,
+              ),
+              // name & price
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  //name of stadium
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        width: 20.0,
+                        height: 4.0,
+                        decoration: BoxDecoration(
+                          gradient: greenGradientColor,
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Container(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.location_on,
-                                  size: 13,
-                                  color: Colors.grey,
-                                ),
-                                SizedBox(width: 5),
-                                Text(
-                                  location,
-                                  style: TextStyle(
-                                    color: Color.fromARGB(255, 130, 128, 128),
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ],
-                            ),
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: "eras-itc-bold",
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+
+                  //price
+                  Padding(
+                    padding: const EdgeInsets.only(right: 22.0),
+                    child: Text(
+                      "${price}.00 .LE",
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: mainColor,
+                        fontFamily: "eras-itc-bold",
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              // location & rating
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  //location
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.location_on,
+                          size: 13,
+                          color: Colors.grey,
+                        ),
+                        SizedBox(width: 5),
+                        Text(
+                          location,
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 130, 128, 128),
+                            fontSize: 13,
                           ),
                         ),
                       ],
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(right: 10.0),
-                      child: Column(
-                        children: [
-                          Text(
-                            price,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: mainColor,
-                              fontFamily: "eras-itc-bold",
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Row(children: [
-                            Text(
-                              "5.5",
-                              style: TextStyle(fontSize: 12),
-                            ),
-                            Icon(Icons.star,
-                                color: Color(0xffFFCC00), size: 15),
-                            SizedBox(width: 1),
-                            Icon(Icons.star,
-                                color: Color(0xffFFCC00), size: 15),
-                            SizedBox(width: 1),
-                            Icon(Icons.star,
-                                color: Color(0xffFFCC00), size: 15),
-                            SizedBox(width: 1),
-                            Icon(Icons.star,
-                                color: Color(0xffFFCC00), size: 15),
-                            SizedBox(width: 1),
-                            Icon(Icons.star,
-                                color: Color(0xffFFCC00), size: 15),
-                          ]),
-                        ],
+                  ),
+
+                  //rating
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10.0),
+                    child: Row(children: [
+                      Text(
+                        "${rating}.0",
+                        style: TextStyle(fontSize: 12, color: Colors.black54),
                       ),
-                    ),
-                  ],
-                ),
+                      for (int i = 0; i < rating; i++)
+                        Icon(Icons.star,
+                            color: const Color.fromARGB(255, 255, 217, 0),
+                            size: 15),
+                      SizedBox(width: 1),
+                    ]),
+                  ),
+                ],
               ),
               SizedBox(
-                height: 14,
-              )
+                height: 12.0,
+              ),
             ],
           ),
         ),
       ),
     );
   }
+}
 
+// Widget []
+List<StadiumCard> stadiums = [];
+
+class _HomeState extends State<Home_Owner> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-            backgroundColor: Color(0xFFFFFFFF),
+            backgroundColor: Colors.white,
             extendBodyBehindAppBar: false,
-            floatingActionButton: Stack(
-              alignment: Alignment.bottomRight,
-              children: [
-                Positioned(
-                  bottom: 100,
-                  right: 10,
-                  child: FloatingActionButton(
-                    onPressed: () {},
-                    child: Image.asset(
-                        "assets/home_loves_tickets_top/imgs/Group 204.png"),
-                    shape: CircleBorder(),
-                    backgroundColor: Color(0xff000000),
-                  ),
-                ),
-                Positioned(
-                  bottom: 5,
-                  right: 1,
-                  child: Container(
-                    width: 185,
-                    height: 80,
-                    child: FloatingActionButton(
-                      elevation: 0,
-                      backgroundColor: Color(0xfffffffff),
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/stdWon_addNewStadium');
-                      },
-                      child: Container(
-                        width: 185,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(100),
-                          gradient: LinearGradient(
-                            colors: [
-                              Color(0xFF005706),
-                              Color(0xFF007211),
-                              Color(0xFF00911E),
-                              Color(0xFF00B92E),
-                            ],
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Stack(
-                              children: [
-                                Image.asset(
-                                  "assets/home_loves_tickets_top/imgs/ic_twotone-stadium.png",
-                                  width: 36.67,
-                                  height: 36.67,
-                                ),
-                                Positioned(
-                                  right: 0,
-                                  left: 25,
-                                  top: 0,
-                                  bottom: 20,
-                                  child: Image.asset(
-                                    "assets/home_loves_tickets_top/imgs/Frame 125.png",
-                                    width: 23.16,
-                                    height: 23.16,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(width: 40),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "New",
-                                  style: TextStyle(
-                                      color: Color(0xffffffff),
-                                      fontSize: 18,
-                                      fontFamily: "eras-itc-bold"),
-                                ),
-                                Text(
-                                  "Stadium",
-                                  style: TextStyle(
-                                      color: Color(0xffffffff),
-                                      fontSize: 18,
-                                      fontFamily: "eras-itc-bold"),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
             appBar: AppBar(
               toolbarHeight: 80.0,
-// foregroundColor: Color(0xFFFFFFFF),
+              scrolledUnderElevation: 0,
+
               elevation: 0,
               backgroundColor: Color(0xFFFFFFFF),
 //bars
@@ -251,8 +193,8 @@ class _HomeState extends State<Home_Owner> {
                       });
                     },
                     icon: Image.asset(
-                        "assets/home_loves_tickets_top/imgs/bars.png"),
-                    iconSize: 24.0,
+                        "assets/home_loves_tickets_top/imgs/bars.png",
+                        width: 22.0),
                   );
                 }),
               ),
@@ -266,8 +208,9 @@ class _HomeState extends State<Home_Owner> {
                       Navigator.pushNamed(context, '/Welcome');
                     },
                     icon: Image.asset(
-                        "assets/home_loves_tickets_top/imgs/notifications.png"),
-                    iconSize: 24.0,
+                      "assets/home_loves_tickets_top/imgs/notifications.png",
+                      width: 22.0,
+                    ),
                   ),
                 )
               ],
@@ -279,7 +222,7 @@ class _HomeState extends State<Home_Owner> {
                         fontFamily: "eras-itc-bold",
                         fontWeight: FontWeight.w900,
                         color: Color(0xff000000),
-                        fontSize: 26.0),
+                        fontSize: 22.0),
                     children: [
                       TextSpan(text: "V"),
                       TextSpan(text: "á", style: TextStyle(color: mainColor)),
@@ -288,102 +231,160 @@ class _HomeState extends State<Home_Owner> {
               ),
               centerTitle: true,
             ),
-            body: SingleChildScrollView(
-              child: Stack(
-                children: [
-                  SingleChildScrollView(
-                    child: Column(
+            floatingActionButton: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.end,
+              direction: Axis.vertical,
+              children: [
+                //statue
+                GestureDetector(
+                  onTap: () {},
+                  child: Container(
+                    width: 50.0,
+                    child: Image.asset(
+                        "assets/home_loves_tickets_top/imgs/Group 204.png"),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 8.0),
+                //new stadium
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/stdWon_addNewStadium');
+                  },
+                  child: Container(
+                    width: 222.0,
+                    height: 66.0,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100),
+                      gradient: greenGradientColor,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        //SEARCH
-                        Container(
-                          width: double.infinity,
-                          margin: EdgeInsets.fromLTRB(16.0, 34.0, 16.0, 0.0),
-                          padding: EdgeInsets.only(left: 12.0, right: 8.0),
+                        Image.asset(
+                          "assets/home_loves_tickets_top/imgs/ic_twotone-stadium.png",
+                          width: 44.00,
+                        ),
+                        Text(
+                          "New Stadium",
+                          style: TextStyle(
+                              color: Color(0xffffffff),
+                              fontSize: 18,
+                              fontFamily: "eras-itc-demi"),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            body: SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(height: 55),
+                  //SEARCH
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          width: 48.0,
                           height: 48.0,
+                          padding: EdgeInsets.all(8.0),
+                          child: Image.asset(
+                            'assets/home_loves_tickets_top/imgs/ic_twotone-stadium.png',
+                          ),
                           decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10.0),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black38,
-                                    offset: Offset(0.0, 2.0),
-                                    blurRadius: 4.0),
-                              ]),
-                          child: Container(
-                            width: double.infinity,
-                            child: TextField(
-                              style: TextStyle(
-                                fontSize: 18.0,
-                                color: Color(0xff000000),
-                                fontWeight: FontWeight.w400,
+                            gradient: greenGradientColor,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 4,
+                        child: Container(
+                          margin: EdgeInsets.only(right: 14.0),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                          ),
+                          // height: 60.0,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(30.0),
+                            border: Border(
+                              left: BorderSide(color: mainColor, width: 4),
+                              right: BorderSide(color: mainColor, width: 0.5),
+                              top: BorderSide(color: mainColor, width: 0.5),
+                              bottom: BorderSide(color: mainColor, width: 0.5),
+                            ),
+                            // boxShadow: [
+                            //   BoxShadow(
+                            //       color: const Color.fromARGB(59, 0, 0, 0),
+                            //       offset: Offset(0.0, 0.0),
+                            //       blurRadius: 2.0),
+                            // ]
+                          ),
+                          child: TextField(
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              color: Color(0xff000000),
+                              fontWeight: FontWeight.w400,
+                            ),
+                            autocorrect: true,
+                            textInputAction: TextInputAction.search,
+                            keyboardType: TextInputType.text,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText:
+                                  "What the stadiums you looking for ? ...",
+                              hintStyle: TextStyle(
+                                color: Color(0x73000000),
+                                fontSize: 12.0,
                               ),
-                              autocorrect: true,
-                              textInputAction: TextInputAction.search,
-                              keyboardType: TextInputType.text,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                hintText:
-                                    "What are you stadiums looking for ? ...",
-                                hintStyle: TextStyle(
-                                  color: Color(0x73000000),
-                                  fontSize: 12.0,
+                              suffixIcon: IconButton(
+                                onPressed: () {},
+                                icon: Icon(
+                                  Icons.close,
+                                  color: const Color.fromARGB(255, 19, 19, 19),
+                                  size: 18,
                                 ),
-                                prefixIcon: Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 8.0),
-                                  child: Image.asset(
-                                      "assets/home_loves_tickets_top/imgs/Vectorcom.png"),
-                                ),
-                                suffixIcon: ElevatedButton(
-                                    style: ButtonStyle(
-                                        shape: MaterialStateProperty.all(
-                                            CircleBorder()),
-                                        backgroundColor:
-                                            MaterialStateProperty.all(
-                                                mainColor),
-                                        padding: MaterialStateProperty.all(
-                                            EdgeInsets.zero)),
-                                    onPressed: () {},
-                                    child: Image.asset(
-                                      "assets/home_loves_tickets_top/imgs/icon-park-outline_search.png",
-                                      width: 26.0,
-                                    )),
                               ),
                             ),
                           ),
                         ),
-                        //just space
-                        SizedBox(
-                          height: 24.0,
-                        ),
-                        // cards
-                        Container(
-                          width: double.infinity,
-                          // margin: EdgeInsets.symmetric(horizontal: 16.0),
-                          margin: EdgeInsets.only(bottom: 60.0),
-                          child: Wrap(
-                            alignment: WrapAlignment.center,
-                            children: [
-                              buildCard(
-                                context: context,
-                                title: "Wembley",
-                                location: "New Assiut_suzan",
-                                imageUrl:
-                                    "assets/cards_home_player/imgs/251123-BFCA3674-9133-44F9-9BE9-8F5433D236E6.jpeg",
-                                price: "250.00 .LE",
-                              ),
-                              buildCard(
-                                context: context,
-                                title: "Camp Nou",
-                                location: "Barcelona_Spain",
-                                imageUrl:
-                                    "assets/cards_home_player/imgs/pngtree-the-camp-nou-stadium-in-barcelona-spain-sport-nou-angle-photo-image_4879020.jpg",
-                                price: "150.00 LE",
-                              ),
-                            ],
+                      ),
+                    ],
+                  ),
+
+                  //just space
+                  SizedBox(
+                    height: 40.0,
+                  ),
+                  // cards
+                  Container(
+                    width: double.infinity,
+                    // margin: EdgeInsets.symmetric(horizontal: 16.0),
+                    margin: EdgeInsets.only(bottom: 60.0),
+                    child: Wrap(
+                      alignment: WrapAlignment.center,
+                      children: [
+                        if (stadiums.isEmpty)
+                          Center(
+                            child: Image.asset(
+                                'assets/home_loves_tickets_top/imgs/noStadiums.png'),
                           ),
-                        ),
+                        for (int stadiumsShown = 0;
+                            stadiumsShown < stadiums.length;
+                            stadiumsShown++)
+                          stadiums[stadiumsShown],
                       ],
                     ),
+                  ),
+                  SizedBox(
+                    height: 60.0,
                   ),
                 ],
               ),

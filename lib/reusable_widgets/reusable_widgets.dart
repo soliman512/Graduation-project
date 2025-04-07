@@ -302,6 +302,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
 }
 
 //statful widget for the appbar
+// ignore: must_be_immutable
 class Create_AppBar extends StatefulWidget implements PreferredSizeWidget {
   Size get preferredSize => Size.fromHeight(80.0);
 
@@ -483,57 +484,45 @@ Widget buildCard({
 }
 
 //gradiant green button
-class Create_GradiantGreenButton extends StatefulWidget {
-  @override
-  State<Create_GradiantGreenButton> createState() =>
-      _Create_GradiantGreenButtonState();
-
-  String title;
-  VoidCallback onButtonPressed;
-  Create_GradiantGreenButton(
-      {required this.title, required this.onButtonPressed});
-}
-
-class _Create_GradiantGreenButtonState
-    extends State<Create_GradiantGreenButton> {
+class Create_GradiantGreenButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 300.0,
-      height: 40.0,
+      width: double.infinity,
+      height: 60.0,
+      margin: EdgeInsets.symmetric(horizontal: 32.0),
       // bottom: 124.0,
       // left: 30,
       decoration: BoxDecoration(
-          gradient: greenGradientColor,
-          borderRadius: BorderRadius.circular(10.0)),
+        gradient: greenGradientColor,
+        borderRadius: BorderRadius.circular(30.0),
+      ),
       child: ElevatedButton(
-        onPressed: widget.onButtonPressed,
-        child: Text(
-          widget.title,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Color(0xFFFFFFFF),
-            fontFamily: "eras-itc-bold",
-            // letterSpacing: 2,
-            fontSize: 24.0,
-            fontWeight: FontWeight.w900,
-          ),
-        ),
+        onPressed: onButtonPressed,
+        child: content,
         style: ButtonStyle(
           // shape: MaterialStateProperty.all(
           //     RoundedRectangleBorder(
           //         borderRadius: BorderRadius.circular(15))),
-          backgroundColor: MaterialStateProperty.all(Colors.transparent),
-          foregroundColor: MaterialStateProperty.all(Color(0xFFFFFFFF)),
-          shadowColor: MaterialStateProperty.all(Colors.transparent),
+          backgroundColor: WidgetStateProperty.all(Colors.transparent),
+          foregroundColor: WidgetStateProperty.all(Color(0xFFFFFFFF)),
+          shadowColor: WidgetStateProperty.all(Colors.transparent),
           // padding: MaterialStateProperty.all(EdgeInsets.all(5)),
         ),
       ),
     );
   }
+
+  final Widget content;
+  final VoidCallback onButtonPressed;
+  Create_GradiantGreenButton({
+    required this.content,
+    required this.onButtonPressed,
+  });
 }
 
 //white button
+// ignore: must_be_immutable
 class Create_WhiteButton extends StatelessWidget {
   String title;
   VoidCallback onButtonPressed;
@@ -563,9 +552,9 @@ class Create_WhiteButton extends StatelessWidget {
           // shape: MaterialStateProperty.all(
           //     RoundedRectangleBorder(
           //         borderRadius: BorderRadius.circular(15))),
-          backgroundColor: MaterialStateProperty.all(Colors.transparent),
-          foregroundColor: MaterialStateProperty.all(Color(0xff006607)),
-          shadowColor: MaterialStateProperty.all(Colors.transparent),
+          backgroundColor: WidgetStateProperty.all(Colors.transparent),
+          foregroundColor: WidgetStateProperty.all(Color(0xff006607)),
+          shadowColor: WidgetStateProperty.all(Colors.transparent),
 
           // padding: MaterialStateProperty.all(EdgeInsets.all(5)),
         ),
@@ -575,7 +564,8 @@ class Create_WhiteButton extends StatelessWidget {
 }
 
 //text field ( input )
-class Create_Input extends StatefulWidget {
+// ignore: must_be_immutable
+class Create_Input extends StatelessWidget {
   Widget? addPrefixIcon;
   Widget? addSuffixIcon;
   String? hintText;
@@ -586,6 +576,7 @@ class Create_Input extends StatefulWidget {
   VoidCallback? on_tap;
   String? initValue;
   TextEditingController? controller;
+  final Function? onChange;
   Create_Input({
     this.addPrefixIcon,
     this.addSuffixIcon,
@@ -597,30 +588,27 @@ class Create_Input extends StatefulWidget {
     this.on_tap,
     this.initValue,
     this.controller,
+    this.onChange,
   });
-  @override
-  State<Create_Input> createState() => _Create_InputState();
-}
-
-class _Create_InputState extends State<Create_Input> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 18.0),
+      margin: EdgeInsets.symmetric(horizontal: 32.0),
       color: Color(0xC7FFFFFF),
       width: double.infinity,
-      height: 44.0,
+      height: 50.0,
       child: TextField(
-          controller: widget.controller ?? TextEditingController(text: widget.initValue),
-          onTap: widget.on_tap,
-          readOnly: widget.isReadOnly,
+        onChanged: onChange as void Function(String)?,
+          controller: controller,
+          onTap: on_tap,
+          readOnly: isReadOnly,
           style: TextStyle(
               color: Color(0xFF000000),
               fontSize: 18.0,
               fontWeight: FontWeight.w400),
-          keyboardType: widget.keyboardType,
-          textInputAction: widget.textInputAction,
-          obscureText: widget.isPassword,
+          keyboardType: keyboardType,
+          textInputAction: textInputAction,
+          obscureText: isPassword,
           cursorColor: mainColor,
           decoration: InputDecoration(
             focusColor: mainColor,
@@ -630,10 +618,19 @@ class _Create_InputState extends State<Create_Input> {
                   width: 2,
                 ),
                 borderRadius: BorderRadius.circular(15)),
-            prefixIcon: widget.addPrefixIcon,
-            suffixIcon: widget.addSuffixIcon,
+            prefixIcon: addPrefixIcon,
+            suffixIcon: addSuffixIcon,
             contentPadding: EdgeInsets.symmetric(vertical: 5),
-            hintText: widget.hintText,
+            labelText: hintText,
+            floatingLabelStyle: TextStyle(
+              color: mainColor,
+              fontSize: 12.0,
+            ),
+            labelStyle: TextStyle(
+              color: Color(0x4F000000),
+              fontSize: 20.0,
+              fontFamily: 'eras-itc-light',
+            ),
             hintStyle: TextStyle(
                 color: Color(0x4F000000),
                 fontSize: 20.0,
@@ -651,6 +648,7 @@ class _Create_InputState extends State<Create_Input> {
 
 // app title (vamonos)
 
+// ignore: must_be_immutable
 class Add_AppName extends StatelessWidget {
   double font_size;
   TextAlign align;
@@ -987,36 +985,80 @@ class Add_AppName extends StatelessWidget {
 
 // required input
 
+
+// phone number
+
+bool PhoneNumber(String phoneNumber) {
+  if (phoneNumber.length == 11 &&
+      (phoneNumber.startsWith("010") ||
+       phoneNumber.startsWith("011") ||
+       phoneNumber.startsWith("012") ||
+       phoneNumber.startsWith("015"))) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+
+// required input
 class Create_RequiredInput extends StatelessWidget {
-  Widget add_prefix;
-  Widget? add_suffix = null;
-  TextInputType textInputType;
+  final Widget add_prefix;
+  final Widget? add_suffix;
+  final bool? isReadOnly;
+  final String? initValue;
+  final VoidCallback? onTap;
+  final ValueChanged<String>? onChange;
+  final TextInputType textInputType;
+  final String lableText;
   Create_RequiredInput({
     required this.add_prefix,
-    this.add_suffix,
     required this.textInputType,
+    required this.lableText,
+    this.add_suffix,
+    this.isReadOnly,
+    this.initValue,
+    this.onTap,
+    this.onChange,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      onChanged: onChange,
+      onTap: onTap,
+      controller: TextEditingController(text: initValue),
       keyboardType: textInputType,
+      readOnly: isReadOnly ?? false,
       maxLines: null,
-      style: TextStyle(color: Colors.black),
-      textAlign: TextAlign.center,
+      style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0)),
       cursorColor: mainColor,
       decoration: InputDecoration(
-        prefixIcon: add_prefix,
-        suffix: add_suffix,
-        fillColor: Color(0xB0F2F2F2),
-        filled: true,
-        focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            borderSide: BorderSide(color: mainColor, width: 2.0)),
-        border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5.0),
-            borderSide: BorderSide(color: Colors.black38, width: 2.0)),
+        contentPadding: EdgeInsets.symmetric(vertical: 15.0),
+      labelText: lableText,
+      labelStyle: TextStyle(
+        color: Color.fromARGB(75, 0, 0, 0),
+        fontSize: 15.0,
+      ),
+      floatingLabelStyle: TextStyle(color: mainColor, fontSize: 16.0),
+      floatingLabelAlignment: FloatingLabelAlignment.center, // Center the label
+      prefixIcon: add_prefix,
+      suffix: add_suffix,
+      fillColor: Color.fromARGB(255, 255, 255, 255),
+      filled: true,
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15.0),
+        borderSide: BorderSide(color: mainColor, width: 2.0),
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10.0),
+        borderSide: BorderSide(
+        color: Color.fromARGB(75, 0, 0, 0),
+        width: 1.0,
+        ),
+      ),
       ),
     );
   }
 }
+

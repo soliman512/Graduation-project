@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:graduation_project_main/Edit_Stadium_stdOwner/EditStadium_stdowner.dart';
 import 'package:graduation_project_main/Home_stadium_owner/Home_owner.dart';
 import 'package:graduation_project_main/Home_stadium_owner/Ticket.dart';
 import 'package:graduation_project_main/firebase_options.dart';
 import 'package:graduation_project_main/home_loves_tickets_top/profileplayer.dart';
 import 'package:graduation_project_main/provider/google_signin.dart';
-import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
+import 'package:graduation_project_main/welcome_signup_login/signUpPages/addAccountImage_player.dart';
 import 'package:graduation_project_main/welcome_signup_login/verify/verifyemail.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 import 'home_loves_tickets_top/home/Home.dart';
 import 'home_loves_tickets_top/loves/Favourites.dart';
 import 'home_loves_tickets_top/tickets/Tickets.dart';
-// import 'payment_successful_check/check_animation.dart';
 import 'no_internetConnection/no_internetConnection.dart';
 import 'payment/payment.dart';
 import 'stadium_information_player_pg/stadium_information_player_pg.dart';
@@ -22,7 +20,6 @@ import 'welcome_signup_login/login_signup page/login_signupPlayer.dart';
 import 'welcome_signup_login/login_signup page/login_signupStdOwner.dart';
 
 import 'welcome_signup_login/loginPages/loginStadium.dart';
-// import 'welcome_signup_login/signUpPages/signup_pg2_stdowner.dart';
 
 import 'welcome_signup_login/loginPages/loginPlayer.dart';
 
@@ -31,12 +28,10 @@ import 'welcome_signup_login/signUpPages/signup_Pg2_Player.dart';
 
 import 'welcome_signup_login/signUpPages/signup_Pg1_stdowner.dart';
 import 'welcome_signup_login/signUpPages/signup_pg2_stdowner.dart';
-import 'welcome_signup_login/signUpPages/signup_pg3_stdowner_stdinfo.dart';
 import 'welcome_signup_login/recorve account/RecorveAcount.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -120,11 +115,11 @@ class MyApp extends StatelessWidget {
           '/Recorve_account': (context) => Recorve_Account(),
 
           '/sign_up_pg1_player': (context) => Signup_pg1_player(),
+          '/addAccountImage_player': (context) => addAccountImage_player(),
           '/sign_up_pg2_player': (context) => Signup_pg2_player(),
 
           '/sign_up_pg1_stdowner': (context) => Signup_pg1_StdOwner(),
           '/sign_up_pg2_stdowner': (context) => Signup_pg2_StdOwner(),
-          '/signup_pg3_stdowner_stdinfo': (context) => Signup_pg3_StdOwner_stdInfo(),
           '/home_owner': (context) => Home_Owner(),
           '/ticket_owner': (context) => Tickets_Owner(),
 
@@ -146,7 +141,7 @@ class MyApp extends StatelessWidget {
 
           // stadium owner
           '/stdWon_addNewStadium': (context) => AddNewStadium(),
-          '/stdown_editStadium': (context) => EditStadium_stdown(),
+          // '/stdown_editStadium': (context) => EditStadium_stdown(),
 
           //no internet connection
           '/no_internetConnection': (context) => NoInternetConnection(),

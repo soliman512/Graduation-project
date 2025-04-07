@@ -78,17 +78,17 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                           },
                           style: ButtonStyle(
                             backgroundColor:
-                                MaterialStateProperty.all(Color(0xADADAD)),
-                            shape: MaterialStateProperty.all(
+                                WidgetStateProperty.all(Color(0xADADAD)),
+                            shape: WidgetStateProperty.all(
                                 RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10.0))),
                             foregroundColor:
-                                MaterialStateProperty.all(Color(0xFF000000)),
+                                WidgetStateProperty.all(Color(0xFF000000)),
                             // side: BorderSide(color: Colors.green, width: 0.5),
-                            side: MaterialStateProperty.all(BorderSide(
+                            side: WidgetStateProperty.all(BorderSide(
                                 color: Color(0xff00B92E), width: 0.5)),
                             shadowColor:
-                                MaterialStateProperty.all(Colors.transparent),
+                                WidgetStateProperty.all(Colors.transparent),
                           ),
                           child: Text(
                             "Day",
@@ -113,17 +113,17 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                           onPressed: () {},
                           style: ButtonStyle(
                             backgroundColor:
-                                MaterialStateProperty.all(Color(0xADADAD)),
-                            shape: MaterialStateProperty.all(
+                                WidgetStateProperty.all(Color(0xADADAD)),
+                            shape: WidgetStateProperty.all(
                                 RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10.0))),
                             foregroundColor:
-                                MaterialStateProperty.all(Color(0xFF000000)),
+                                WidgetStateProperty.all(Color(0xFF000000)),
                             // side: BorderSide(color: Colors.green, width: 0.5),
-                            side: MaterialStateProperty.all(BorderSide(
+                            side: WidgetStateProperty.all(BorderSide(
                                 color: Color(0xff00B92E), width: 0.5)),
                             shadowColor:
-                                MaterialStateProperty.all(Colors.transparent),
+                                WidgetStateProperty.all(Colors.transparent),
                           ),
                           child: Text(
                             "Time",
@@ -148,17 +148,17 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                           onPressed: () {},
                           style: ButtonStyle(
                             backgroundColor:
-                                MaterialStateProperty.all(Color(0xADADAD)),
-                            shape: MaterialStateProperty.all(
+                                WidgetStateProperty.all(Color(0xADADAD)),
+                            shape: WidgetStateProperty.all(
                                 RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10.0))),
                             foregroundColor:
-                                MaterialStateProperty.all(Color(0xFF000000)),
+                                WidgetStateProperty.all(Color(0xFF000000)),
                             // side: BorderSide(color: Colors.green, width: 0.5),
-                            side: MaterialStateProperty.all(BorderSide(
+                            side: WidgetStateProperty.all(BorderSide(
                                 color: Color(0xff00B92E), width: 0.5)),
                             shadowColor:
-                                MaterialStateProperty.all(Colors.transparent),
+                                WidgetStateProperty.all(Colors.transparent),
                           ),
                           child: Text(
                             "Duration",
@@ -250,10 +250,10 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                               onPressed: () {},
                               style: ButtonStyle(
                                 shape:
-                                    MaterialStateProperty.all(CircleBorder()),
+                                    WidgetStateProperty.all(CircleBorder()),
                                 // padding:
                                 // MaterialStateProperty.all(EdgeInsets.all(0)),
-                                backgroundColor: MaterialStateProperty.all(
+                                backgroundColor: WidgetStateProperty.all(
                                     Color(0xff00B92E)),
                               ),
                               child: Icon(
@@ -486,7 +486,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all(Colors.transparent),
+                          WidgetStateProperty.all(Colors.transparent),
                     ),
                     child: Text(
                       "Book",
