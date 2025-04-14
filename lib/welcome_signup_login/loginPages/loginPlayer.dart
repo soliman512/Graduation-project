@@ -370,7 +370,9 @@ class _Login_playerState extends State<Login_player> {
                             child: SizedBox(
                               height: 60.0,
                               child: ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.pushNamed(context, '/stadium_information_player_pg');
+                                },
                                 child: Wrap(
                                   children: [
                                     Image.asset(
