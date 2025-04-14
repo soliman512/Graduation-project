@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 
-
 class Stadium_info_playerPG extends StatefulWidget {
   Stadium_info_playerPG({key});
 
@@ -19,7 +18,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
+        extendBodyBehindAppBar: true,
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -738,33 +737,22 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                 ),
               ),
               Expanded(
-                child: Container(
-                  height: 50.0,
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Color(0xff005706),
-                          Color(0xff007211),
-                          Color(0xff00911E),
-                          Color(0xff00B92E),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(10.0)),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/payment');
-                    },
-                    style: ButtonStyle(
-                      backgroundColor:
-                          WidgetStateProperty.all(Colors.transparent),
-                    ),
-                    child: Text(
-                      "Book",
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 255, 255, 255),
-                        fontSize: 23,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: "eras-itc-bold",
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/payment');
+                  },
+                  child: Container(
+                    height: 50.0,
+                    decoration: BoxDecoration(
+                        gradient: greenGradientColor,
+                        borderRadius: BorderRadius.circular(30.0)),
+                    child: Center(
+                      child: Text(
+                        "Book",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'eras-itc-bold',
+                            fontSize: 24.0),
                       ),
                     ),
                   ),
