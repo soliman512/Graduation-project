@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 
-void main() {
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: Stadium_info_playerPG(),
-  ));
-}
 
 class Stadium_info_playerPG extends StatefulWidget {
   Stadium_info_playerPG({key});
@@ -25,16 +19,31 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
         backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: Colors.white,
-          title: Text('Stadium Information'),
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
+          backgroundColor: Colors.transparent,
+          leading: GestureDetector(
+            onTap: () {
               Navigator.pop(context);
             },
+            child: Container(
+              margin: EdgeInsets.all(6),
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 6,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Icon(Icons.arrow_back),
+            ),
           ),
         ),
         body: SingleChildScrollView(
@@ -195,7 +204,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                     clipBehavior: Clip.none,
                     children: [
                       Positioned(
-                        top: -30,
+                        top: -40,
                         child: Transform.rotate(
                           angle: 0.785,
                           child: Container(
@@ -261,7 +270,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                           ))
                     ]),
               ),
-
+              SizedBox(height: 20),
               // Description
               Padding(
                 padding: const EdgeInsets.all(18.0),
@@ -272,8 +281,9 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                       "Description",
                       textAlign: TextAlign.center,
                       style: TextStyle(
+                        color: Colors.grey,
+                        fontFamily: "eras-itc-demi",
                         fontSize: 18,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -281,86 +291,55 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                       "A football field with durable artificial grass, perfect for all-weather games. The surface is smooth, with clear white lines marking key areas like the penalty box. Surrounding the field are safety fences and seating for spectators. Bright floodlights make it ideal for exciting night matches.",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[700],
+                        fontSize: 12,
+                        color: Colors.black,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(18.0),
-                      child: Container(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Column(
-                              children: [
-                                Text(
-                                  "- water is avalablie",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                SizedBox(height: 9),
-                                Text(
-                                  "- seats 10 people",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ],
-                            ),
-                            SizedBox(width: 30),
-                            Column(
-                              children: [
-                                Text(
-                                  "- running track ",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                SizedBox(height: 9),
-                                Text(
-                                  "- grass is normal",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        margin: EdgeInsets.all(20),
-                        padding: EdgeInsets.all(20),
+                    SizedBox(height: 40),
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Column(
+                            children: [
+                              Text(
+                                "water is avalablie",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              SizedBox(height: 9),
+                              Text(
+                                "seats 10 people",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          ),
+                          SizedBox(width: 30),
+                          Column(
+                            children: [
+                              Text(
+                                "running track ",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              SizedBox(height: 9),
+                              Text(
+                                "grass is normal",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          )
+                        ],
                       ),
-                    )
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
                   ],
                 ),
               ),
-
-              // Back Button
-              Positioned(
-                top: 40,
-                left: 16,
-                child: Container(
-                  height: 30,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  padding: EdgeInsets.all(0),
-                  margin: EdgeInsets.all(0),
-                  child: IconButton(
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.black,
-                      size: 20,
-                    ),
-                    onPressed: () {},
-                  ),
-                ),
-              ),
+              SizedBox(height: 60),
 
               // Choose date of match section
               Row(
