@@ -68,7 +68,7 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                 )),
             leading: IconButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/login_signup_player');
+                Navigator.pushNamed(context, '/Welcome');
               },
               icon: Image.asset(
                 "assets/welcome_signup_login/imgs/back.png",

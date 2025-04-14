@@ -48,6 +48,7 @@ dependencies:
   flutter_rounded_date_picker: ^3.0.4
   animated_toggle_switch: ^0.8.4
   day_night_time_picker: ^1.2.0
+  webview_flutter: ^4.7.0  # Latest stable
   
 dev_dependencies:
   flutter_test:

@@ -16,8 +16,8 @@ import 'payment/payment.dart';
 import 'stadium_information_player_pg/stadium_information_player_pg.dart';
 import 'stdown_addNewStd/stdwon_addNewStadium.dart';
 import 'welcome_signup_login/Welcome.dart';
-import 'welcome_signup_login/login_signup page/login_signupPlayer.dart';
-import 'welcome_signup_login/login_signup page/login_signupStdOwner.dart';
+// import 'welcome_signup_login/login_signup page/login_signupPlayer.dart';
+// import 'welcome_signup_login/login_signup page/login_signupStdOwner.dart';
 
 import 'welcome_signup_login/loginPages/loginStadium.dart';
 
@@ -44,22 +44,7 @@ Future<void> main() async {
   );
   runApp(MyApp());
 }
-//useful icons and images:
 
-RichText appNameLogo = RichText(
-  textAlign: TextAlign.center,
-  text: TextSpan(
-      style: TextStyle(
-          color: Color(0xffffffff),
-          fontFamily: "eras-itc-bold",
-          fontWeight: FontWeight.w900,
-          fontSize: 48.0),
-      children: [
-        TextSpan(text: "V"),
-        TextSpan(text: "á", style: TextStyle(color: Color(0xff00B92E))),
-        TextSpan(text: "monos"),
-      ]),
-);
 
 //drawer options
 
@@ -106,8 +91,8 @@ class MyApp extends StatelessWidget {
         routes: {
           '/Welcome': (context) => Welcome(), //done
           //login and signup
-          '/login_signup_player': (context) => Login_Signup_player(), //done
-          '/login_signup_stdOwner': (context) => Login_Signup_stdOwner(), //done
+          // '/login_signup_player': (context) => Login_Signup_player(), //done
+          // '/login_signup_stdOwner': (context) => Login_Signup_stdOwner(), //done
 
           '/login_player': (context) => Login_player(), //done
           '/login_stadium': (context) => Login_Stadiumonwer(), //done
@@ -120,12 +105,9 @@ class MyApp extends StatelessWidget {
 
           '/sign_up_pg1_stdowner': (context) => Signup_pg1_StdOwner(),
           '/sign_up_pg2_stdowner': (context) => Signup_pg2_StdOwner(),
+          //stadium owner 
           '/home_owner': (context) => Home_Owner(),
           '/ticket_owner': (context) => Tickets_Owner(),
-
-          // Booking Successful
-
-          // '/booking_successful': (context) => BookingSuccessful(),
 
           // home_loves_tickets_top
           '/home': (context) => Home(),

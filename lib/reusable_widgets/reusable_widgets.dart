@@ -3,6 +3,165 @@ import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/home_loves_tickets_top/profileplayer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io';
+
+class StadiumCard extends StatelessWidget {
+  final String title;
+  final String location;
+  // final String imageUrl;
+  final String price;
+  final int rating;
+  final List<File> selectedImages;
+
+  StadiumCard({
+    Key? key,
+    required this.title,
+    required this.location,
+    // required this.imageUrl,
+    required this.price,
+    required this.rating,
+    required this.selectedImages,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {},
+      child: Container(
+        width: double.infinity,
+        margin: EdgeInsets.symmetric(horizontal: 2.0),
+        child: Card(
+          color: Colors.white,
+          margin: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(
+                color: const Color.fromARGB(255, 255, 255, 255), width: 2),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: double.infinity,
+                height: 130.0,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10)),
+                  child: Image.asset(
+                    selectedImages[0].path,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 12.0,
+              ),
+              // name & price
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  //name of stadium
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        width: 20.0,
+                        height: 4.0,
+                        decoration: BoxDecoration(
+                          gradient: greenGradientColor,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: "eras-itc-bold",
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+
+                  //price
+                  Padding(
+                    padding: const EdgeInsets.only(right: 22.0),
+                    child: Text(
+                      "${price}.00 .LE",
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: mainColor,
+                        fontFamily: "eras-itc-bold",
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              // location & rating
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  //location
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.location_on,
+                          size: 13,
+                          color: Colors.grey,
+                        ),
+                        SizedBox(width: 5),
+                        Text(
+                          location,
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 130, 128, 128),
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  //rating
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10.0),
+                    child: Row(children: [
+                      Text(
+                        "${rating}.0",
+                        style: TextStyle(fontSize: 12, color: Colors.black54),
+                      ),
+                      for (int i = 0; i < rating; i++)
+                        Icon(Icons.star,
+                            color: const Color.fromARGB(255, 255, 217, 0),
+                            size: 15),
+                      SizedBox(width: 1),
+                    ]),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 12.0,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Widget []
+
+// database of stadiums
+List<StadiumCard> stadiums = [];
 
 //statful widget for the drawer
 class Create_Drawer extends StatefulWidget {
@@ -306,7 +465,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
 class Create_AppBar extends StatefulWidget implements PreferredSizeWidget {
   Size get preferredSize => Size.fromHeight(80.0);
 
-  RichText title;
+  Widget title;
   Create_AppBar({
     required this.title,
   });
@@ -333,8 +492,8 @@ class _Create_AppBarState extends State<Create_AppBar> {
                 Scaffold.of(context).openDrawer();
               });
             },
-            icon: Image.asset("assets/home_loves_tickets_top/imgs/bars.png"),
-            iconSize: 24.0,
+            icon: Image.asset("assets/home_loves_tickets_top/imgs/bars.png", width: 24.0),
+            iconSize: 16.0,
           );
         }),
       ),
@@ -348,8 +507,8 @@ class _Create_AppBarState extends State<Create_AppBar> {
               Navigator.pushNamed(context, '/Welcome');
             },
             icon: Image.asset(
-                "assets/home_loves_tickets_top/imgs/notifications.png"),
-            iconSize: 24.0,
+                "assets/home_loves_tickets_top/imgs/notifications.png", width: 24.0),
+            
           ),
         )
       ],
@@ -363,125 +522,125 @@ class _Create_AppBarState extends State<Create_AppBar> {
 }
 
 //statdium card
-Widget buildCard({
-  required BuildContext context,
-  required String title,
-  required String location,
-  required String imageUrl,
-  required String price,
-}) {
-  return GestureDetector(
-    onTap: () {
-      Navigator.pushNamed(context, '/stadium_information_player_pg');
-    },
-    child: Container(
-      width: 360.0,
-      child: Card(
-        margin: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-        elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(color: mainColor, width: 2),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: double.infinity,
-              height: 130.0,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.asset(
-                  imageUrl,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.star, color: Color(0xffFFCC00), size: 15),
-                      SizedBox(width: 1),
-                      Icon(Icons.star, color: Color(0xffFFCC00), size: 15),
-                      SizedBox(width: 1),
-                      Icon(Icons.star, color: Color(0xffFFCC00), size: 15),
-                      SizedBox(width: 1),
-                      Icon(Icons.star, color: Color(0xffFFCC00), size: 15),
-                      SizedBox(width: 1),
-                      Icon(Icons.star, color: Color(0xffFFCC00), size: 15),
-                      SizedBox(
-                        width: 1,
-                      ),
-                      Text(
-                        "5.5",
-                        style: TextStyle(fontSize: 12),
-                      )
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(right: 10.0),
-                    child: Text(
-                      price,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: mainColor,
-                        fontFamily: "eras-itc-bold",
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text(
-                title,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontFamily: "eras-itc-bold",
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
-              child: Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.location_on,
-                      size: 13,
-                      color: Colors.grey,
-                    ),
-                    SizedBox(width: 5),
-                    Text(
-                      location,
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 130, 128, 128),
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 14,
-            )
-          ],
-        ),
-      ),
-    ),
-  );
-}
+// Widget buildCard({
+//   required BuildContext context,
+//   required String title,
+//   required String location,
+//   required String imageUrl,
+//   required String price,
+// }) {
+//   return GestureDetector(
+//     onTap: () {
+//       Navigator.pushNamed(context, '/stadium_information_player_pg');
+//     },
+//     child: Container(
+//       width: 360.0,
+//       child: Card(
+//         margin: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+//         elevation: 4,
+//         shape: RoundedRectangleBorder(
+//           borderRadius: BorderRadius.circular(10),
+//           side: BorderSide(color: mainColor, width: 2),
+//         ),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.center,
+//           children: [
+//             Container(
+//               width: double.infinity,
+//               height: 130.0,
+//               child: ClipRRect(
+//                 borderRadius: BorderRadius.circular(10),
+//                 child: Image.asset(
+//                   imageUrl,
+//                   width: double.infinity,
+//                   fit: BoxFit.cover,
+//                 ),
+//               ),
+//             ),
+//             Padding(
+//               padding: EdgeInsets.all(8.0),
+//               child: Row(
+//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                 children: [
+//                   Row(
+//                     children: [
+//                       Icon(Icons.star, color: Color(0xffFFCC00), size: 15),
+//                       SizedBox(width: 1),
+//                       Icon(Icons.star, color: Color(0xffFFCC00), size: 15),
+//                       SizedBox(width: 1),
+//                       Icon(Icons.star, color: Color(0xffFFCC00), size: 15),
+//                       SizedBox(width: 1),
+//                       Icon(Icons.star, color: Color(0xffFFCC00), size: 15),
+//                       SizedBox(width: 1),
+//                       Icon(Icons.star, color: Color(0xffFFCC00), size: 15),
+//                       SizedBox(
+//                         width: 1,
+//                       ),
+//                       Text(
+//                         "5.5",
+//                         style: TextStyle(fontSize: 12),
+//                       )
+//                     ],
+//                   ),
+//                   Padding(
+//                     padding: EdgeInsets.only(right: 10.0),
+//                     child: Text(
+//                       price,
+//                       style: TextStyle(
+//                         fontSize: 13,
+//                         color: mainColor,
+//                         fontFamily: "eras-itc-bold",
+//                         fontWeight: FontWeight.bold,
+//                       ),
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//             Padding(
+//               padding: EdgeInsets.symmetric(horizontal: 8.0),
+//               child: Text(
+//                 title,
+//                 style: TextStyle(
+//                   fontSize: 20,
+//                   fontFamily: "eras-itc-bold",
+//                   fontWeight: FontWeight.bold,
+//                 ),
+//                 textAlign: TextAlign.center,
+//               ),
+//             ),
+//             Padding(
+//               padding: EdgeInsets.symmetric(horizontal: 8.0),
+//               child: Container(
+//                 child: Row(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   children: [
+//                     Icon(
+//                       Icons.location_on,
+//                       size: 13,
+//                       color: Colors.grey,
+//                     ),
+//                     SizedBox(width: 5),
+//                     Text(
+//                       location,
+//                       style: TextStyle(
+//                         color: Color.fromARGB(255, 130, 128, 128),
+//                         fontSize: 13,
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//             SizedBox(
+//               height: 14,
+//             )
+//           ],
+//         ),
+//       ),
+//     ),
+//   );
+// }
 
 //gradiant green button
 class Create_GradiantGreenButton extends StatelessWidget {
@@ -598,7 +757,7 @@ class Create_Input extends StatelessWidget {
       width: double.infinity,
       height: 50.0,
       child: TextField(
-        onChanged: onChange as void Function(String)?,
+          onChanged: onChange as void Function(String)?,
           controller: controller,
           onTap: on_tap,
           readOnly: isReadOnly,
@@ -985,21 +1144,19 @@ class Add_AppName extends StatelessWidget {
 
 // required input
 
-
 // phone number
 
 bool PhoneNumber(String phoneNumber) {
   if (phoneNumber.length == 11 &&
       (phoneNumber.startsWith("010") ||
-       phoneNumber.startsWith("011") ||
-       phoneNumber.startsWith("012") ||
-       phoneNumber.startsWith("015"))) {
+          phoneNumber.startsWith("011") ||
+          phoneNumber.startsWith("012") ||
+          phoneNumber.startsWith("015"))) {
     return true;
   } else {
     return false;
   }
 }
-
 
 // required input
 class Create_RequiredInput extends StatelessWidget {
@@ -1035,30 +1192,30 @@ class Create_RequiredInput extends StatelessWidget {
       cursorColor: mainColor,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.symmetric(vertical: 15.0),
-      labelText: lableText,
-      labelStyle: TextStyle(
-        color: Color.fromARGB(75, 0, 0, 0),
-        fontSize: 15.0,
-      ),
-      floatingLabelStyle: TextStyle(color: mainColor, fontSize: 16.0),
-      floatingLabelAlignment: FloatingLabelAlignment.center, // Center the label
-      prefixIcon: add_prefix,
-      suffix: add_suffix,
-      fillColor: Color.fromARGB(255, 255, 255, 255),
-      filled: true,
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(15.0),
-        borderSide: BorderSide(color: mainColor, width: 2.0),
-      ),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0),
-        borderSide: BorderSide(
-        color: Color.fromARGB(75, 0, 0, 0),
-        width: 1.0,
+        labelText: lableText,
+        labelStyle: TextStyle(
+          color: Color.fromARGB(75, 0, 0, 0),
+          fontSize: 15.0,
         ),
-      ),
+        floatingLabelStyle: TextStyle(color: mainColor, fontSize: 16.0),
+        floatingLabelAlignment:
+            FloatingLabelAlignment.center, // Center the label
+        prefixIcon: add_prefix,
+        suffix: add_suffix,
+        fillColor: Color.fromARGB(255, 255, 255, 255),
+        filled: true,
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15.0),
+          borderSide: BorderSide(color: mainColor, width: 2.0),
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide(
+            color: Color.fromARGB(75, 0, 0, 0),
+            width: 1.0,
+          ),
+        ),
       ),
     );
   }
 }
-

@@ -122,54 +122,52 @@ class _addAccountImage_playerState extends State<addAccountImage_player> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   
-                  Center(
-                    child: Container(
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: mainColor,
-                            width: 1.5,
-                          )),
-                      child: Stack(
-                        children: [
-                          imgPath == null
-                              ? CircleAvatar(
-                                  backgroundColor:
-                                      Color.fromARGB(255, 225, 225, 225),
-                                  radius: 77.0,
-                                  backgroundImage: AssetImage(
-                                      "assets/welcome_signup_login/imgs/avatar.png"),
-                                )
-                              : ClipOval(
-                                  child: Image.file(imgPath!,
-                                      width: 154.0,
-                                      height: 154.0,
-                                      fit: BoxFit.cover),
-                                ),
-                          Positioned(
-                            bottom: -6,
-                            right: -1,
-                            child: Container(
-                              width: 60,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: mainColor,
-                                ),
-                                color: Colors.white,
+                  Container(
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: mainColor,
+                          width: 1.5,
+                        )),
+                    child: Stack(
+                      children: [
+                        imgPath == null
+                            ? CircleAvatar(
+                                backgroundColor:
+                                    Color.fromARGB(255, 225, 225, 225),
+                                radius: 100.0,
+                                backgroundImage: AssetImage(
+                                    "assets/welcome_signup_login/imgs/avatar.png"),
+                              )
+                            : ClipOval(
+                                child: Image.file(imgPath!,
+                                    width: 154.0,
+                                    height: 154.0,
+                                    fit: BoxFit.cover),
                               ),
-                              child: IconButton(
-                                onPressed: () {
-                                  showImageSourceActionSheet(context);
-                                },
-                                icon: Icon(Icons.add_a_photo),
-                                iconSize: 20,
+                        Positioned(
+                          bottom: -6,
+                          right: -1,
+                          child: Container(
+                            width: 60,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
                                 color: mainColor,
                               ),
+                              color: Colors.white,
+                            ),
+                            child: IconButton(
+                              onPressed: () {
+                                showImageSourceActionSheet(context);
+                              },
+                              icon: Icon(Icons.add_a_photo),
+                              iconSize: 20,
+                              color: mainColor,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                   SizedBox(height: 164.0),
