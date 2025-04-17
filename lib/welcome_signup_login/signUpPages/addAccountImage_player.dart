@@ -16,6 +16,18 @@ class _addAccountImage_playerState extends State<addAccountImage_player> {
 
   Future<void> uploadImage(String filePath) async {
     final File file = File(filePath);
+    final SupabaseClient supabase = Supabase.instance.client;
+    final String fullPath = await supabase.storage.from('photo').upload(
+      'public/avatar1.png',
+      file,
+      fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+    );
+
+    print('File uploaded to: $fullPath');
+    final String url = await supabase.storage.from('photo').getPublicUrl(fullPath);
+    print('File URL: $url');
+    // You can now use the URL to display the image or store it in your database
+
   }
   // upload image
   uploadImage2Screen(ImageSource source) async {
