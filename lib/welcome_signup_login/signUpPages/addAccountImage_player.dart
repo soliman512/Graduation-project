@@ -13,22 +13,24 @@ class addAccountImage_player extends StatefulWidget {
 
 class _addAccountImage_playerState extends State<addAccountImage_player> {
   File? imgPath;
+  late String imagePath;
 
   Future<void> uploadImage(String filePath) async {
     final File file = File(filePath);
     final SupabaseClient supabase = Supabase.instance.client;
     final String fullPath = await supabase.storage.from('photo').upload(
-      'public/avatar1.png',
-      file,
-      fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
-    );
+          'public/avatar1.png',
+          file,
+          fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+        );
 
     print('File uploaded to: $fullPath');
-    final String url = await supabase.storage.from('photo').getPublicUrl(fullPath);
+    final String url =
+        await supabase.storage.from('photo').getPublicUrl(fullPath);
     print('File URL: $url');
     // You can now use the URL to display the image or store it in your database
-
   }
+
   // upload image
   uploadImage2Screen(ImageSource source) async {
     final pickedImg = await ImagePicker().pickImage(source: source);
@@ -36,6 +38,7 @@ class _addAccountImage_playerState extends State<addAccountImage_player> {
       if (pickedImg != null) {
         setState(() {
           imgPath = File(pickedImg.path);
+          imagePath = pickedImg.path;
         });
       } else {
         print("NO img selected");
@@ -113,7 +116,11 @@ class _addAccountImage_playerState extends State<addAccountImage_player> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  
+                  ElevatedButton(
+                      onPressed: () async {
+                        await uploadImage(imagePath);
+                      },
+                      child: Text("Send")),
                   Container(
                     decoration: BoxDecoration(
                         shape: BoxShape.circle,
@@ -168,7 +175,10 @@ class _addAccountImage_playerState extends State<addAccountImage_player> {
                     child: Create_GradiantGreenButton(
                       content: Text(
                         'Next',
-                        style: TextStyle(color: Colors.white, fontFamily: "eras-itc-bold", fontSize: 24.0),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: "eras-itc-bold",
+                            fontSize: 24.0),
                       ),
                       onButtonPressed: () {
                         if (imgPath != null) {
