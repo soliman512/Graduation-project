@@ -33,20 +33,32 @@ import 'welcome_signup_login/recorve account/RecorveAcount.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 
+//supabase
+// Future<void> main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await supabase.Supabase.initialize(
+//     url: 'https://htoxbuyjqsxyxnhrdepl.supabase.co',
+//     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0b3hidXlqcXN4eXhuaHJkZXBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE3ODk5OTAsImV4cCI6MjA1NzM2NTk5MH0.LgR8CpDcpXkOOZ14K1YZs6cS6SViQMy9JKskjSLuoOg',
+//   );
+//   await Firebase.initializeApp(
+//     options: DefaultFirebaseOptions.currentPlatform,
+//   );
+//   runApp(MyApp());
+// }
+
+//supabase storage
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await supabase.Supabase.initialize(
-    url: 'https://htoxbuyjqsxyxnhrdepl.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0b3hidXlqcXN4eXhuaHJkZXBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE3ODk5OTAsImV4cCI6MjA1NzM2NTk5MH0.LgR8CpDcpXkOOZ14K1YZs6cS6SViQMy9JKskjSLuoOg',
+    url: 'https://ozxylrfxkhldgjfvxfwg.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im96eHlscmZ4a2hsZGdqZnZ4ZndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ3MjIxNzksImV4cCI6MjA2MDI5ODE3OX0.uWle-duyIvDVqYAEVpujsUVt81IUG3G6eL5hbhqJH3c',
   );
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(MyApp());
 }
-
-
-//drawer options
 
 class MyApp extends StatelessWidget {
   @override
@@ -105,7 +117,7 @@ class MyApp extends StatelessWidget {
 
           '/sign_up_pg1_stdowner': (context) => Signup_pg1_StdOwner(),
           '/sign_up_pg2_stdowner': (context) => Signup_pg2_StdOwner(),
-          //stadium owner 
+          //stadium owner
           '/home_owner': (context) => Home_Owner(),
           '/ticket_owner': (context) => Tickets_Owner(),
 

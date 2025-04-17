@@ -6,6 +6,7 @@ import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:day_night_time_picker/day_night_time_picker.dart';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AddNewStadium extends StatefulWidget {
   const AddNewStadium({Key? key}) : super(key: key);
@@ -15,30 +16,30 @@ class AddNewStadium extends StatefulWidget {
 }
 
 class _AddNewStadiumState extends State<AddNewStadium> {
-  final bool isDaysOpend = false;
-  // Text controllers for inputs
+  // controllers
   final TextEditingController stadiumNameController = TextEditingController();
   final TextEditingController stadiumPriceController = TextEditingController();
   final TextEditingController stadiumDescriptionController =
       TextEditingController();
   final TextEditingController stadiumCapacityController =
       TextEditingController();
+  final TextEditingController neighborhoodEnterd =
+      TextEditingController(); // if not defined
 
-  List<String> daysSelected = [];
+// location
+  String? citySelected;
+  String? placeSelected;
+  String location = '';
 
+// time settings
   String? timeStart;
   String? timeEnd;
-  @override
-  void dispose() {
-    stadiumNameController.dispose();
-    stadiumPriceController.dispose();
-    stadiumDescriptionController.dispose();
-    stadiumCapacityController.dispose();
-    super.dispose();
-  }
 
-  //time work
-  List<Map> selectDays = [
+// days
+  bool isDaysOpened = false;
+  List<String> daysSelected = [];
+
+  List<Map<String, dynamic>> selectDays = [
     {'day': 'Saturday', 'isSelected': false},
     {'day': 'Sunday', 'isSelected': false},
     {'day': 'Monday', 'isSelected': false},
@@ -47,60 +48,160 @@ class _AddNewStadiumState extends State<AddNewStadium> {
     {'day': 'Thursday', 'isSelected': false},
     {'day': 'Friday', 'isSelected': false},
   ];
+
+// visibilities
   bool locationPopup = false;
   double locationPopupHeight = 0.0;
-
-// location visiblity and visibl of items on location
   bool visibleOfPlace = false;
   bool visibleOfNeighborhood = false;
   bool visibleOfButton = false;
 
+// images
+  List<File> selectedImages = [];
+  List<String> selectedImagesUrl = [];
+  final ImagePicker multibleImages_picker = ImagePicker();
+
+// features
+  bool isWaterAvailable = true;
+  bool isTrackAvailable = false;
+  bool isGrassNormal = false;
+
+// check if ready to show button
   bool checkInputs() {
-    if (visibleOfPlace == true && visibleOfNeighborhood == true) {
+    if (visibleOfPlace && visibleOfNeighborhood) {
       visibleOfButton = true;
       return true;
     }
     return false;
   }
 
-  String Location = '';
-  void initValueOfLocation() {
+// generate final location
+  void initValueOflocation() {
     if (citySelected == null) {
-      Location = "";
+      location = '';
     } else {
-      Location = "$citySelected-$placeSelected-${neighborhoodEnterd.text}";
+      location = "$citySelected-$placeSelected-${neighborhoodEnterd.text}";
     }
   }
 
-  //select multible images:
-  List<File> selectedImages = [];
-  //pick image from gallery:
-  final ImagePicker multibleImages_picker = ImagePicker();
-
-  Future getImages() async {
+// choose multiple images
+  Future<void> getImages() async {
     final pickFile = await multibleImages_picker.pickMultiImage(
       imageQuality: 80,
       maxHeight: 1000.0,
       maxWidth: 1000.0,
     );
 
-    List<XFile> xfilePick = pickFile;
-    if (xfilePick.isNotEmpty) {
+    if (pickFile.isNotEmpty) {
       selectedImages.clear();
+      selectedImagesUrl.clear();
 
-      for (var file in xfilePick) {
+      for (var file in pickFile) {
         selectedImages.add(File(file.path));
+        selectedImagesUrl.add(file.path);
       }
       setState(() {});
     }
   }
 
-  //water
-  bool isWaterAvailable = true;
-  //track
-  bool isTrackAvailable = false;
-  //grass
-  bool isGrassNormal = false;
+// add new stadium to supabase
+  Future<void> addNewStadiumToSupabase() async {
+    final String name = stadiumNameController.text.trim();
+    final String desc = stadiumDescriptionController.text.trim();
+    final int price = int.tryParse(stadiumPriceController.text.trim()) ?? 0;
+    final int capacity =
+        int.tryParse(stadiumCapacityController.text.trim()) ?? 0;
+
+    final response = await Supabase.instance.client.from('stadiums').insert({
+      'name': name,
+      'location': location,
+      'image_url': selectedImagesUrl,
+      'price': price,
+      'description': desc,
+      'capacity': capacity,
+      'is_water_available': isWaterAvailable,
+      'is_track_available': isTrackAvailable,
+      'is_grass_natural': isGrassNormal,
+      'start_time': timeStart,
+      'end_time': timeEnd,
+      'available_days': daysSelected,
+    }).execute();
+
+    if (response.status == 201) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Stadium added successfully'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${response.status == 400}'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+// Handle Post Button Press
+  void _handlePostButtonPressed() {
+    if (_isFormIncomplete()) {
+      _showIncompleteDataDialog();
+    } else {
+      addNewStadiumToSupabase();
+      _addNewStadium();
+      Navigator.pushNamed(context, '/home_owner');
+    }
+  }
+
+// Check if any required field is empty
+  bool _isFormIncomplete() {
+    return stadiumNameController.text.isEmpty ||
+        stadiumPriceController.text.isEmpty ||
+        stadiumDescriptionController.text.isEmpty ||
+        stadiumCapacityController.text.isEmpty ||
+        location.isEmpty ||
+        timeStart.toString().isEmpty ||
+        timeEnd.toString().isEmpty ||
+        daysSelected.isEmpty ||
+        selectedImages.isEmpty;
+  }
+
+// Show alert dialog if the form is incomplete
+  void _showIncompleteDataDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Incomplete Data'),
+          content: Text('Please fill all the required fields.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'OK',
+                style: TextStyle(color: mainColor),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+// Add new stadium to the list
+  void _addNewStadium() {
+    stadiums.add(StadiumCard(
+      title: stadiumNameController.text,
+      location: location,
+      selectedImages: selectedImages,
+      price: stadiumPriceController.text,
+      rating: 4,
+    ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -267,9 +368,9 @@ class _AddNewStadiumState extends State<AddNewStadium> {
 
                 //stadium location
                 Create_RequiredInput(
-                  // initValue: stadiumLocationController.text,
+                  // initValue: stadiumlocationController.text,
                   onChange: (value) {
-                    Location = value;
+                    location = value;
                   },
                   onTap: () {
                     setState(() {
@@ -277,8 +378,8 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                       locationPopupHeight = locationPopup ? 500.0 : 0.0;
                     });
                   },
-                  lableText: 'Stadium Location',
-                  initValue: Location,
+                  lableText: 'Stadium location',
+                  initValue: location,
                   isReadOnly: true,
                   textInputType: TextInputType.text,
                   add_prefix: Image.asset(
@@ -836,49 +937,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                 SizedBox(
                   height: 50.0,
                   child: Create_GradiantGreenButton(
-                    onButtonPressed: () {
-                      if (stadiumNameController.text.isEmpty ||
-                          stadiumPriceController.text.isEmpty ||
-                          stadiumDescriptionController.text.isEmpty ||
-                          stadiumCapacityController.text.isEmpty ||
-                          Location.isEmpty ||
-                          timeStart.toString().isEmpty ||
-                          timeEnd.toString().isEmpty ||
-                          daysSelected.isEmpty ||
-                          selectedImages.isEmpty) {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text('Incomplete Data'),
-                              content: Text(
-                                'Please fill all the required fields.',
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text(
-                                    'OK',
-                                    style: TextStyle(color: mainColor),
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      } else {
-                        stadiums.add(StadiumCard(
-                          title: stadiumNameController.text,
-                          location: Location,
-                          selectedImages: selectedImages,
-                          price: stadiumPriceController.text,
-                          rating: 4,
-                        ));
-                        Navigator.pushNamed(context, '/home_owner');
-                      }
-                    },
+                    onButtonPressed: _handlePostButtonPressed,
                     content: Text(
                       'post',
                       style: TextStyle(
@@ -1246,7 +1305,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                                         );
                                       } else {
                                         setState(() {
-                                          initValueOfLocation();
+                                          initValueOflocation();
                                           locationPopupHeight = 0.0;
                                           locationPopup = false;
                                         });

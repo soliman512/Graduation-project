@@ -44,7 +44,6 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
   String phoneNumber = '';
   String dateOfBirth = "";
 
-
   Future<void> storeData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('username', username);
@@ -250,9 +249,9 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                             phoneNumber.isNotEmpty &&
                             Location != null &&
                             dateOfBirth.isNotEmpty) {
-                          Navigator.pushNamed(context, '/addAccountImage_player');
+                          Navigator.pushNamed(
+                              context, '/addAccountImage_player');
                         } else {
-
                           // Show an alert dialog or a snackbar to inform the user to fill all fields
                           showDialog(
                             context: context,
@@ -276,8 +275,8 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                               );
                             },
                           );
-                          Navigator.pushNamed(context, '/addAccountImage_player');
-                        
+                          Navigator.pushNamed(
+                              context, '/addAccountImage_player');
                         }
                       },
                     ),

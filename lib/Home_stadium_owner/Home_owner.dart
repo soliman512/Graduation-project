@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
+
 class Home_Owner extends StatefulWidget {
   @override
   State<Home_Owner> createState() => _HomeState();
 }
-
-/*
-name -- price
-location -- rating
-*/
 
 class _HomeState extends State<Home_Owner> {
   @override
@@ -222,7 +218,6 @@ class _HomeState extends State<Home_Owner> {
                             stadiumsShown++)
                           stadiums[stadiumsShown]
                       ],
-                    
                     ),
                   ),
                   SizedBox(
