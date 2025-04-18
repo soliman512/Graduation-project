@@ -50,9 +50,6 @@ class _Login_playerState extends State<Login_player> {
   }
 
   bool visiblePassword = true;
-  Icon unShowPassword = Icon(Icons.visibility);
-  Icon showPassword = Icon(Icons.visibility_off);
-  Icon showPasswordState = Icon(Icons.visibility);
 
   void dispose() {
     emailController.dispose();
@@ -65,6 +62,7 @@ class _Login_playerState extends State<Login_player> {
     final googleSignInProvider = Provider.of<GoogleSignInProvider>(context);
     return SafeArea(
       child: Scaffold(
+          backgroundColor: Colors.white,
           extendBodyBehindAppBar: false,
           //app bar
           appBar: AppBar(
@@ -122,7 +120,7 @@ class _Login_playerState extends State<Login_player> {
                     SizedBox(
                       height: 60.0,
                     ),
-          
+
                     //email address
                     Container(
                       margin: EdgeInsets.symmetric(horizontal: 32.0),
@@ -197,16 +195,13 @@ class _Login_playerState extends State<Login_player> {
                           suffixIcon: IconButton(
                             onPressed: () {
                               setState(() {
-                                if (showPasswordState == unShowPassword) {
-                                  showPasswordState = showPassword;
-                                  visiblePassword = true;
-                                } else {
-                                  showPasswordState = unShowPassword;
-                                  visiblePassword = false;
-                                }
+                                visiblePassword = !visiblePassword;
                               });
                             },
-                            icon: showPasswordState,
+                            icon: visiblePassword
+                                ? Icon(Icons.visibility, color: mainColor)
+                                : Icon(Icons.visibility_off,
+                                    color: Colors.grey),
                             color: mainColor,
                           ),
                           contentPadding: EdgeInsets.symmetric(vertical: 5),
@@ -226,7 +221,7 @@ class _Login_playerState extends State<Login_player> {
                         ),
                       ),
                     ),
-          
+
                     //forgot
                     Container(
                       alignment: Alignment.centerLeft,
@@ -250,7 +245,7 @@ class _Login_playerState extends State<Login_player> {
                                 fontSize: 12.0)),
                       ),
                     ),
-          
+
                     SizedBox(
                       height: 54,
                     ),
@@ -278,7 +273,7 @@ class _Login_playerState extends State<Login_player> {
                         },
                       ),
                     ),
-          
+
                     SizedBox(
                       height: 26.0,
                     ),
@@ -313,11 +308,11 @@ class _Login_playerState extends State<Login_player> {
                         ),
                       ],
                     ),
-          
+
                     SizedBox(
                       height: 30.0,
                     ),
-          
+
                     //another ways to login
                     Container(
                       margin: EdgeInsets.symmetric(horizontal: 34.0),
@@ -350,8 +345,7 @@ class _Login_playerState extends State<Login_player> {
                                 style: ButtonStyle(
                                   elevation: WidgetStateProperty.all(2),
                                   backgroundColor: WidgetStateProperty.all(
-                                      const Color.fromARGB(
-                                          255, 255, 255, 255)),
+                                      const Color.fromARGB(255, 255, 255, 255)),
                                   shape: WidgetStateProperty.all<
                                       RoundedRectangleBorder>(
                                     RoundedRectangleBorder(
@@ -370,9 +364,7 @@ class _Login_playerState extends State<Login_player> {
                             child: SizedBox(
                               height: 60.0,
                               child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pushNamed(context, '/stadium_information_player_pg');
-                                },
+                                onPressed: () {},
                                 child: Wrap(
                                   children: [
                                     Image.asset(
@@ -388,8 +380,7 @@ class _Login_playerState extends State<Login_player> {
                                 style: ButtonStyle(
                                   elevation: WidgetStateProperty.all(2),
                                   backgroundColor: WidgetStateProperty.all(
-                                      const Color.fromARGB(
-                                          255, 255, 255, 255)),
+                                      const Color.fromARGB(255, 255, 255, 255)),
                                   shape: WidgetStateProperty.all<
                                       RoundedRectangleBorder>(
                                     RoundedRectangleBorder(
@@ -417,7 +408,8 @@ class _Login_playerState extends State<Login_player> {
                                 fontWeight: FontWeight.w300)),
                         TextButton(
                             onPressed: () {
-                              Navigator.pushNamed(context, '/sign_up_pg1_player');
+                              Navigator.pushNamed(
+                                  context, '/sign_up_pg1_player');
                             },
                             child: Text('sign up',
                                 style: TextStyle(

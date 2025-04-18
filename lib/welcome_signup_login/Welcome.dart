@@ -121,9 +121,9 @@ class _WelcomeState extends State<Welcome> {
                     Center(
                         child: Text('start as',
                             style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20.0,
-                                ))),
+                              color: Colors.white,
+                              fontSize: 20.0,
+                            ))),
                     SizedBox(
                       height: 38,
                     ),

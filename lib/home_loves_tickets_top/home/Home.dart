@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/constants/constants.dart';
@@ -163,23 +162,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List cities = [
-    'Assiut',
-  ];
-
-  List places = [
-    'new assiut city',
-    'Abu Tig',
-    'Manfalut',
-    'Al-Qusiya',
-    'El-Ghanayem',
-    'Sidfa',
-  ];
-
-  List prices = [
-    'Top',
-    'Down',
-  ];
 
   double heightOfListfilter_city = 0.0;
   double heightOfListfilter_place = 0.0;
@@ -197,7 +179,6 @@ class _HomeState extends State<Home> {
               color: Colors.black,
             )),
             //floating action button for home, tickets, and favourites
-            //down buttons
             floatingActionButton: Container(
               width: double.infinity,
               margin: EdgeInsets.symmetric(horizontal: 16.0),
@@ -252,7 +233,6 @@ class _HomeState extends State<Home> {
                   child: Column(
                     children: [
                       SizedBox(height: 55),
-
 //search bar
                       Row(
                         children: [
@@ -417,8 +397,8 @@ class _HomeState extends State<Home> {
                                           blurRadius: 2.0),
                                     ]),
                                 child: Wrap(
-                                    alignment: WrapAlignment.center,
-                                    runAlignment: WrapAlignment.center,
+                                  alignment: WrapAlignment.center,
+                                  runAlignment: WrapAlignment.center,
                                   children: [
                                     Image.asset(
                                         'assets/home_loves_tickets_top/imgs/price_Vector.png'),
@@ -447,12 +427,11 @@ class _HomeState extends State<Home> {
                                           blurRadius: 2.0),
                                     ]),
                                 child: Wrap(
-                                    alignment: WrapAlignment.center,
-                                    runAlignment: WrapAlignment.center,
+                                  alignment: WrapAlignment.center,
+                                  runAlignment: WrapAlignment.center,
                                   children: [
                                     Image.asset(
                                         'assets/home_loves_tickets_top/imgs/rating_Vector.png'),
-                                    
                                   ],
                                 )),
                           ),
@@ -468,20 +447,6 @@ class _HomeState extends State<Home> {
                         height: 30.0,
                       ),
 // cards
-                      Container(
-                        width: double.infinity,
-                        // margin: EdgeInsets.symmetric(horizontal: 16.0),
-                        margin: EdgeInsets.only(bottom: 60.0),
-                        child: Wrap(
-                          alignment: WrapAlignment.center,
-                          children: [
-                            for (int stadiumsShownOnHome = 0;
-                                stadiumsShownOnHome < stadiums.length;
-                                stadiumsShownOnHome++)
-                              stadiums[stadiumsShownOnHome]
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                 ),

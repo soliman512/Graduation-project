@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
-import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
-// import 'package:image_picker/image_picker.dart';
 
 class EditStadium_stdown extends StatefulWidget {
-  final StadiumCard stadiumSelectedToEdit;
-  EditStadium_stdown(this.stadiumSelectedToEdit);
-
   @override
   State<EditStadium_stdown> createState() => _EditStadium_stdownState();
 }
@@ -86,20 +81,6 @@ class _EditStadium_stdownState extends State<EditStadium_stdown> {
                         ),
                       ),
                     ),
-                    for (int i = 0;
-                        i < widget.stadiumSelectedToEdit.selectedImages.length;
-                        i++)
-                      Container(
-                        height: 100.0,
-                        width: 100.0,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                        child: Image.asset(
-                          widget.stadiumSelectedToEdit.selectedImages[i] as String,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
                   ],
                 ),
               ),

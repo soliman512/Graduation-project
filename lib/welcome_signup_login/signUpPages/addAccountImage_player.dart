@@ -103,7 +103,7 @@ class _addAccountImage_playerState extends State<addAccountImage_player> {
               )),
           leading: IconButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/login_signup_player');
+              Navigator.pushNamed(context, '/sign_up_pg1_player');
             },
             icon: Image.asset(
               "assets/welcome_signup_login/imgs/back.png",
@@ -121,7 +121,6 @@ class _addAccountImage_playerState extends State<addAccountImage_player> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  
                   Container(
                     decoration: BoxDecoration(
                         shape: BoxShape.circle,
@@ -176,34 +175,37 @@ class _addAccountImage_playerState extends State<addAccountImage_player> {
                     child: Create_GradiantGreenButton(
                       content: Text(
                         'Next',
-                        style: TextStyle(color: Colors.white, fontFamily: "eras-itc-bold", fontSize: 24.0),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: "eras-itc-bold",
+                            fontSize: 24.0),
                       ),
                       onButtonPressed: () {
-                        if (imgPath != null) {
-                          Navigator.pushNamed(context, '/sign_up_pg2_player');
-                        } else {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('Incomplete Information'),
-                                content: Text('Please upload an image.'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text(
-                                      'OK',
-                                      style: TextStyle(
-                                          fontSize: 15, color: Colors.green),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        }
+                        Navigator.pushNamed(context, '/sign_up_pg2_player');
+                        // if (imgPath != null) {
+                        // } else {
+                        //   showDialog(
+                        //     context: context,
+                        //     builder: (BuildContext context) {
+                        //       return AlertDialog(
+                        //         title: Text('Incomplete Information'),
+                        //         content: Text('Please upload an image.'),
+                        //         actions: [
+                        //           TextButton(
+                        //             onPressed: () {
+                        //               Navigator.of(context).pop();
+                        //             },
+                        //             child: Text(
+                        //               'OK',
+                        //               style: TextStyle(
+                        //                   fontSize: 15, color: Colors.green),
+                        //             ),
+                        //           ),
+                        //         ],
+                        //       );
+                        //     },
+                        //   );
+                        // }
                       },
                     ),
                   ),

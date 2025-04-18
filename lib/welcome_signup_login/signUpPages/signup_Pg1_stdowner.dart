@@ -296,8 +296,7 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                                   fontSize: 16.0,
                                 )))
                       ],
-                    )
-                 
+                    ),
                   ],
                 ),
               ),
@@ -690,7 +689,6 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                   ),
                 ],
               )
-            
             ],
           )),
     );
