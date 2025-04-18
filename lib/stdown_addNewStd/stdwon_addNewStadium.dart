@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -6,7 +7,6 @@ import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:day_night_time_picker/day_night_time_picker.dart';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AddNewStadium extends StatefulWidget {
   const AddNewStadium({Key? key}) : super(key: key);
@@ -32,8 +32,8 @@ class _AddNewStadiumState extends State<AddNewStadium> {
   String location = '';
 
 // time settings
-  String? timeStart;
-  String? timeEnd;
+  String timeStart = '';
+  String timeEnd = '';
 
 // days
   bool isDaysOpened = false;
@@ -104,30 +104,60 @@ class _AddNewStadiumState extends State<AddNewStadium> {
     }
   }
 
-// add new stadium to supabase
-  Future<void> addNewStadiumToSupabase() async {
-    final String name = stadiumNameController.text.trim();
-    final String desc = stadiumDescriptionController.text.trim();
-    final int price = int.tryParse(stadiumPriceController.text.trim()) ?? 0;
-    final int capacity =
-        int.tryParse(stadiumCapacityController.text.trim()) ?? 0;
+// Handle Post Button Press
+  void _handlePostButtonPressed() {
+    if (_isFormIncomplete()) {
+      _showIncompleteDataDialog();
+    } else {
+      addStadiumToFirestore(
+        name: stadiumNameController.text,
+        location: location,
+        hasWater: isWaterAvailable,
+        hasTrack: isTrackAvailable,
+        isNaturalGrass: isGrassNormal,
+        price: double.parse(stadiumPriceController.text),
+        description: stadiumDescriptionController.text,
+        capacity: int.parse(stadiumCapacityController.text),
+        startTime: timeStart,
+        endTime: timeEnd,
+        workingDays: daysSelected,
+      );
 
-    final response = await Supabase.instance.client.from('stadiums').insert({
-      'name': name,
-      'location': location,
-      'image_url': selectedImagesUrl,
-      'price': price,
-      'description': desc,
-      'capacity': capacity,
-      'is_water_available': isWaterAvailable,
-      'is_track_available': isTrackAvailable,
-      'is_grass_natural': isGrassNormal,
-      'start_time': timeStart,
-      'end_time': timeEnd,
-      'available_days': daysSelected,
-    }).execute();
+      Navigator.pushNamed(context, '/home_owner');
+    }
+  }
 
-    if (response.status == 201) {
+// add new stadium to firestore
+  Future<void> addStadiumToFirestore({
+    required String name,
+    required String location,
+    required bool hasWater,
+    required bool hasTrack,
+    required bool isNaturalGrass,
+    required double price,
+    required String description,
+    required int capacity,
+    required String startTime,
+    required String endTime,
+    required List<String> workingDays,
+  }) async {
+    final stadiumData = {
+      "name": name,
+      "location": location,
+      "hasWater": hasWater,
+      "hasTrack": hasTrack,
+      "isNaturalGrass": isNaturalGrass,
+      "price": price,
+      "description": description,
+      "capacity": capacity,
+      "startTime": startTime,
+      "endTime": endTime,
+      "workingDays": workingDays,
+      "createdAt": FieldValue.serverTimestamp(),
+    };
+
+    try {
+      await FirebaseFirestore.instance.collection("stadiums").add(stadiumData);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Stadium added successfully'),
@@ -135,25 +165,14 @@ class _AddNewStadiumState extends State<AddNewStadium> {
           duration: Duration(seconds: 2),
         ),
       );
-    } else {
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: ${response.status == 400}'),
+          content: Text('Error: $e'),
           backgroundColor: Colors.red,
           duration: Duration(seconds: 2),
         ),
       );
-    }
-  }
-
-// Handle Post Button Press
-  void _handlePostButtonPressed() {
-    if (_isFormIncomplete()) {
-      _showIncompleteDataDialog();
-    } else {
-      addNewStadiumToSupabase();
-      _addNewStadium();
-      Navigator.pushNamed(context, '/home_owner');
     }
   }
 
@@ -190,17 +209,6 @@ class _AddNewStadiumState extends State<AddNewStadium> {
         );
       },
     );
-  }
-
-// Add new stadium to the list
-  void _addNewStadium() {
-    stadiums.add(StadiumCard(
-      title: stadiumNameController.text,
-      location: location,
-      selectedImages: selectedImages,
-      price: stadiumPriceController.text,
-      rating: 4,
-    ));
   }
 
   @override
@@ -368,7 +376,6 @@ class _AddNewStadiumState extends State<AddNewStadium> {
 
                 //stadium location
                 Create_RequiredInput(
-                  // initValue: stadiumlocationController.text,
                   onChange: (value) {
                     location = value;
                   },
@@ -454,7 +461,6 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                 Wrap(
                   spacing: 4.0,
                   runSpacing: 8.0,
-                  // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     //water
                     Center(
@@ -982,7 +988,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                   ),
                   child: Stack(
                     children: [
-                      //close button
+//close button
                       Positioned(
                         top: 10.0,
                         right: 10.0,
@@ -996,7 +1002,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                           icon: Icon(Icons.close),
                         ),
                       ),
-                      //content
+//content and done button
                       Center(
                         child: SingleChildScrollView(
                           child: Column(

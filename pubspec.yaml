@@ -48,6 +48,7 @@
     flutter_rounded_date_picker: ^3.0.4
     animated_toggle_switch: ^0.8.4
     day_night_time_picker: ^1.2.0
+    connectivity_plus: ^6.1.3
     
   dev_dependencies:
     flutter_test:
@@ -73,6 +74,7 @@
 
     # To add assets to your application, add an assets section, like this:
     assets:
+      - assets/splashBackground.png
       - assets/cards_home_player/imgs/
       - assets/home_loves_tickets_top/imgs/
       - assets/payment_successful_check/imgs/
