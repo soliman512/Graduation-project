@@ -116,7 +116,7 @@ class MyApp extends StatelessWidget {
 
         // Define all available routes in the application
         routes: {
-          
+          '/splash': (context) => Splash(),
           // Welcome and Authentication routes
           '/Welcome': (context) => Welcome(),
           '/login_player': (context) => Login_player(),

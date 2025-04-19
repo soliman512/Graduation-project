@@ -1,160 +1,9 @@
 import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/constants/constants.dart';
-
-class StadiumCard extends StatelessWidget {
-  final String title;
-  final String location;
-  // final String imageUrl;
-  final String price;
-  final int rating;
-  final List<File> selectedImages;
-
-  StadiumCard({
-    Key? key,
-    required this.title,
-    required this.location,
-    // required this.imageUrl,
-    required this.price,
-    required this.rating,
-    required this.selectedImages,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {},
-      child: Container(
-        width: double.infinity,
-        margin: EdgeInsets.symmetric(horizontal: 2.0),
-        child: Card(
-          color: Colors.white,
-          margin: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: BorderSide(
-                color: const Color.fromARGB(255, 255, 255, 255), width: 2),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                width: double.infinity,
-                height: 130.0,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10)),
-                  child: Image.asset(
-                    selectedImages[0].path,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 12.0,
-              ),
-              // name & price
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  //name of stadium
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                        width: 20.0,
-                        height: 4.0,
-                        decoration: BoxDecoration(
-                          gradient: greenGradientColor,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      SizedBox(width: 4),
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontFamily: "eras-itc-bold",
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-
-                  //price
-                  Padding(
-                    padding: const EdgeInsets.only(right: 22.0),
-                    child: Text(
-                      "${price}.00 .LE",
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: mainColor,
-                        fontFamily: "eras-itc-bold",
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              // location & rating
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  //location
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.location_on,
-                          size: 13,
-                          color: Colors.grey,
-                        ),
-                        SizedBox(width: 5),
-                        Text(
-                          location,
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 130, 128, 128),
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  //rating
-                  Padding(
-                    padding: const EdgeInsets.only(right: 10.0),
-                    child: Row(children: [
-                      Text(
-                        "${rating}.0",
-                        style: TextStyle(fontSize: 12, color: Colors.black54),
-                      ),
-                      for (int i = 0; i < rating; i++)
-                        Icon(Icons.star,
-                            color: const Color.fromARGB(255, 255, 217, 0),
-                            size: 15),
-                      SizedBox(width: 1),
-                    ]),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 12.0,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class Home extends StatefulWidget {
   @override
@@ -162,9 +11,11 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
   double heightOfListfilter_city = 0.0;
   double heightOfListfilter_place = 0.0;
+  String searchQuery = '';
+
+  TextEditingController searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -270,14 +121,14 @@ class _HomeState extends State<Home> {
                                   bottom:
                                       BorderSide(color: mainColor, width: 0.5),
                                 ),
-                                // boxShadow: [
-                                //   BoxShadow(
-                                //       color: const Color.fromARGB(59, 0, 0, 0),
-                                //       offset: Offset(0.0, 0.0),
-                                //       blurRadius: 2.0),
-                                // ]
                               ),
                               child: TextField(
+                                controller: searchController,
+                                onChanged: (value) {
+                                  setState(() {
+                                    searchQuery = value;
+                                  });
+                                },
                                 style: TextStyle(
                                   fontSize: 18.0,
                                   color: Color(0xff000000),
@@ -294,13 +145,21 @@ class _HomeState extends State<Home> {
                                     color: Color(0x73000000),
                                     fontSize: 12.0,
                                   ),
-                                  suffixIcon: IconButton(
-                                    onPressed: () {},
-                                    icon: Icon(
-                                      Icons.close,
-                                      color:
-                                          const Color.fromARGB(255, 19, 19, 19),
-                                      size: 18,
+                                  suffixIcon: Visibility(
+                                    visible: searchQuery.isNotEmpty,
+                                    child: IconButton(
+                                      onPressed: () {
+                                        searchController.clear();
+                                        setState(() {
+                                          searchQuery = '';
+                                        });
+                                      },
+                                      icon: Icon(
+                                        Icons.close,
+                                        color:
+                                            const Color.fromARGB(255, 19, 19, 19),
+                                        size: 18,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -447,6 +306,99 @@ class _HomeState extends State<Home> {
                         height: 30.0,
                       ),
 // cards
+                      StreamBuilder(
+                        stream: FirebaseFirestore.instance
+                            .collection('stadiums')
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(
+                                child: Image.asset(
+                                    'assets/loading.gif'));
+                          }
+
+                          if (!snapshot.hasData ||
+                              snapshot.data!.docs.isEmpty) {
+                            return Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.error_outline, size: 100, color: const Color.fromARGB(38, 0, 0, 0)),
+                                  SizedBox(height: 16),
+                                  Text("No stadiums found or shown", style: TextStyle(fontSize: 20, color: const Color.fromARGB(38, 0, 0, 0))),
+                                ],
+                              ),
+                            );
+                          } else if (searchQuery.isNotEmpty) {
+                            List<DocumentSnapshot> stadiumsAfterFilter =
+                                snapshot.data!.docs
+                                    .where((stadium) => stadium['name']
+                                        .toLowerCase()
+                                        .contains(searchQuery.toLowerCase()))
+                                    .toList();
+                            if (stadiumsAfterFilter.isEmpty) {
+                              return Center(
+                                child:  Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.error_outline, size: 100, color: const Color.fromARGB(38, 0, 0, 0)),
+                                  SizedBox(height: 16),
+                                  Text("No stadiums found or shown", style: TextStyle(fontSize: 20, color: const Color.fromARGB(38, 0, 0, 0))),
+                                ],
+                              ),
+                              );
+                            }
+                            return ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: stadiumsAfterFilter.length,
+                              itemBuilder: (context, index) {
+                                DocumentSnapshot stadium =
+                                    stadiumsAfterFilter[index];
+                                return GestureDetector(
+                                  onTap: () {},
+                                  child: StadiumCard(
+                                    title: stadium['name'],
+                                    location: stadium['location'],
+                                    price: stadium['price'].toString(),
+                                    rating: 5,
+                                    selectedImages: [
+                                      File(
+                                          'assets/cards_home_player/imgs/test.jpg')
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          } else {
+                            return ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: snapshot.data!.docs.length,
+                              itemBuilder: (context, index) {
+                                DocumentSnapshot stadium =
+                                    snapshot.data!.docs[index];
+                                return GestureDetector(
+                                  onTap: () {},
+                                  child: StadiumCard(
+                                    title: stadium['name'],
+                                    location: stadium['location'],
+                                    price: stadium['price'].toString(),
+                                    rating: 5,
+                                    selectedImages: [
+                                      File(
+                                          'assets/cards_home_player/imgs/test.jpg')
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          }
+                        },
+                      ),
+                    
+                      SizedBox(height: 80.0),
                     ],
                   ),
                 ),
