@@ -1,11 +1,203 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/home_loves_tickets_top/profileplayer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// StadiumCard class to display stadiums
+class StadiumCard extends StatelessWidget {
+  final String title;
+  final String location;
+  final String price;
+  final int rating;
+  final List<File> selectedImages;
 
+  StadiumCard({
+    Key? key,
+    required this.title,
+    required this.location,
+    required this.price,
+    required this.rating,
+    required this.selectedImages,
+  }) : super(key: key);
 
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {},
+      child: Container(
+        width: double.infinity,
+        margin: EdgeInsets.symmetric(horizontal: 2.0),
+        child: Card(
+          color: Colors.white,
+          margin: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(
+                color: const Color.fromARGB(255, 255, 255, 255), width: 2),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: double.infinity,
+                height: 130.0,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10)),
+                  child: Image.asset(
+                    selectedImages[0].path,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 12.0,
+              ),
+              // name & price
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  //name of stadium
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        width: 20.0,
+                        height: 4.0,
+                        decoration: BoxDecoration(
+                          gradient: greenGradientColor,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: "eras-itc-bold",
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+
+                  //price
+                  Padding(
+                    padding: const EdgeInsets.only(right: 22.0),
+                    child: Text(
+                      "${price}.00 .LE",
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: mainColor,
+                        fontFamily: "eras-itc-bold",
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              // location & rating
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  //location
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.location_on,
+                          size: 13,
+                          color: Colors.grey,
+                        ),
+                        SizedBox(width: 5),
+                        Text(
+                          location,
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 130, 128, 128),
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  //rating
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10.0),
+                    child: Row(children: [
+                      Text(
+                        "${rating}.0",
+                        style: TextStyle(fontSize: 12, color: Colors.black54),
+                      ),
+                      for (int i = 0; i < rating; i++)
+                        Icon(Icons.star,
+                            color: const Color.fromARGB(255, 255, 217, 0),
+                            size: 15),
+                      SizedBox(width: 1),
+                    ]),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 12.0,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class DrawerItem extends StatelessWidget {
+  final String title;
+  final Widget icon;
+  final VoidCallback onTap;
+  DrawerItem({required this.title, required this.icon, required this.onTap});
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 120.0,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            icon,
+            SizedBox(height: 10.0),
+            Text(
+              title,
+              style: TextStyle(
+                  fontSize: 16.0,
+                  fontFamily: "eras-itc-demi",
+                  color: const Color.fromARGB(255, 0, 0, 0)),
+            ),
+          ],
+        ),
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30.0),
+        boxShadow: [
+          BoxShadow(
+            color: mainColor.withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 5,
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 //statful widget for the drawer
 class Create_Drawer extends StatefulWidget {
@@ -35,271 +227,228 @@ class _Create_DrawerState extends State<Create_Drawer> {
   Widget build(BuildContext context) {
     // User Google
     final userr = FirebaseAuth.instance.currentUser;
-    return Container(
-      color: Colors.white,
-      width: double.infinity,
-      margin: EdgeInsets.only(right: 112.0),
-      child: Column(
-        children: [
-          SizedBox(
-            height: 50.0,
+    return Stack(
+      children: [
+        Container(
+          width: double.infinity,
+          margin: EdgeInsets.fromLTRB(14.0, 10.0, 24.0, 10.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30.0),
           ),
-          //user image
-          if (userr != null && userr.photoURL != null)
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: mainColor, width: 3.0),
-              ),
-              child: CircleAvatar(
-                radius: 60.0,
-                backgroundImage: NetworkImage(userr.photoURL!),
-                backgroundColor: Colors.grey[300],
-              ),
-            ),
-          if (userr == null || userr.photoURL == null)
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: mainColor, width: 3.0),
-              ),
-              child: CircleAvatar(
-                radius: 60.0,
-                backgroundColor: Colors.grey[300],
-                child: Icon(Icons.person, size: 50, color: Colors.white),
-              ),
-            ),
-          SizedBox(
-            height: 20.0,
-          ),
-
-          //username and line
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          child: Column(
             children: [
-              //first line
-              Container(
-                height: 2.0,
-                color: mainColor,
-                width: 40.0,
+              SizedBox(
+                height: 50.0,
               ),
-              //username
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 10.0),
-                child: Text(
-                  username ?? 'Guest',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontFamily: 'eras-itc-bold',
-                      fontSize: 24.0),
+              //user image
+              if (userr != null && userr.photoURL != null)
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: mainColor, width: 3.0),
+                  ),
+                  child: CircleAvatar(
+                    radius: 60.0,
+                    backgroundImage: NetworkImage(userr.photoURL!),
+                    backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                  ),
                 ),
-              ),
-              //second line
-              Container(
-                height: 2.0,
-                color: mainColor,
-                width: 40.0,
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 10.0,
-          ),
-          //email
-          Text(
-            userr?.email ?? 'gust@gmail.com',
-            style: TextStyle(
-              color: Colors.black54,
-              fontSize: 14.0,
-              fontFamily: 'eras-itc-light',
-              letterSpacing: 1.5,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(
-            height: 70.0,
-          ),
-          //options:
-          // 0 : Home option
-          Container(
-            margin: EdgeInsets.only(bottom: 10.0),
-            child: ListTile(
-              onTap: () {
-                setState(() {
-                  drawerOptions[0]['widtOfOption'] =
-                      widthOfDrawer_SelectedOption;
-                  drawerOptions[1]['widtOfOption'] = 10.0;
-                  drawerOptions[2]['widtOfOption'] = 10.0;
-                  drawerOptions[3]['widtOfOption'] = 10.0;
-                });
-              },
-              leading: AnimatedContainer(
-                duration: Duration(milliseconds: 150),
-                width: drawerOptions[0]['widtOfOption'],
-                height: 10.0,
-                decoration: BoxDecoration(
-                    gradient: greenGradientColor,
-                    borderRadius: BorderRadius.circular(50.0)),
-              ),
-              title: Row(
-                children: [
-                  Image.asset(
-                    'assets/home_loves_tickets_top/imgs/Vector_drawerHome.png',
-                    width: 24.0,
+              if (userr == null || userr.photoURL == null)
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: mainColor, width: 3.0),
                   ),
-                  SizedBox(
-                    width: 20.0,
+                  child: CircleAvatar(
+                    radius: 60.0,
+                    backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                    child: Icon(Icons.person_outline_rounded, size: 80, color: mainColor),
                   ),
-                  Text(
-                    'Home',
-                    style: TextStyle(color: Colors.black, fontSize: 18.0),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // 1 : profile option
-          Container(
-            margin: EdgeInsets.only(bottom: 10.0),
-            child: ListTile(
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ProfilePlayer()));
-                setState(() {
-                  drawerOptions[0]['widtOfOption'] = 10.0;
-                  drawerOptions[1]['widtOfOption'] =
-                      widthOfDrawer_SelectedOption;
-                  drawerOptions[2]['widtOfOption'] = 10.0;
-                  drawerOptions[3]['widtOfOption'] = 10.0;
-                });
-              },
-              leading: AnimatedContainer(
-                duration: Duration(milliseconds: 150),
-                width: drawerOptions[1]['widtOfOption'],
-                height: 10.0,
-                decoration: BoxDecoration(
-                    gradient: greenGradientColor,
-                    borderRadius: BorderRadius.circular(50.0)),
-              ),
-              title: Row(
-                children: [
-                  Image.asset(
-                    'assets/home_loves_tickets_top/imgs/Vector_drawerProfile.png',
-                    width: 24.0,
-                  ),
-                  SizedBox(
-                    width: 20.0,
-                  ),
-                  Text(
-                    'Profile',
-                    style: TextStyle(color: Colors.black, fontSize: 18.0),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // 2 : settings option
-          Container(
-            margin: EdgeInsets.only(bottom: 10.0),
-            child: ListTile(
-              onTap: () {
-                setState(() {
-                  drawerOptions[0]['widtOfOption'] = 10.0;
-                  drawerOptions[1]['widtOfOption'] = 10.0;
-                  drawerOptions[2]['widtOfOption'] =
-                      widthOfDrawer_SelectedOption;
-                  drawerOptions[3]['widtOfOption'] = 10.0;
-                });
-              },
-              leading: AnimatedContainer(
-                duration: Duration(milliseconds: 150),
-                width: drawerOptions[2]['widtOfOption'],
-                height: 10.0,
-                decoration: BoxDecoration(
-                    gradient: greenGradientColor,
-                    borderRadius: BorderRadius.circular(50.0)),
-              ),
-              title: Row(
-                children: [
-                  drawerOptions[2]['icon'],
-                  SizedBox(
-                    width: 20.0,
-                  ),
-                  drawerOptions[2]['title']
-                ],
-              ),
-            ),
-          ),
-          // 3 : log_out option
-          Container(
-            margin: EdgeInsets.only(bottom: 10.0),
-            child: ListTile(
-              onTap: () async {
-                // logout funcation
-                await FirebaseAuth.instance.signOut();
-                setState(() {
-                  drawerOptions[0]['widtOfOption'] = 10.0;
-                  drawerOptions[1]['widtOfOption'] = 10.0;
-                  drawerOptions[2]['widtOfOption'] = 10.0;
-                  drawerOptions[3]['widtOfOption'] =
-                      widthOfDrawer_SelectedOption;
-                });
-              },
-              leading: AnimatedContainer(
-                duration: Duration(milliseconds: 150),
-                width: drawerOptions[3]['widtOfOption'],
-                height: 10.0,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xFF570000),
-                      Color(0xFF920000),
-                      Color(0xFFCE0000),
-                      Color(0xFFE00101),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(50.0),
                 ),
+              SizedBox(
+                height: 20.0,
               ),
-              title: Row(
-                children: [
-                  Image.asset(
-                    'assets/home_loves_tickets_top/imgs/vector_drawerLog_out.png',
-                    width: 24.0,
-                  ),
-                  SizedBox(
-                    width: 20.0,
-                  ),
-                  Text(
-                    'Log out',
-                    style: TextStyle(color: Colors.black, fontSize: 18.0),
-                  ),
-                ],
-              ),
-            ),
-          ),
 
-          //ball img
-          Expanded(
-            child: Stack(
-              // clipBehavior: Clip.none,
-              children: [
-                Positioned(
-                  right: -90.0,
-                  bottom: -90.0,
-                  child: Center(
-                    // top: 0,
-                    child: Image.asset(
-                      'assets/home_loves_tickets_top/imgs/ball.png',
-                      width: 238.0,
+              //username and line
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  //first line
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      height: 2.0,
+                      color: mainColor,
+                      width: 40.0,
                     ),
                   ),
+                  //username
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      margin: EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Text(
+                        username ?? 'Guest',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'eras-itc-bold',
+                            fontSize: 24.0),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                  //second line
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      height: 2.0,
+                      color: mainColor,
+                      width: 40.0,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 10.0,
+              ),
+              //email
+              Text(
+                userr?.email ?? 'gust@gmail.com',
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 14.0,
+                  fontFamily: 'eras-itc-light',
+                  letterSpacing: 1.5,
                 ),
-              ],
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(
+                height: 70.0,
+              ),
+              //options:
+              Row(
+                children: [
+                  SizedBox(width: 40.0),
+                  Expanded(
+                    child: DrawerItem(
+                        title: "Home",
+                        icon: Image.asset(
+                            "assets/home_loves_tickets_top/imgs/Vector_drawerHome.png",
+                            width: 30.0),
+                        onTap: () {}),
+                  ),
+                  SizedBox(width: 32.0),
+                  Expanded(
+                    child: DrawerItem(
+                        title: "Profile",
+                        icon: Image.asset(
+                            "assets/home_loves_tickets_top/imgs/Vector_drawerProfile.png",
+                            width: 30.0),
+                        onTap: () {}),
+                  ),
+                  SizedBox(width: 40.0),
+                ],
+              ),
+              SizedBox(height: 32.0),
+              Row(
+                children: [
+                  SizedBox(width: 40.0),
+                  Expanded(
+                    child: DrawerItem(
+                        title: "About us",
+                        icon: Icon(Icons.info,
+                            size: 30.0,
+                            color: const Color.fromARGB(255, 0, 255, 64)),
+                        onTap: () {}),
+                  ),
+                  SizedBox(width: 32.0),
+                  Expanded(
+                    child: DrawerItem(
+                        title: "Logout",
+                        icon: Image.asset(
+                            "assets/home_loves_tickets_top/imgs/vector_drawerLog_out.png",
+                            width: 30.0),
+                        onTap: () {}),
+                  ),
+                  SizedBox(width: 40.0),
+                ],
+              ),
+              SizedBox(height: 32.0),
+              Expanded(
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 40.0),
+                  height: 120.0,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(30.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: mainColor.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                          "assets/home_loves_tickets_top/imgs/Vector_drawerSettings.png",
+                          width: 30.0),
+                      SizedBox(width: 40.0),
+                      Text(
+                        "Settings",
+                        style: TextStyle(
+                            fontSize: 16.0,
+                            fontFamily: "eras-itc-demi",
+                            color: const Color.fromARGB(255, 0, 0, 0)),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(width: 40.0),
+              SizedBox(height: 32.0),
+
+              //ball img
+              Expanded(
+                child: Stack(
+                  // clipBehavior: Clip.none,
+                  children: [
+                    Positioned(
+                      right: -90.0,
+                      bottom: -90.0,
+                      child: Center(
+                        // top: 0,
+                        child: Image.asset(
+                          'assets/home_loves_tickets_top/imgs/ball.png',
+                          width: 238.0,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+        // Back button
+        Positioned(
+          top: 30,
+          right: 30,
+          child: IconButton(
+            icon: Icon(
+              Icons.arrow_back_rounded,
+              color: const Color.fromARGB(255, 0, 0, 0),
+              size: 30,
             ),
-          )
-        ],
-      ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
+      ],
     );
   }
 }
@@ -336,7 +485,8 @@ class _Create_AppBarState extends State<Create_AppBar> {
                 Scaffold.of(context).openDrawer();
               });
             },
-            icon: Image.asset("assets/home_loves_tickets_top/imgs/bars.png", width: 24.0),
+            icon: Image.asset("assets/home_loves_tickets_top/imgs/bars.png",
+                width: 24.0),
             iconSize: 16.0,
           );
         }),
@@ -351,8 +501,8 @@ class _Create_AppBarState extends State<Create_AppBar> {
               Navigator.pushNamed(context, '/Welcome');
             },
             icon: Image.asset(
-                "assets/home_loves_tickets_top/imgs/notifications.png", width: 24.0),
-            
+                "assets/home_loves_tickets_top/imgs/notifications.png",
+                width: 24.0),
           ),
         )
       ],
@@ -364,127 +514,6 @@ class _Create_AppBarState extends State<Create_AppBar> {
     );
   }
 }
-
-//statdium card
-// Widget buildCard({
-//   required BuildContext context,
-//   required String title,
-//   required String location,
-//   required String imageUrl,
-//   required String price,
-// }) {
-//   return GestureDetector(
-//     onTap: () {
-//       Navigator.pushNamed(context, '/stadium_information_player_pg');
-//     },
-//     child: Container(
-//       width: 360.0,
-//       child: Card(
-//         margin: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-//         elevation: 4,
-//         shape: RoundedRectangleBorder(
-//           borderRadius: BorderRadius.circular(10),
-//           side: BorderSide(color: mainColor, width: 2),
-//         ),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.center,
-//           children: [
-//             Container(
-//               width: double.infinity,
-//               height: 130.0,
-//               child: ClipRRect(
-//                 borderRadius: BorderRadius.circular(10),
-//                 child: Image.asset(
-//                   imageUrl,
-//                   width: double.infinity,
-//                   fit: BoxFit.cover,
-//                 ),
-//               ),
-//             ),
-//             Padding(
-//               padding: EdgeInsets.all(8.0),
-//               child: Row(
-//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                 children: [
-//                   Row(
-//                     children: [
-//                       Icon(Icons.star, color: Color(0xffFFCC00), size: 15),
-//                       SizedBox(width: 1),
-//                       Icon(Icons.star, color: Color(0xffFFCC00), size: 15),
-//                       SizedBox(width: 1),
-//                       Icon(Icons.star, color: Color(0xffFFCC00), size: 15),
-//                       SizedBox(width: 1),
-//                       Icon(Icons.star, color: Color(0xffFFCC00), size: 15),
-//                       SizedBox(width: 1),
-//                       Icon(Icons.star, color: Color(0xffFFCC00), size: 15),
-//                       SizedBox(
-//                         width: 1,
-//                       ),
-//                       Text(
-//                         "5.5",
-//                         style: TextStyle(fontSize: 12),
-//                       )
-//                     ],
-//                   ),
-//                   Padding(
-//                     padding: EdgeInsets.only(right: 10.0),
-//                     child: Text(
-//                       price,
-//                       style: TextStyle(
-//                         fontSize: 13,
-//                         color: mainColor,
-//                         fontFamily: "eras-itc-bold",
-//                         fontWeight: FontWeight.bold,
-//                       ),
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//             Padding(
-//               padding: EdgeInsets.symmetric(horizontal: 8.0),
-//               child: Text(
-//                 title,
-//                 style: TextStyle(
-//                   fontSize: 20,
-//                   fontFamily: "eras-itc-bold",
-//                   fontWeight: FontWeight.bold,
-//                 ),
-//                 textAlign: TextAlign.center,
-//               ),
-//             ),
-//             Padding(
-//               padding: EdgeInsets.symmetric(horizontal: 8.0),
-//               child: Container(
-//                 child: Row(
-//                   mainAxisAlignment: MainAxisAlignment.center,
-//                   children: [
-//                     Icon(
-//                       Icons.location_on,
-//                       size: 13,
-//                       color: Colors.grey,
-//                     ),
-//                     SizedBox(width: 5),
-//                     Text(
-//                       location,
-//                       style: TextStyle(
-//                         color: Color.fromARGB(255, 130, 128, 128),
-//                         fontSize: 13,
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//             SizedBox(
-//               height: 14,
-//             )
-//           ],
-//         ),
-//       ),
-//     ),
-//   );
-// }
 
 //gradiant green button
 class Create_GradiantGreenButton extends StatelessWidget {
@@ -680,311 +709,6 @@ class Add_AppName extends StatelessWidget {
     );
   }
 }
-
-// //Location
-
-// class Create_LocationInputs extends StatefulWidget {
-//   Create_LocationInputs({Key? key}) : super(key: key);
-
-//   @override
-//   State<Create_LocationInputs> createState() => _Create_LocationInputsState();
-// }
-
-// bool visibleOfLocation = false;
-// bool visibleOfPlace = false;
-// bool visibleOfNeighborhood = false;
-// bool visibleOfButton = false;
-// String? Location;
-
-// class _Create_LocationInputsState extends State<Create_LocationInputs> {
-//   // location visiblity and visibl of items on location
-
-//   bool checkInputs() {
-//     if (visibleOfPlace == true && visibleOfNeighborhood == true) {
-//       visibleOfButton = true;
-//       return true;
-//     }
-//     return false;
-//   }
-
-//   void initValueOfLocation() {
-//     if (citySelected == null) {
-//       Location = "";
-//     } else {
-//       Location = "$citySelected-$placeSelected-${neighborhoodEnterd.text}";
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Visibility(
-//       visible: visibleOfLocation,
-//       child: Center(
-//         child: Stack(
-//           children: [
-//             Container(
-//               height: null,
-//               padding: EdgeInsets.only(bottom: 20.0),
-//               width: double.infinity,
-//               margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 150.0),
-//               decoration: BoxDecoration(
-//                   borderRadius: BorderRadius.circular(30.0),
-//                   boxShadow: [
-//                     BoxShadow(color: Colors.black, blurRadius: 100.0)
-//                   ],
-//                   color: Colors.white
-//                   // color: Colors.red
-//                   ),
-//               child: SingleChildScrollView(
-//                 child: Stack(
-//                   children: [
-//                     //close location
-//                     Positioned(
-//                       // padding: EdgeInsets.only(right: 10.0, top: 10.0),
-//                       top: 10.0,
-//                       right: 10.0,
-//                       child: GestureDetector(
-//                         onTap: () {
-//                           setState(() {
-//                             visibleOfLocation = false;
-//                           });
-//                         },
-//                         child: Icon(Icons.close_rounded,
-//                             color: Colors.black, size: 30.0),
-//                       ),
-//                     ),
-//                     //inputs
-//                     Column(
-//                       // crossAxisAlignment: CrossAxisAlignment.end,
-//                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//                       mainAxisSize: MainAxisSize.min,
-//                       children: [
-//                         SizedBox(
-//                           height: 60.0,
-//                         ),
-//                         //city
-//                         ListTile(
-//                           leading: Container(
-//                             padding: EdgeInsets.all(8.0),
-//                             width: 40.0,
-//                             decoration: BoxDecoration(
-//                               shape: BoxShape.circle,
-//                               color: Colors.white,
-//                               boxShadow: [
-//                                 BoxShadow(
-//                                     color: Color(0x7C000000), blurRadius: 10.0)
-//                               ],
-//                             ),
-//                             child: Image.asset(
-//                               'assets/home_loves_tickets_top/imgs/city_Vector.png',
-//                               fit: BoxFit.contain,
-//                             ),
-//                           ),
-//                           title: Container(
-//                             width: double.infinity,
-//                             margin: EdgeInsets.symmetric(horizontal: 20.0),
-//                             height: 40.0,
-//                             decoration: BoxDecoration(
-//                                 color: Colors.white,
-//                                 boxShadow: [
-//                                   BoxShadow(
-//                                       color: Color(0x7C000000),
-//                                       blurRadius: 10.0)
-//                                 ],
-//                                 borderRadius: BorderRadius.circular(10.0)),
-//                             child: Center(
-//                               child: DropdownButton<String>(
-//                                 onChanged: (String? cityValue) {
-//                                   setState(() {
-//                                     visibleOfPlace = true;
-//                                     citySelected = cityValue;
-//                                     placesOfCityOnSelected = null;
-//                                     placeSelected = null;
-//                                   });
-//                                   placesOfCityOnSelected =
-//                                       egyptGovernoratesAndCenters[cityValue];
-//                                 },
-//                                 items: egyptGovernorates.map((city) {
-//                                   return DropdownMenuItem<String>(
-//                                     value: city,
-//                                     child: Text(city),
-//                                   );
-//                                 }).toList(),
-//                                 menuMaxHeight: 300.0,
-//                                 value: citySelected,
-//                                 hint: Text('select City'),
-//                                 icon: Icon(
-//                                     Icons.arrow_drop_down_circle_outlined,
-//                                     size: 30.0,
-//                                     color: mainColor),
-//                                 style: TextStyle(
-//                                   color: Colors.black,
-//                                   fontSize: 18.0,
-//                                 ),
-//                                 alignment: Alignment.center,
-//                                 underline: null,
-//                                 borderRadius: BorderRadius.circular(20.0),
-//                               ),
-//                             ),
-//                           ),
-//                         ),
-
-//                         //place
-//                         Visibility(
-//                           visible: visibleOfPlace,
-//                           child: Padding(
-//                             padding: EdgeInsets.only(top: 20.0),
-//                             child: ListTile(
-//                               leading: Container(
-//                                 padding: EdgeInsets.all(8.0),
-//                                 width: 40.0,
-//                                 decoration: BoxDecoration(
-//                                   shape: BoxShape.circle,
-//                                   color: Colors.white,
-//                                   boxShadow: [
-//                                     BoxShadow(
-//                                         color: Color(0x7C000000),
-//                                         blurRadius: 10.0)
-//                                   ],
-//                                 ),
-//                                 child: Image.asset(
-//                                   'assets/home_loves_tickets_top/imgs/stash_pin-place.png',
-//                                   fit: BoxFit.contain,
-//                                 ),
-//                               ),
-//                               title: Container(
-//                                 width: double.infinity,
-//                                 margin: EdgeInsets.symmetric(horizontal: 20.0),
-//                                 height: 40.0,
-//                                 decoration: BoxDecoration(
-//                                     color: Colors.white,
-//                                     boxShadow: [
-//                                       BoxShadow(
-//                                           color: Color(0x7C000000),
-//                                           blurRadius: 10.0)
-//                                     ],
-//                                     borderRadius: BorderRadius.circular(10.0)),
-//                                 child: Center(
-//                                   child: DropdownButton<String>(
-//                                     items: placesOfCityOnSelected
-//                                         ?.map((String place) {
-//                                       return DropdownMenuItem<String>(
-//                                         child: Text(place),
-//                                         value: place,
-//                                       );
-//                                     }).toList(),
-//                                     onChanged: (String? placeValue) {
-//                                       setState(() {
-//                                         visibleOfNeighborhood = true;
-//                                         placeSelected = placeValue;
-//                                       });
-//                                     },
-//                                     menuMaxHeight: 300.0,
-//                                     value: placeSelected,
-//                                     hint: Text('select place'),
-//                                     icon: Icon(
-//                                         Icons.arrow_drop_down_circle_outlined,
-//                                         size: 30.0,
-//                                         color: mainColor),
-//                                     style: TextStyle(
-//                                       color: Colors.black,
-//                                       fontSize: 18.0,
-//                                     ),
-//                                     alignment: Alignment.center,
-//                                     underline: null,
-//                                     borderRadius: BorderRadius.circular(20.0),
-//                                   ),
-//                                 ),
-//                               ),
-//                             ),
-//                           ),
-//                         ),
-
-//                         // //neighborhood
-//                         Visibility(
-//                           visible: visibleOfNeighborhood,
-//                           child: Padding(
-//                             padding: EdgeInsets.symmetric(
-//                               vertical: 20.0,
-//                             ),
-//                             child: ListTile(
-//                               leading: Container(
-//                                 padding: EdgeInsets.all(8.0),
-//                                 width: 40.0,
-//                                 decoration: BoxDecoration(
-//                                   shape: BoxShape.circle,
-//                                   color: Colors.white,
-//                                   boxShadow: [
-//                                     BoxShadow(
-//                                         color: Color(0x7C000000),
-//                                         blurRadius: 10.0)
-//                                   ],
-//                                 ),
-//                                 child: Image.asset(
-//                                   'assets/home_loves_tickets_top/imgs/nighborhood.png',
-//                                   fit: BoxFit.contain,
-//                                 ),
-//                               ),
-//                               title: Container(
-//                                   width: double.infinity,
-//                                   margin:
-//                                       EdgeInsets.symmetric(horizontal: 20.0),
-//                                   height: 40.0,
-//                                   decoration: BoxDecoration(
-//                                       color: Colors.white,
-//                                       boxShadow: [
-//                                         BoxShadow(
-//                                             color: Color(0x7C000000),
-//                                             blurRadius: 10.0)
-//                                       ],
-//                                       borderRadius:
-//                                           BorderRadius.circular(10.0)),
-//                                   child: TextField(
-//                                     controller: neighborhoodEnterd,
-//                                     textAlign: TextAlign.center,
-//                                     style: TextStyle(
-//                                       color: Colors.black,
-//                                       fontSize: 18.0,
-//                                     ),
-//                                     keyboardType: TextInputType.text,
-//                                     textInputAction: TextInputAction.done,
-//                                     decoration: InputDecoration(
-//                                         border: InputBorder.none,
-//                                         contentPadding:
-//                                             EdgeInsets.only(bottom: 10.0),
-//                                         hintText: 'neighborhood'),
-//                                   )),
-//                             ),
-//                           ),
-//                         ),
-
-//                         SizedBox(
-//                           height: 20.0,
-//                         ),
-//                         // //button
-//                         Visibility(
-//                           visible: checkInputs(),
-//                           child: Create_GradiantGreenButton(
-//                               title: 'Done',
-//                               onButtonPressed: () {
-//                                 setState(() {
-//                                   visibleOfLocation = false;
-//                                   initValueOfLocation();
-//                                 });
-//                               }),
-//                         )
-//                       ],
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 // required input
 

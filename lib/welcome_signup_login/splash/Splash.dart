@@ -45,7 +45,7 @@ class _SplashState extends State<Splash> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 AnimatedContainer(
-                  duration: Duration(milliseconds: 800),
+                  duration: Duration(milliseconds: 500),
                   height: isStart ? 0.0 : 100.0,
                   child: null,
                 ),
@@ -58,6 +58,7 @@ class _SplashState extends State<Splash> {
                     shape: BoxShape.circle,
                   ),
                 ),
+              
                 Container(
                   padding: EdgeInsets.all(14.0),
                   decoration: BoxDecoration(
