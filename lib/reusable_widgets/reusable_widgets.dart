@@ -203,7 +203,9 @@ class DrawerItem extends StatelessWidget {
 
 //statful widget for the drawer
 class Create_Drawer extends StatefulWidget {
-  const Create_Drawer({Key? key}) : super(key: key);
+  VoidCallback onHomeTap;
+  VoidCallback onProfileTap;
+  Create_Drawer({required this.onHomeTap, required this.onProfileTap});
 
   @override
   State<Create_Drawer> createState() => _Create_DrawerState();
@@ -339,7 +341,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
                         icon: Image.asset(
                             "assets/home_loves_tickets_top/imgs/Vector_drawerHome.png",
                             width: 30.0),
-                        onTap: () {}),
+                        onTap: widget.onHomeTap),
                   ),
                   SizedBox(width: 32.0),
                   Expanded(
@@ -348,7 +350,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
                         icon: Image.asset(
                             "assets/home_loves_tickets_top/imgs/Vector_drawerProfile.png",
                             width: 30.0),
-                        onTap: () {}),
+                        onTap: widget.onProfileTap),
                   ),
                   SizedBox(width: 40.0),
                 ],

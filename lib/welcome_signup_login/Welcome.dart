@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/constants/constants.dart';
-import 'package:typewritertext/typewritertext.dart';
+
 class Welcome extends StatefulWidget {
   @override
   State<Welcome> createState() => _WelcomeState();
@@ -105,23 +105,19 @@ class _WelcomeState extends State<Welcome> {
                               color: Color(0xffffffff),
                             ),
                             SizedBox(height: 8.0),
-                            TypeWriterText(
-                              text: Text('Book the best fields or be the best of them',
-                                style: TextStyle(
-                                  color: Color(0xffffffff),
-                                  fontSize: 8.0,
-                                ),
+                            Text(
+                              'Book the best fields or be the best of them',
+                              style: TextStyle(
+                                color: Color(0xffffffff),
+                                fontSize: 8.0,
                               ),
-                              duration: Duration(milliseconds: 50),
                             ),
-                            TypeWriterText(
-                              text: Text('and enjoy an unmatched service we brought\n the distances closer to you',
-                                style: TextStyle(
-                                  color: Color(0xffffffff),
-                                  fontSize: 8.0,
-                                ),
+                            Text(
+                              'and enjoy an unmatched service we brought\n the distances closer to you',
+                              style: TextStyle(
+                                color: Color(0xffffffff),
+                                fontSize: 8.0,
                               ),
-                              duration: Duration(milliseconds: 50),
                             ),
                           ],
                         ),
