@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
+import 'package:graduation_project_main/welcome_signup_login/signUpPages/addAccountImage_player.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 
@@ -21,6 +22,7 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
   bool visibleOfPlace = false;
   bool visibleOfNeighborhood = false;
   bool visibleOfButton = false;
+  bool visibleOfDateOfBirth = false;
   DateTime? selectedDate;
 
   bool checkInputs() {
@@ -40,14 +42,19 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
     }
   }
 
-  String username = '';
-  String phoneNumber = '';
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController phoneNumberController = TextEditingController();
+  TextEditingController yearController = TextEditingController();
+  TextEditingController monthController = TextEditingController();
+  TextEditingController dayController = TextEditingController();
+
+  // Variable to store the date of birth value
   String dateOfBirth = "";
 
   Future<void> storeData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('username', username);
-    await prefs.setString('phoneNumber', phoneNumber);
+    await prefs.setString('username', usernameController.text);
+    await prefs.setString('phoneNumber', phoneNumberController.text);
     await prefs.setString('dateOfBirth', dateOfBirth);
     await prefs.setString('location', Location ?? '');
   }
@@ -117,9 +124,7 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
 
                   //username
                   Create_Input(
-                    onChange: (value) {
-                      username = value;
-                    },
+                    controller: usernameController,
                     isPassword: false,
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.next,
@@ -135,9 +140,7 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
 
                   //phone
                   Create_Input(
-                    onChange: (value) {
-                      phoneNumber = value;
-                    },
+                    controller: phoneNumberController,
                     isPassword: false,
                     keyboardType: TextInputType.phone,
                     textInputAction: TextInputAction.next,
@@ -216,6 +219,8 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                       if (newDateTime != null) {
                         setState(() {
                           selectedDate = newDateTime;
+                          // Update the dateOfBirth value
+                          dateOfBirth = "${selectedDate?.day}/${selectedDate?.month}/${selectedDate?.year}";
                         });
                       }
                     },
@@ -245,14 +250,27 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                             fontSize: 24.0),
                       ),
                       onButtonPressed: () async {
-                        if (username.isNotEmpty &&
-                            phoneNumber.isNotEmpty &&
+                        // Debugging: Print values to check
+                        print("Username: ${usernameController.text}");
+                        print("Phone Number: ${phoneNumberController.text}");
+                        print("Location: $Location");
+                        print("Date of Birth: $dateOfBirth");
+
+                        // Ensure all fields are filled
+                        if (usernameController.text.trim().isNotEmpty &&
+                            phoneNumberController.text.trim().isNotEmpty &&
                             Location != null &&
-                            dateOfBirth.isNotEmpty) {
-                          Navigator.pushNamed(
-                              context, '/addAccountImage_player');
+                            Location!.trim().isNotEmpty &&
+                            dateOfBirth.trim().isNotEmpty) {
+                          await storeData();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => addAccountImage_player(),
+                            ),
+                          );
                         } else {
-                          // Show an alert dialog or a snackbar to inform the user to fill all fields
+                          // Show an alert dialog to inform the user to fill all fields
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
@@ -275,8 +293,6 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                               );
                             },
                           );
-                          Navigator.pushNamed(
-                              context, '/addAccountImage_player');
                         }
                       },
                     ),

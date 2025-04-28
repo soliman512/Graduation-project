@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
-import 'package:graduation_project_main/home_loves_tickets_top/profileplayer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // StadiumCard class to display stadiums
@@ -165,35 +164,38 @@ class DrawerItem extends StatelessWidget {
   DrawerItem({required this.title, required this.icon, required this.onTap});
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 120.0,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            icon,
-            SizedBox(height: 10.0),
-            Text(
-              title,
-              style: TextStyle(
-                  fontSize: 16.0,
-                  fontFamily: "eras-itc-demi",
-                  color: const Color.fromARGB(255, 0, 0, 0)),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 120.0,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              icon,
+              SizedBox(height: 10.0),
+              Text(
+                title,
+                style: TextStyle(
+                    fontSize: 16.0,
+                    fontFamily: "eras-itc-demi",
+                    color: const Color.fromARGB(255, 0, 0, 0)),
+              ),
+            ],
+          ),
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30.0),
+          boxShadow: [
+            BoxShadow(
+              color: mainColor.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 5,
             ),
           ],
         ),
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(30.0),
-        boxShadow: [
-          BoxShadow(
-            color: mainColor.withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 5,
-          ),
-        ],
       ),
     );
   }
@@ -263,7 +265,8 @@ class _Create_DrawerState extends State<Create_Drawer> {
                   child: CircleAvatar(
                     radius: 60.0,
                     backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-                    child: Icon(Icons.person_outline_rounded, size: 80, color: mainColor),
+                    child: Icon(Icons.person_outline_rounded,
+                        size: 80, color: mainColor),
                   ),
                 ),
               SizedBox(

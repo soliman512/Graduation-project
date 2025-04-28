@@ -156,8 +156,8 @@ class _HomeState extends State<Home> {
                                       },
                                       icon: Icon(
                                         Icons.close,
-                                        color:
-                                            const Color.fromARGB(255, 19, 19, 19),
+                                        color: const Color.fromARGB(
+                                            255, 19, 19, 19),
                                         size: 18,
                                       ),
                                     ),
@@ -314,8 +314,7 @@ class _HomeState extends State<Home> {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             return Center(
-                                child: Image.asset(
-                                    'assets/loading.gif'));
+                                child: Image.asset('assets/loading.gif'));
                           }
 
                           if (!snapshot.hasData ||
@@ -324,9 +323,15 @@ class _HomeState extends State<Home> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.error_outline, size: 100, color: const Color.fromARGB(38, 0, 0, 0)),
+                                  Icon(Icons.error_outline,
+                                      size: 100,
+                                      color: const Color.fromARGB(38, 0, 0, 0)),
                                   SizedBox(height: 16),
-                                  Text("No stadiums found or shown", style: TextStyle(fontSize: 20, color: const Color.fromARGB(38, 0, 0, 0))),
+                                  Text("No stadiums found or shown",
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          color: const Color.fromARGB(
+                                              38, 0, 0, 0))),
                                 ],
                               ),
                             );
@@ -339,14 +344,21 @@ class _HomeState extends State<Home> {
                                     .toList();
                             if (stadiumsAfterFilter.isEmpty) {
                               return Center(
-                                child:  Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.error_outline, size: 100, color: const Color.fromARGB(38, 0, 0, 0)),
-                                  SizedBox(height: 16),
-                                  Text("No stadiums found or shown", style: TextStyle(fontSize: 20, color: const Color.fromARGB(38, 0, 0, 0))),
-                                ],
-                              ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.error_outline,
+                                        size: 100,
+                                        color:
+                                            const Color.fromARGB(38, 0, 0, 0)),
+                                    SizedBox(height: 16),
+                                    Text("No stadiums found or shown",
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            color: const Color.fromARGB(
+                                                38, 0, 0, 0))),
+                                  ],
+                                ),
                               );
                             }
                             return ListView.builder(
@@ -397,7 +409,7 @@ class _HomeState extends State<Home> {
                           }
                         },
                       ),
-                    
+
                       SizedBox(height: 80.0),
                     ],
                   ),
