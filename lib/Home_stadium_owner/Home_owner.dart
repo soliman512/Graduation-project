@@ -21,6 +21,14 @@ class _HomeState extends State<Home_Owner> {
       child: Scaffold(
         backgroundColor: Colors.white,
         extendBodyBehindAppBar: false,
+        drawer: Create_Drawer(
+          onHomeTap: () {
+            Navigator.pushNamed(context, '');
+          },
+          onProfileTap: () {
+            Navigator.pushNamed(context, '');
+          },
+        ),
         appBar: AppBar(
           toolbarHeight: 80.0,
           scrolledUnderElevation: 0,

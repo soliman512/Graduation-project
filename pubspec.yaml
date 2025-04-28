@@ -49,8 +49,7 @@
     animated_toggle_switch: ^0.8.4
     day_night_time_picker: ^1.2.0
     internet_connection_checker_plus: ^2.7.1
-    typewritertext: ^3.0.9
-    
+        
   dependency_overrides:
     webview_flutter_android: null
 

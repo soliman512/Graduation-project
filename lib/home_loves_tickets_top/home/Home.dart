@@ -22,7 +22,10 @@ class _HomeState extends State<Home> {
         child: Scaffold(
             backgroundColor: Color(0xFFFFFFFF),
             extendBodyBehindAppBar: false,
-            drawer: Create_Drawer(),
+            drawer: Create_Drawer(
+              onHomeTap: () {},
+              onProfileTap: () {},
+            ),
             appBar: Create_AppBar(
                 title: Add_AppName(
               align: TextAlign.center,
