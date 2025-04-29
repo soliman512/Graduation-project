@@ -87,6 +87,7 @@ flutter:
     - assets/editstadium_stdown/imgs/
     - assets/no_internet_connection/imgs/
     - assets/sharedBackground.png
+    - assets/loading.gif
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
