@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
@@ -17,7 +16,13 @@ class ProfilePlayer extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePlayer> {
   File? imgPath;
-  final credential = FirebaseAuth.instance.currentUser;
+  User? user;
+
+  @override
+  void initState() {
+    super.initState();
+    user = FirebaseAuth.instance.currentUser;
+  }
 
   // upload image
   uploadImage2Screen() async {
@@ -38,6 +43,25 @@ class _ProfilePageState extends State<ProfilePlayer> {
 
   @override
   Widget build(BuildContext context) {
+    if (user == null) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('No user logged in'),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, '/login_player');
+                },
+                child: Text('Go to Login'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -139,21 +163,21 @@ class _ProfilePageState extends State<ProfilePlayer> {
                   SizedBox(
                     height: 11,
                   ),
-                  Text("Email: ${credential!.email}",
+                  Text("Email: ${user?.email ?? 'Not available'}",
                       style:
                           TextStyle(fontSize: 15, fontFamily: "eras-itc-bold")),
                   SizedBox(
                     height: 11,
                   ),
                   Text(
-                      "Created date: ${DateFormat('MMMM-d-y').format(credential!.metadata.creationTime!.toLocal())}",
+                      "Created date: ${user?.metadata.creationTime != null ? DateFormat('MMMM-d-y').format(user!.metadata.creationTime!.toLocal()) : 'Not available'}",
                       style:
                           TextStyle(fontSize: 15, fontFamily: "eras-itc-bold")),
                   SizedBox(
                     height: 11,
                   ),
                   Text(
-                      "Last Signed In: ${DateFormat('MMMM-d-y').format(credential!.metadata.lastSignInTime!.toLocal())}",
+                      "Last Signed In: ${user?.metadata.lastSignInTime != null ? DateFormat('MMMM-d-y').format(user!.metadata.lastSignInTime!.toLocal()) : 'Not available'}",
                       style:
                           TextStyle(fontSize: 15, fontFamily: "eras-itc-bold")),
                 ],
@@ -173,7 +197,7 @@ class _ProfilePageState extends State<ProfilePlayer> {
                           fontSize: 20,
                         ),
                       ))),
-              GetDataFromFirestore(documentId: credential!.uid),
+              if (user != null) GetDataFromFirestore(documentId: user!.uid),
             ],
           ),
         ),

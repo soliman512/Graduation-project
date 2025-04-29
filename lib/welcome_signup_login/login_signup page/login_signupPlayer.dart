@@ -66,7 +66,7 @@ class Login_Signup_player extends StatelessWidget {
 
                     //login
                     Create_GradiantGreenButton(
-                      title: "login",
+                      content: Text('login', style: TextStyle(color:Colors.white),),
                       onButtonPressed: () {
                         Navigator.pushNamed(context, '/login_player');
                       },

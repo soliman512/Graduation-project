@@ -1,17 +1,20 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/welcome_signup_login/loginPages/loginPlayer.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
-import 'package:email_validator/email_validator.dart';
+// import 'package:email_validator/email_validator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import 'package:supabase_flutter/supabase_flutter.dart';
+// import 'package:image_picker/image_picker.dart';
+// import 'dart:io';
 
 class Signup_pg2_player extends StatefulWidget {
-    final String? profileImage;
+  final String? profileImage;
   Signup_pg2_player({this.profileImage});
   @override
   State<Signup_pg2_player> createState() => _Signup_pg2_playerState();
@@ -31,10 +34,6 @@ class _Signup_pg2_playerState extends State<Signup_pg2_player> {
 
   bool visiblePassword = true;
   bool confirm_passwordVisible = true;
-  Icon showPasswordState = Icon(Icons.visibility);
-  Icon unShowPassword = Icon(Icons.visibility_off);
-  Icon showConfirmState = Icon(Icons.visibility);
-  Icon unShowConfirm = Icon(Icons.visibility_off);
 
   bool ispassword8char = false;
   bool ispassword1number = false;
@@ -42,9 +41,7 @@ class _Signup_pg2_playerState extends State<Signup_pg2_player> {
   bool ispasswordlowercase = false;
   bool ispasswordspecialchar = false;
 
-  Icon checkBoxState = Icon(Icons.check_box_outline_blank);
-  Icon checkBox = Icon(Icons.check_box_outline_blank);
-  Icon checkedBox = Icon(Icons.check_box);
+  bool termsChecked = false;
 
   @override
   void initState() {
@@ -67,31 +64,45 @@ class _Signup_pg2_playerState extends State<Signup_pg2_player> {
       isLoading = true;
     });
     try {
-      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+// إنشاء الحساب باستخدام Firebase Authentication
+      final credential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailController.text,
         password: passwordController.text,
       );
-
+      final String uid = credential.user!.uid;
 
       // Store additional user information in Firestore
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(credential.user!.uid)
-          .set({
-        'username': username,
-        'phoneNumber': phoneNumber,
-        'dateOfBirth': dateOfBirth,
-        'location': location,
-        'email': emailController.text,
-        'profileImage': widget.profileImage,
-      });
+      // رفع الصورة إلى Supabase باستخدام uid كاسم للصورة
+      if (widget.profileImage != null && widget.profileImage!.isNotEmpty) {
+        final File file = File(widget.profileImage!);
+        final SupabaseClient supabase = Supabase.instance.client;
+
+        final String uniqueFileName = '$uid.png';
+
+        final String fullPath = await supabase.storage.from('photo').upload(
+              'public/$uniqueFileName',
+              file,
+              fileOptions:
+                  const FileOptions(cacheControl: '3600', upsert: false),
+            );
+
+        final String url =
+            await supabase.storage.from('photo').getPublicUrl(fullPath);
+
+        // تخزين بيانات المستخدم في Firestore
+        await FirebaseFirestore.instance.collection('users').doc(uid).set({
+          'username': username,
+          'phoneNumber': phoneNumber,
+          'dateOfBirth': dateOfBirth,
+          'location': location,
+          'profileImage': url, // رابط الصورة
+        });
+      }
 
       showSnackBar(context, "Account created...");
       if (!mounted) return;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Login_player()),
-      );
+      Navigator.pushReplacementNamed(context, '/login_player');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         showSnackBar(context, "The password provided is too weak.");
@@ -100,7 +111,7 @@ class _Signup_pg2_playerState extends State<Signup_pg2_player> {
       } else if (e.code == 'invalid-email') {
         showSnackBar(context, "The email address is not valid.");
       } else {
-        showSnackBar(context, "ERROR - Please try again later");
+        showSnackBar(context, "An error occurred. Please try again.");
       }
     } catch (error) {
       showSnackBar(context, error.toString());
@@ -153,6 +164,7 @@ class _Signup_pg2_playerState extends State<Signup_pg2_player> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+          backgroundColor: Colors.white,
           extendBodyBehindAppBar: false,
           //app bar
           appBar: AppBar(
@@ -172,8 +184,6 @@ class _Signup_pg2_playerState extends State<Signup_pg2_player> {
                 "assets/welcome_signup_login/imgs/back.png",
                 color: Color(0xFF000000),
               ),
-              // ic
-              // icon: Image.asset("assets/welcome_signup_login/imgs/ligh back.png"),
             ),
             toolbarHeight: 80.0,
             elevation: 0,
@@ -196,29 +206,28 @@ class _Signup_pg2_playerState extends State<Signup_pg2_player> {
                     key: _formKey,
                     child: Column(
                       children: [
+                        SizedBox(
+                          height: 44.0,
+                        ),
+                        //logo
+                        add_logo(80.0),
                         // title
                         Add_AppName(
                             font_size: 34.0,
                             align: TextAlign.center,
                             color: Colors.black),
                         //specific user
-                        Text("Player",
+                        Text("player",
                             style: TextStyle(
-                              color: Color(0xFF000000),
-                              // fontFamily: "eras-itc-bold",
-                              fontWeight: FontWeight.w200,
-                              fontSize: 20.0,
-                            )),
-
+                                color: Color.fromARGB(111, 0, 0, 0),
+                                fontWeight: FontWeight.w200,
+                                fontSize: 20.0,
+                                fontFamily: 'eras-itc-light')),
+                        //just for space
                         SizedBox(
-                          height: 10.0,
+                          height: 60.0,
                         ),
-                        //logo
-                        logo,
 
-                        SizedBox(
-                          height: 70.0,
-                        ),
                         //inputs:
 
                         //Email
@@ -228,7 +237,6 @@ class _Signup_pg2_playerState extends State<Signup_pg2_player> {
                           width: double.infinity,
                           height: 60.0,
                           child: TextFormField(
-                            
                             validator: (email) {
                               return email!.contains(RegExp(
                                       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"))
@@ -243,7 +251,6 @@ class _Signup_pg2_playerState extends State<Signup_pg2_player> {
                             obscureText: false,
                             cursorColor: mainColor,
                             decoration: InputDecoration(
-                            
                               focusColor: mainColor,
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
@@ -321,12 +328,12 @@ class _Signup_pg2_playerState extends State<Signup_pg2_player> {
                                 onPressed: () {
                                   setState(() {
                                     visiblePassword = !visiblePassword;
-                                    showPasswordState = visiblePassword
-                                        ? Icon(Icons.visibility)
-                                        : Icon(Icons.visibility_off);
                                   });
                                 },
-                                icon: showPasswordState,
+                                icon: visiblePassword
+                                    ? Icon(Icons.visibility, color: mainColor)
+                                    : Icon(Icons.visibility_off,
+                                        color: Colors.grey),
                                 color: mainColor,
                               ),
                               contentPadding: EdgeInsets.symmetric(vertical: 5),
@@ -385,12 +392,12 @@ class _Signup_pg2_playerState extends State<Signup_pg2_player> {
                                   setState(() {
                                     confirm_passwordVisible =
                                         !confirm_passwordVisible;
-                                    showConfirmState = confirm_passwordVisible
-                                        ? Icon(Icons.visibility)
-                                        : Icon(Icons.visibility_off);
                                   });
                                 },
-                                icon: showConfirmState,
+                                icon: confirm_passwordVisible
+                                    ? Icon(Icons.visibility, color: mainColor)
+                                    : Icon(Icons.visibility_off,
+                                        color: Colors.grey),
                                 color: mainColor,
                               ),
                               contentPadding: EdgeInsets.symmetric(vertical: 5),
@@ -557,22 +564,90 @@ class _Signup_pg2_playerState extends State<Signup_pg2_player> {
                         ),
                         //check terms
                         Container(
-                          margin: EdgeInsets.only(left: 31.0),
+                          margin: EdgeInsets.only(top: 10.0, left: 30.0),
                           child: Row(
                             children: [
                               IconButton(
                                 onPressed: () {
                                   setState(() {
-                                    if (checkBoxState == checkBox) {
-                                      checkBoxState = checkedBox;
-                                    } else {
-                                      checkBoxState = checkBox;
-                                    }
+                                    termsChecked = !termsChecked;
                                   });
                                 },
-                                icon: checkBoxState,
+                                icon: termsChecked
+                                    ? Icon(Icons.check_box_rounded,
+                                        color: mainColor)
+                                    : Icon(
+                                        Icons.check_box_outline_blank_rounded,
+                                        color: Colors.grey),
                               ),
-                              Text("Agree to terms and conditions")
+                              Text("Agree to"),
+                              TextButton(
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        backgroundColor: Colors.white,
+                                        title: Text(
+                                          "Terms and Conditions",
+                                          style: TextStyle(
+                                            fontSize: 20.0,
+                                            fontFamily: 'eras-itc-demi',
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        content: Container(
+                                          height: 300.0,
+                                          child: SingleChildScrollView(
+                                            child: Text("1. Introduction\n"
+                                                "Welcome to the Vámonos app (the \"App\"). These Terms and Conditions govern your use of the App, provided by Vámonos. By accessing or using the App, you agree to comply with these Terms. If you do not agree, you should not use the App.\n\n"
+                                                "2. Service Definition\n"
+                                                "The Vámonos app provides a platform for sports facility owners to list their fields and allow users to book and pay for them online. All financial transactions are handled via the in-app payment system.\n\n"
+                                                "3. Account Registration\n"
+                                                "To complete a booking or list your field, you must create a personal account. You are responsible for maintaining the confidentiality of your account information and password, as well as for all activities that occur under your account.\n\n"
+                                                "4. User Responsibilities\n"
+                                                "For Users (Booking the Fields):\n\n"
+                                                "You are responsible for entering accurate booking information (such as booking date, time, and payment details).\n\n"
+                                                "You must ensure that all payments are made through the approved payment channels within the app.\n\n"
+                                                "For Facility Owners:\n\n"
+                                                "Facility owners must provide accurate and complete information about their fields (such as size, location, pricing, and available amenities).\n\n"
+                                                "You must keep your listings updated to ensure accuracy.\n\n"
+                                                "Facility owners must handle all bookings and payments via the in-app payment system.\n\n"
+                                                "5. Online Payment\n"
+                                                "All payments are processed through the app's integrated payment system. You agree that charges for bookings will be deducted from your account through the approved payment methods within the app.\n\n"
+                                                "6. Privacy Policy\n"
+                                                "We value your privacy. Your personal data will be collected and used in accordance with our [Privacy Policy], which explains how we handle and protect your information. By using the App, you consent to the collection and use of your data as described in the Privacy Policy.\n\n"
+                                                "7. Legal Restrictions\n"
+                                                "You may not use the app for any unlawful activities or fraudulent behavior.\n\n"
+                                                "You must comply with local laws when using the app or interacting with other users on the platform.\n\n"
+                                                "8. Limitation of Liability\n"
+                                                "The app is provided \"as is\" and \"as available.\" Vámonos does not guarantee that the app will be error-free or continuously available.\n\n"
+                                                "We are not responsible for any losses or damages that arise from your use of the app, including, but not limited to, booking errors or failed payment transactions.\n\n"
+                                                "9. Account Termination\n"
+                                                "We reserve the right to suspend or terminate your account if you violate these Terms or engage in any illegal or unauthorized activities while using the app.\n\n"
+                                                "10. Modifications to Terms\n"
+                                                "Vámonos reserves the right to update or modify these Terms at any time. Changes will take effect immediately once posted on the app or our website.\n\n"
+                                                "11. Governing Law\n"
+                                                "These Terms are governed by and construed in accordance with the laws of Egypt. Any disputes arising from these Terms will be subject to the exclusive jurisdiction of the courts in Egypt.\n\n"
+                                                "12. Contact Us\n"
+                                                "If you have any questions or concerns about these Terms and Conditions, please contact us at [Contact Information — to be updated].\n\n"),
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Text("OK"),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                  child: Text('terms and conditions',
+                                      style: TextStyle(
+                                          color: Colors.blue,
+                                          decoration:
+                                              TextDecoration.underline)))
                             ],
                           ),
                         ),
@@ -580,31 +655,17 @@ class _Signup_pg2_playerState extends State<Signup_pg2_player> {
                           height: 60.0,
                         ),
                         //sign up
-                        Container(
-                          width: 300.0,
-                          height: 40.0,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Color(0xff005706),
-                                Color(0xff007211),
-                                Color(0xff00911E),
-                                Color(0xff00B92E),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          child: ElevatedButton(
-                            onPressed: () async {
+                        SizedBox(
+                          height: 50.0,
+                          child: Create_GradiantGreenButton(
+                            onButtonPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 await register();
                               } else {
                                 showSnackBar(context, "ERROR");
                               }
                             },
-                            child: isLoading
+                            content: isLoading
                                 ? CircularProgressIndicator(
                                     color: Colors.white,
                                   )
@@ -618,18 +679,6 @@ class _Signup_pg2_playerState extends State<Signup_pg2_player> {
                                       fontWeight: FontWeight.w900,
                                     ),
                                   ),
-                            style: ButtonStyle(
-                              // shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                              //     borderRadius: BorderRadius.circular(15))),
-                              backgroundColor:
-                                  MaterialStateProperty.all(Colors.transparent),
-                              foregroundColor:
-                                  MaterialStateProperty.all(Color(0xFFFFFFFF)),
-                              shadowColor:
-                                  MaterialStateProperty.all(Colors.transparent),
-
-                              // padding: MaterialStateProperty.all(EdgeInsets.all(5)),
-                            ),
                           ),
                         ),
                       ],

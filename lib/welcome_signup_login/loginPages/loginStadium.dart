@@ -15,16 +15,19 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
   );
   Icon showPassword = Icon(
     Icons.visibility_off,
-    color: mainColor,
+    color: const Color.fromARGB(158, 44, 44, 44),
   );
   Icon showPasswordState = Icon(
     Icons.visibility,
     color: mainColor,
   );
+  TextEditingController password = TextEditingController();
+  TextEditingController email = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.white,
           extendBodyBehindAppBar: false,
           //app bar
           appBar: AppBar(
@@ -38,7 +41,7 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                 )),
             leading: IconButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/login_signup_stdOwner');
+                Navigator.pushNamed(context, '/Welcome');
               },
               icon: Image.asset("assets/welcome_signup_login/imgs/back.png"),
               color: Color(0xff000000),
@@ -63,6 +66,8 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
               SingleChildScrollView(
                 child: Column(
                   children: [
+                    //logo
+                    add_logo(80.0),
                     // title
                     Add_AppName(
                         font_size: 34.0,
@@ -71,24 +76,21 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                     //specific user
                     Text("stadium owner",
                         style: TextStyle(
-                          color: Color(0xB6000000),
-                          // fontFamily: "eras-itc-bold",
-                          fontWeight: FontWeight.w200,
-                          fontSize: 20.0,
-                        )),
+                            color: Color.fromARGB(111, 0, 0, 0),
+                            fontWeight: FontWeight.w200,
+                            fontSize: 20.0,
+                            fontFamily: 'eras-itc-light')),
                     //just for space
                     SizedBox(
-                      height: 10.0,
-                    ),
-                    //logo
-                    logo,
-                    //just for space
-                    SizedBox(
-                      height: 52.0,
+                      height: 60.0,
                     ),
 
                     //email address
                     Create_Input(
+                      onChange: (value) {
+                        this.email.text = value;
+                      },
+                      // controller: email,
                       isPassword: false,
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
@@ -100,11 +102,15 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                     ),
                     //just for space
                     SizedBox(
-                      height: 30.0,
+                      height: 26.0,
                     ),
 
                     //password
                     Create_Input(
+                      onChange: (value) {
+                        this.password.text = value;
+                      },
+                      // controller: password,
                       isPassword: visiblePassword,
                       keyboardType: TextInputType.text,
                       textInputAction: TextInputAction.done,
@@ -126,17 +132,17 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                     //forgot
                     Container(
                       alignment: Alignment.centerLeft,
-                      margin: EdgeInsets.fromLTRB(23, 20, 0, 0),
+                      margin: EdgeInsets.fromLTRB(20, 20, 0, 0),
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.pushNamed(context, '/Recorve_account');
                         },
                         style: ButtonStyle(
-                            elevation: MaterialStateProperty.all(0),
+                            elevation: WidgetStateProperty.all(0),
                             backgroundColor:
-                                MaterialStateProperty.all(Colors.transparent),
+                                WidgetStateProperty.all(Colors.transparent),
                             foregroundColor:
-                                MaterialStateProperty.all(Color(0xffffffff))),
+                                WidgetStateProperty.all(Color(0xffffffff))),
                         child: Text("Forgot your password ?",
                             style: TextStyle(
                                 color: Color(0xff004FFB),
@@ -148,17 +154,26 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                     ),
 
                     SizedBox(
-                      height: 56,
+                      height: 40,
                     ),
 
                     //login
-                    Create_GradiantGreenButton(
-                        title: 'Login',
-                        onButtonPressed: () {
-                          Navigator.pushNamed(context, '/home_owner');
-                        }),
                     SizedBox(
-                      height: 40.0,
+                      height: 50.0,
+                      child: Create_GradiantGreenButton(
+                          content: Text(
+                            'login',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 24.0,
+                                fontFamily: 'eras-itc-bold'),
+                          ),
+                          onButtonPressed: () {
+                            Navigator.pushNamed(context, '/home_owner');
+                          }),
+                    ),
+                    SizedBox(
+                      height: 26.0,
                     ),
 
                     // or line
@@ -184,9 +199,6 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                         ),
                         Container(
                           color: Color(0xD7000000),
-                          // thickness: 1,
-                          // indent: 16.0,
-                          // endIndent: 30.0,
                           height: 1.0,
                           width: 145.0,
                         ),
@@ -194,95 +206,101 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                     ),
 
                     SizedBox(
-                      height: 30.0,
+                      height: 20.0,
                     ),
 
                     //another ways to login
                     Container(
-                      margin: EdgeInsets.symmetric(horizontal: 30.0),
+                      margin: EdgeInsets.symmetric(horizontal: 34.0),
                       width: double.infinity,
-                      alignment: Alignment.center,
+                      // alignment: Alignment.center,
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         // spacing: ,
                         children: [
                           //google
-                          Container(
-                            width: 100.0,
-                            // margin: EdgeInsets.only(left: 20.0),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Color(0xFFFF0000),
-                                width: 2,
+                          Expanded(
+                            child: SizedBox(
+                              height: 60.0,
+                              child: ElevatedButton(
+                                onPressed: () {},
+                                child: Wrap(
+                                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Image.asset(
+                                      "assets/welcome_signup_login/imgs/google.png",
+                                      width: 32.0
+                                    ),
+                                    Text('google',
+                                        style: TextStyle(
+                                            color: Color(0xFFFF3D00),
+                                            fontSize: 18.0)),
+                                  ],
+                                ),
+                                style: ButtonStyle(
+                                  elevation: WidgetStateProperty.all(2),
+                                  backgroundColor: WidgetStateProperty.all(
+                                      const Color.fromARGB(255, 255, 255, 255)),
+                                  shape: WidgetStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(30),
+                                          bottomLeft: Radius.circular(30)),
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              child: Image.asset(
-                                "assets/welcome_signup_login/imgs/google.png",
-                              ),
-                              style: ButtonStyle(
-                                  elevation: MaterialStateProperty.all(0),
-                                  backgroundColor: MaterialStateProperty.all(
-                                      Colors.transparent),
-                                  foregroundColor: MaterialStateProperty.all(
-                                      Color(0xffffffff))),
                             ),
                           ),
-
-                          //twitter
-                          Container(
-                            width: 80.0,
-                            // margin: EdgeInsets.only(left: 20.0),
-                            padding: EdgeInsets.all(5.0),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Color(0xFF000000),
-                                width: 2,
-                              ),
-                            ),
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              child: Image.asset(
-                                "assets/welcome_signup_login/imgs/icons8-twitter-100.png",
-                              ),
-                              style: ButtonStyle(
-                                  elevation: MaterialStateProperty.all(0),
-                                  backgroundColor: MaterialStateProperty.all(
-                                      Colors.transparent),
-                                  foregroundColor: MaterialStateProperty.all(
-                                      Color(0xffffffff))),
-                            ),
-                          ),
-
+                          SizedBox(width: 6.0),
                           //facebook
-                          Container(
-                            width: 100.0,
-                            // margin: EdgeInsets.only(left: 20.0),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Color(0xFF0077FF),
-                                width: 2,
+                          Expanded(
+                            child: SizedBox(
+                              height:60.0,
+                              child: ElevatedButton(
+                                onPressed: () {},
+                                child: Wrap(
+                                  children: [
+                                    Image.asset(
+                                      "assets/welcome_signup_login/imgs/facebook.png",
+                                      width: 32.0,
+                                    ),
+                                    Text('facebook',
+                                        style: TextStyle(
+                                            color: Color(0xFF0680DD),
+                                            fontSize: 18.0)),
+                                  ],
+                                ),
+                                style: ButtonStyle(
+                                  elevation: WidgetStateProperty.all(2),
+                                  backgroundColor: WidgetStateProperty.all(
+                                      const Color.fromARGB(255, 255, 255, 255)),
+                                  shape: WidgetStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.only(
+                                          topRight: Radius.circular(30),
+                                          bottomRight: Radius.circular(30)),
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              child: Image.asset(
-                                "assets/welcome_signup_login/imgs/facebook.png",
-                              ),
-                              style: ButtonStyle(
-                                  elevation: MaterialStateProperty.all(0),
-                                  backgroundColor: MaterialStateProperty.all(
-                                      Colors.transparent),
-                                  foregroundColor: MaterialStateProperty.all(
-                                      Color(0xffffffff))),
                             ),
                           ),
                         ],
                       ),
+                    ),
+                    SizedBox(height: 60.0),
+                    //don't have account
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('don\'t have account? ',style: TextStyle(color:Colors.black, fontSize:16.0,fontWeight: FontWeight.w300)),
+                        TextButton(onPressed: (){
+                          Navigator.pushNamed(context, '/sign_up_pg1_stdowner');
+                        }, child: Text('sign up', style: TextStyle(color:mainColor, fontSize:16.0, )))
+                      ],
                     )
                   ],
                 ),

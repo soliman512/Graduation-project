@@ -16,7 +16,7 @@ Image logo = Image.asset('assets/welcome_signup_login/imgs/logo.png',
     fit: BoxFit.cover, width: 90.0, height: 90.0);
 
 Image big_logo = Image.asset('assets/welcome_signup_login/imgs/logo.png',
-    fit: BoxFit.cover, width: 158.0, height: 158.0);
+    fit: BoxFit.cover, width: 100.0);
 
 Image add_logo(double logoSize) {
   return Image.asset('assets/welcome_signup_login/imgs/logo.png',
@@ -32,7 +32,7 @@ Image backgroundImage = Image.asset(
 
 //background image balls
 Opacity backgroundImage_balls = Opacity(
-    opacity: 0.08,
+    opacity: 0.02,
     child: Image.asset(
       'assets/sharedBackground.png',
       fit: BoxFit.fill,
@@ -44,9 +44,9 @@ Container blackBackground = Container(
   width: double.infinity,
   decoration: BoxDecoration(
       gradient: LinearGradient(colors: [
-    Color(0x00000000),
-    Color(0x86000000),
-    Color(0xBE000000),
+    Color.fromARGB(22, 27, 27, 27),
+    Color(0xD3111111),
+    Color.fromARGB(255, 0, 0, 0),
   ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
 );
 
@@ -54,8 +54,8 @@ Container blackBackground = Container(
 List drawerOptions = [
   // 0 : Home
   {
-    'icon': Image.asset(
-        'assets/home_loves_tickets_top/imgs/Vector_drawerHome.png'),
+    'icon':
+        Image.asset('assets/home_loves_tickets_top/imgs/Vector_drawerHome.png'),
     'title': Text(
       'Home',
       style: TextStyle(color: Colors.black, fontSize: 18.0),
@@ -127,43 +127,60 @@ List<String> egyptGovernorates = [
   'Sohag',
   'South Sinai',
   'Suez',
+  'another'
 ];
 
 Map<String, List<String>> egyptGovernoratesAndCenters = {
-  'Cairo': ['Nasr City', 'Heliopolis', 'Maadi', 'Zamalek'],
-  'Alexandria': ['Montaza', 'Raml', 'Amreya', 'Attarin'],
-  'Giza': ['Dokki', 'Mohandessin', 'Haram', '6th of October'],
-  'Port Said': ['Port Fouad', 'El Arab', 'El Manakh', 'El Dawahy'],
-  'Luxor': ['Luxor', 'Armant', 'Esna', 'Tiba'],
-  'Aswan': ['Aswan', 'Edfu', 'Kom Ombo', 'Nasr El Nuba'],
+  'Cairo': ['Nasr City', 'Heliopolis', 'Maadi', 'Zamalek', 'another'],
+  'Alexandria': ['Montaza', 'Raml', 'Amreya', 'Attarin', 'another'],
+  'Giza': ['Dokki', 'Mohandessin', 'Haram', '6th of October', 'another'],
+  'Port Said': ['Port Fouad', 'El Arab', 'El Manakh', 'El Dawahy', 'another'],
+  'Luxor': ['Luxor', 'Armant', 'Esna', 'Tiba', 'another'],
+  'Aswan': ['Aswan', 'Edfu', 'Kom Ombo', 'Nasr El Nuba', 'another'],
   'Asyut': [
     'Asyut',
     'Dairut',
     'Manfalut',
     'Abnub',
     'New Assiut City',
-    'Abo Teej'
+    'Abo Teej',
+    'another'
   ],
-  'Beheira': ['Damanhour', 'Kafr El Dawwar', 'Rashid', 'Edku'],
-  'Beni Suef': ['Beni Suef', 'Nasser', 'Ihnasia', 'Biba'],
-  'Dakahlia': ['Mansoura', 'Talkha', 'Mit Ghamr', 'Dekernes'],
-  'Damietta': ['Damietta', 'Faraskur', 'Kafr Saad', 'Zarqa'],
-  'Faiyum': ['Faiyum', 'Sinnuris', 'Tamiya', 'Ibsheway'],
-  'Gharbia': ['Tanta', 'El Mahalla El Kubra', 'Kafr El Zayat', 'Zifta'],
-  'Ismailia': ['Ismailia', 'Qantara East', 'Qantara West', 'Fayed'],
-  'Kafr El Sheikh': ['Kafr El Sheikh', 'Desouk', 'Baltim', 'Sidi Salem'],
-  'Matruh': ['Marsa Matruh', 'El Alamein', 'Sallum', 'Siwa'],
-  'Minya': ['Minya', 'Beni Mazar', 'Maghagha', 'Mallawi'],
-  'Monufia': ['Shibin El Kom', 'Menouf', 'Ashmoun', 'Sadat City'],
-  'New Valley': ['Kharga', 'Dakhla', 'Farafra', 'Balat'],
-  'North Sinai': ['Arish', 'Sheikh Zuweid', 'Rafah', 'Bir al-Abed'],
-  'Qalyubia': ['Banha', 'Qalyub', 'Shubra El Kheima', 'Tukh'],
-  'Qena': ['Qena', 'Nag Hammadi', 'Qus', 'Abu Tesht'],
-  'Red Sea': ['Hurghada', 'Safaga', 'Quseer', 'Marsa Alam'],
-  'Sharqia': ['Zagazig', 'Belbeis', 'Minya El Qamh', 'Abu Hammad'],
-  'Sohag': ['Sohag', 'Akhmim', 'Girga', 'Tahta'],
-  'South Sinai': ['Sharm El Sheikh', 'Dahab', 'Nuweiba', 'Taba'],
-  'Suez': ['Arbaeen', 'Ganayen', 'Attaka', 'Faisal'],
+  'Beheira': ['Damanhour', 'Kafr El Dawwar', 'Rashid', 'Edku', 'another'],
+  'Beni Suef': ['Beni Suef', 'Nasser', 'Ihnasia', 'Biba', 'another'],
+  'Dakahlia': ['Mansoura', 'Talkha', 'Mit Ghamr', 'Dekernes', 'another'],
+  'Damietta': ['Damietta', 'Faraskur', 'Kafr Saad', 'Zarqa', 'another'],
+  'Faiyum': ['Faiyum', 'Sinnuris', 'Tamiya', 'Ibsheway', 'another'],
+  'Gharbia': [
+    'Tanta',
+    'El Mahalla El Kubra',
+    'Kafr El Zayat',
+    'Zifta',
+    'another'
+  ],
+  'Ismailia': ['Ismailia', 'Qantara East', 'Qantara West', 'Fayed', 'another'],
+  'Kafr El Sheikh': [
+    'Kafr El Sheikh',
+    'Desouk',
+    'Baltim',
+    'Sidi Salem',
+    'another'
+  ],
+  'Matruh': ['Marsa Matruh', 'El Alamein', 'Sallum', 'Siwa', 'another'],
+  'Minya': ['Minya', 'Beni Mazar', 'Maghagha', 'Mallawi', 'another'],
+  'Monufia': ['Shibin El Kom', 'Menouf', 'Ashmoun', 'Sadat City', 'another'],
+  'New Valley': ['Kharga', 'Dakhla', 'Farafra', 'Balat', 'another'],
+  'North Sinai': ['Arish', 'Sheikh Zuweid', 'Rafah', 'Bir al-Abed', 'another'],
+  'Qalyubia': ['Banha', 'Qalyub', 'Shubra El Kheima', 'Tukh', 'another'],
+  'Qena': ['Qena', 'Nag Hammadi', 'Qus', 'Abu Tesht', 'another'],
+  'Red Sea': ['Hurghada', 'Safaga', 'Quseer', 'Marsa Alam', 'another'],
+  'Sharqia': ['Zagazig', 'Belbeis', 'Minya El Qamh', 'Abu Hammad', 'another'],
+  'Sohag': ['Sohag', 'Akhmim', 'Girga', 'Tahta', 'another'],
+  'South Sinai': ['Sharm El Sheikh', 'Dahab', 'Nuweiba', 'Taba', 'another'],
+  'Suez': ['Arbaeen', 'Ganayen', 'Attaka', 'Faisal', 'another'],
+  'another': [
+    'another',
+  ]
 };
 List<String>? placesOfCityOnSelected;
 String? citySelected;

@@ -45,7 +45,11 @@ dependencies:
   intl: ^0.20.2
   firebase_storage: ^12.4.4
   supabase_flutter: ^2.8.4
-
+  typewritertext: ^3.0.9
+  flutter_rounded_date_picker: ^3.0.4
+  day_night_time_picker: ^1.2.0
+  animated_toggle_switch: ^0.8.4
+  uuid: ^3.0.7
 
 
 dev_dependencies:

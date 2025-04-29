@@ -8,53 +8,17 @@ class Signup_pg2_StdOwner extends StatefulWidget {
 }
 
 class _Signup_pg2_StdOwnerState extends State<Signup_pg2_StdOwner> {
-  Icon checkBox = Icon(
-    Icons.check_box_outline_blank,
-    size: 20.0,
-    color: Color(0xFF161616),
-  );
-  Icon checkedBox = Icon(
-    Icons.check_box,
-    size: 20.0,
-    color: Color(0xff00B92E),
-  );
-  Icon checkBoxState = Icon(
-    Icons.check_box_outline_blank,
-    size: 20.0,
-    color: Color(0xFF161616),
-  );
-
+  bool checkBox_checkTerms = false;
   bool visiblePassword = true;
-  Icon unShowPassword = Icon(
-    Icons.visibility,
-    color: mainColor,
-  );
-  Icon showPassword = Icon(
-    Icons.visibility_off,
-    color: mainColor,
-  );
-  Icon showPasswordState = Icon(
-    Icons.visibility,
-    color: mainColor,
-  );
-
   bool confirm_passwordVisible = true;
-  Icon unShowConfirm = Icon(
-    Icons.visibility,
-    color: mainColor,
-  );
-  Icon ShowConfirm = Icon(
-    Icons.visibility_off,
-    color: mainColor,
-  );
-  Icon showConfirmState = Icon(
-    Icons.visibility,
-    color: mainColor,
-  );
+  String emailAddress = '';
+  String password = '';
+  String confirmPassword = '';
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+          backgroundColor: Colors.white,
           extendBodyBehindAppBar: false,
           //app bar
           appBar: AppBar(
@@ -68,7 +32,7 @@ class _Signup_pg2_StdOwnerState extends State<Signup_pg2_StdOwner> {
                 )),
             leading: IconButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/signup_pg3_stdowner_stdinfo');
+                Navigator.pushNamed(context, '/sign_up_pg1_stdowner');
               },
               icon: Image.asset(
                 "assets/welcome_signup_login/imgs/back.png",
@@ -95,32 +59,37 @@ class _Signup_pg2_StdOwnerState extends State<Signup_pg2_StdOwner> {
               SingleChildScrollView(
                 child: Column(
                   children: [
+                    SizedBox(
+                      height: 44.0,
+                    ),
+
+                    //logo
+                    add_logo(80.0),
                     // title
                     Add_AppName(
                         font_size: 34.0,
                         align: TextAlign.center,
                         color: Colors.black),
                     //specific user
-                    Text("Stadium owner",
+                    Text("stadium owner",
                         style: TextStyle(
-                          color: Color(0xFF000000),
-                          // fontFamily: "eras-itc-bold",
-                          fontWeight: FontWeight.w200,
-                          fontSize: 20.0,
-                        )),
-
+                            color: Color.fromARGB(111, 0, 0, 0),
+                            fontWeight: FontWeight.w200,
+                            fontSize: 20.0,
+                            fontFamily: 'eras-itc-light')),
+                    //just for space
                     SizedBox(
-                      height: 10.0,
-                    ),
-                    //logo
-                    logo,
-                    SizedBox(
-                      height: 70.0,
+                      height: 60.0,
                     ),
 
                     //inputs:
                     //email
                     Create_Input(
+                        onChange: (email) {
+                          setState(() {
+                            emailAddress = email;
+                          });
+                        },
                         isPassword: false,
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
@@ -134,6 +103,11 @@ class _Signup_pg2_StdOwnerState extends State<Signup_pg2_StdOwner> {
                     ),
                     //password
                     Create_Input(
+                        onChange: (value) {
+                          setState(() {
+                            password = value;
+                          });
+                        },
                         isPassword: visiblePassword,
                         keyboardType: TextInputType.text,
                         textInputAction: TextInputAction.next,
@@ -143,22 +117,23 @@ class _Signup_pg2_StdOwnerState extends State<Signup_pg2_StdOwner> {
                         addSuffixIcon: IconButton(
                             onPressed: () {
                               setState(() {
-                                if (showPasswordState == showPassword) {
-                                  showPasswordState = unShowPassword;
-                                  visiblePassword = true;
-                                } else {
-                                  showPasswordState = showPassword;
-                                  visiblePassword = false;
-                                }
+                                visiblePassword = !visiblePassword;
                               });
                             },
-                            icon: showPasswordState)),
+                            icon: visiblePassword
+                                ? Icon(Icons.visibility_off, color: Colors.grey)
+                                : Icon(Icons.visibility, color: mainColor))),
                     SizedBox(
                       height: 20.0,
                     ),
 
                     //confirm password
                     Create_Input(
+                        onChange: (value) {
+                          setState(() {
+                            confirmPassword = value;
+                          });
+                        },
                         isPassword: confirm_passwordVisible,
                         keyboardType: TextInputType.text,
                         textInputAction: TextInputAction.done,
@@ -168,35 +143,98 @@ class _Signup_pg2_StdOwnerState extends State<Signup_pg2_StdOwner> {
                         addSuffixIcon: IconButton(
                             onPressed: () {
                               setState(() {
-                                if (showConfirmState == ShowConfirm) {
-                                  showConfirmState = unShowConfirm;
-                                  confirm_passwordVisible = true;
-                                } else {
-                                  showConfirmState = ShowConfirm;
-                                  confirm_passwordVisible = false;
-                                }
+                                confirm_passwordVisible =
+                                    !confirm_passwordVisible;
                               });
                             },
-                            icon: showConfirmState)),
+                            icon: confirm_passwordVisible
+                                ? Icon(Icons.visibility_off, color: Colors.grey)
+                                : Icon(Icons.visibility, color: mainColor))),
 
                     //check terms
                     Container(
-                      margin: EdgeInsets.only(top: 20.0, left: 20.0),
+                      margin: EdgeInsets.only(top: 10.0, left: 30.0),
                       child: Row(
                         children: [
                           IconButton(
                             onPressed: () {
                               setState(() {
-                                if (checkBoxState == checkBox) {
-                                  checkBoxState = checkedBox;
-                                } else {
-                                  checkBoxState = checkBox;
-                                }
+                                checkBox_checkTerms = !checkBox_checkTerms;
                               });
                             },
-                            icon: checkBoxState,
+                            icon: checkBox_checkTerms
+                                ? Icon(Icons.check_box_rounded,
+                                    color: mainColor)
+                                : Icon(Icons.check_box_outline_blank_rounded,
+                                    color: Colors.grey),
                           ),
-                          Text("Agree to terms and conditions")
+                          Text("Agree to"),
+                          TextButton(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    backgroundColor: Colors.white,
+                                    title: Text(
+                                      "Terms and Conditions",
+                                      style: TextStyle(
+                                        fontSize: 20.0,
+                                        fontFamily: 'eras-itc-demi',
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    content: Container(
+                                      height: 300.0,
+                                      child: SingleChildScrollView(
+                                        child: Text("1. Introduction\n"
+                                            "Welcome to the Vámonos app (the \"App\"). These Terms and Conditions govern your use of the App, provided by Vámonos. By accessing or using the App, you agree to comply with these Terms. If you do not agree, you should not use the App.\n\n"
+                                            "2. Service Definition\n"
+                                            "The Vámonos app provides a platform for sports facility owners to list their fields and allow users to book and pay for them online. All financial transactions are handled via the in-app payment system.\n\n"
+                                            "3. Account Registration\n"
+                                            "To complete a booking or list your field, you must create a personal account. You are responsible for maintaining the confidentiality of your account information and password, as well as for all activities that occur under your account.\n\n"
+                                            "4. User Responsibilities\n"
+                                            "For Users (Booking the Fields):\n\n"
+                                            "You are responsible for entering accurate booking information (such as booking date, time, and payment details).\n\n"
+                                            "You must ensure that all payments are made through the approved payment channels within the app.\n\n"
+                                            "For Facility Owners:\n\n"
+                                            "Facility owners must provide accurate and complete information about their fields (such as size, location, pricing, and available amenities).\n\n"
+                                            "You must keep your listings updated to ensure accuracy.\n\n"
+                                            "Facility owners must handle all bookings and payments via the in-app payment system.\n\n"
+                                            "5. Online Payment\n"
+                                            "All payments are processed through the app's integrated payment system. You agree that charges for bookings will be deducted from your account through the approved payment methods within the app.\n\n"
+                                            "6. Privacy Policy\n"
+                                            "We value your privacy. Your personal data will be collected and used in accordance with our [Privacy Policy], which explains how we handle and protect your information. By using the App, you consent to the collection and use of your data as described in the Privacy Policy.\n\n"
+                                            "7. Legal Restrictions\n"
+                                            "You may not use the app for any unlawful activities or fraudulent behavior.\n\n"
+                                            "You must comply with local laws when using the app or interacting with other users on the platform.\n\n"
+                                            "8. Limitation of Liability\n"
+                                            "The app is provided \"as is\" and \"as available.\" Vámonos does not guarantee that the app will be error-free or continuously available.\n\n"
+                                            "We are not responsible for any losses or damages that arise from your use of the app, including, but not limited to, booking errors or failed payment transactions.\n\n"
+                                            "9. Account Termination\n"
+                                            "We reserve the right to suspend or terminate your account if you violate these Terms or engage in any illegal or unauthorized activities while using the app.\n\n"
+                                            "10. Modifications to Terms\n"
+                                            "Vámonos reserves the right to update or modify these Terms at any time. Changes will take effect immediately once posted on the app or our website.\n\n"
+                                            "11. Governing Law\n"
+                                            "These Terms are governed by and construed in accordance with the laws of Egypt. Any disputes arising from these Terms will be subject to the exclusive jurisdiction of the courts in Egypt.\n\n"
+                                            "12. Contact Us\n"
+                                            "If you have any questions or concerns about these Terms and Conditions, please contact us at [Contact Information — to be updated].\n\n"),
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text("OK"),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                              child: Text('terms and conditions',
+                                  style: TextStyle(
+                                      color: Colors.blue,
+                                      decoration: TextDecoration.underline)))
                         ],
                       ),
                     ),
@@ -205,11 +243,194 @@ class _Signup_pg2_StdOwnerState extends State<Signup_pg2_StdOwner> {
                       height: 40.0,
                     ),
                     //sign up
-                    Create_GradiantGreenButton(
-                      title: 'Sign up',
-                      onButtonPressed: () {
-                        Navigator.pushNamed(context, '/stdWon_addNewStadium');
-                      },
+                    SizedBox(
+                      height: 50.0,
+                      child: Create_GradiantGreenButton(
+                        content: Text(
+                          'sign up',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24.0,
+                              fontFamily: 'eras-itc-bold'),
+                        ),
+                        onButtonPressed: () {
+                          if (emailAddress.isEmpty) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                backgroundColor: Colors.white,
+                                icon: Icon(
+                                  Icons.error,
+                                  color: Colors.red,
+                                  size: 40.0,
+                                ),
+                                title: Text(
+                                  "Missing Email",
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontFamily: 'eras-itc-demi',
+                                  ),
+                                ),
+                                content:
+                                    Text("Please enter your email address."),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text("OK"),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else if (!emailAddress.contains('@') ||
+                              !emailAddress.contains('.')) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                backgroundColor: Colors.white,
+                                icon: Icon(
+                                  Icons.error,
+                                  color: Colors.red,
+                                  size: 40.0,
+                                ),
+                                title: Text(
+                                  "Invalid Email",
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontFamily: 'eras-itc-demi',
+                                  ),
+                                ),
+                                content:
+                                    Text("Please enter a valid email address."),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text("OK"),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else if (password.isEmpty) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                backgroundColor: Colors.white,
+                                icon: Icon(
+                                  Icons.error,
+                                  color: Colors.red,
+                                  size: 40.0,
+                                ),
+                                title: Text(
+                                  "Missing Password",
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontFamily: 'eras-itc-demi',
+                                  ),
+                                ),
+                                content: Text("Please enter your password."),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text("OK"),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else if (confirmPassword.isEmpty) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                backgroundColor: Colors.white,
+                                icon: Icon(
+                                  Icons.error,
+                                  color: Colors.red,
+                                  size: 40.0,
+                                ),
+                                title: Text(
+                                  "Missing Confirm Password",
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontFamily: 'eras-itc-demi',
+                                  ),
+                                ),
+                                content: Text("Please confirm your password."),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text("OK"),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else if (password != confirmPassword) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                backgroundColor: Colors.white,
+                                icon: Icon(
+                                  Icons.error,
+                                  color: Colors.red,
+                                  size: 40.0,
+                                ),
+                                title: Text(
+                                  "Password Mismatch",
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontFamily: 'eras-itc-demi',
+                                  ),
+                                ),
+                                content: Text("Passwords do not match."),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text("OK"),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else if (!checkBox_checkTerms) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                backgroundColor: Colors.white,
+                                icon: Icon(
+                                  Icons.error,
+                                  color: Colors.red,
+                                  size: 40.0,
+                                ),
+                                title: Text(
+                                  "Terms Not Accepted",
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontFamily: 'eras-itc-demi',
+                                  ),
+                                ),
+                                content: Text(
+                                    "You must agree to the terms and conditions."),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text("OK"),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else {
+                            Navigator.pushNamed(context, '/home_owner');
+                          }
+                        },
+                      ),
                     ),
                   ],
                 ),
