@@ -1,8 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 
+// ignore: must_be_immutable
 class Stadium_info_playerPG extends StatefulWidget {
-  Stadium_info_playerPG({key});
+  String stadiumName = '';
+  String stadiumPrice = '';
+  String stadiumLocation = '';
+  bool isWaterAvailbale = false;
+  bool isTrackAvailable = false;
+  bool isGrassNormal = false;
+  String capacity = '';
+  String description = '';
+
+  Stadium_info_playerPG({
+    required this.stadiumName,
+    required this.stadiumPrice,
+    required this.stadiumLocation,
+    required this.isWaterAvailbale,
+    required this.isTrackAvailable,
+    required this.isGrassNormal,
+    required this.capacity,
+    required this.description,
+  });
 
   @override
   State<Stadium_info_playerPG> createState() => _Stadium_info_playerPGState();
@@ -92,103 +111,85 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                   ],
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
 
               // Stadium Name, rating Button and add to favorite Button
+              Text(
+                widget.stadiumName,
+                style: TextStyle(
+                  fontSize: 20.0,
+                  fontFamily: "eras-itc-bold",
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 10),
+              // price
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      "Wembley",
-                      style: TextStyle(
-                        fontSize: 24.0,
-                        fontFamily: "eras-itc-bold",
-                      ),
-                    ),
-                  ),
                   Row(
                     children: [
-                      Row(children: [
-                        for (int i = 0; i < 5; i++)
-                          Icon(Icons.star, color: Colors.amber, size: 15),
-                      ]),
+                      SizedBox(width: 20.0),
                       Text(
-                        "5.0",
+                        '${widget.stadiumPrice}.00 LE',
                         style: const TextStyle(
-                          fontSize: 15,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 161, 161, 161),
+                          fontFamily: "eras-itc-bold",
+                          color: mainColor,
                         ),
+                        textAlign: TextAlign.left,
                       ),
                     ],
                   ),
-                  SizedBox(width: 10),
-                  IconButton(
-                    icon: Icon(
-                      isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: isFavorite ? mainColor : Colors.grey,
-                      size: 30,
+//rating
+                  Row(children: [
+                    Row(children: [
+                      for (int i = 0; i < 5; i++)
+                        Icon(Icons.star, color: Colors.amber, size: 15),
+                    ]),
+                    Text(
+                      "5.0",
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 161, 161, 161),
+                      ),
                     ),
-                    onPressed: () => setState(() => isFavorite = !isFavorite),
-                  ),
+                    SizedBox(width: 20),
+                  ]),
                 ],
               ),
 
-              const SizedBox(height: 10),
-              // price
-              Padding(
-                padding: EdgeInsets.only(left: 10.0),
-                child: Row(children: [
-                  Text(
-                    "200.00 .LE",
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: "eras-itc-bold",
-                      color: mainColor,
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
-                  // SizedBox(width: 10),
-                ]),
-              ),
-
               //location
-              const SizedBox(height: 10),
-              Padding(
-                padding: EdgeInsets.only(left: 10.0),
-                child: Row(children: [
-                  Icon(Icons.location_on, color: Colors.grey, size: 18),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Assiut, New Assiut City, Suzan ",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
-                            ),
-                            maxLines: 2,
-                          ),
-                        ],
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                Icon(Icons.location_on, color: Colors.grey, size: 18),
+                Row(
+                  children: [
+                    SizedBox(width: 10.0),
+                    Text(
+                      widget.stadiumLocation,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
                       ),
+                      maxLines: 2,
                     ),
-                  ),
-                ]),
-              ),
-              const SizedBox(height: 40),
+                    SizedBox(width: 40.0),
+                  ],
+                ),
+              ]),
+              const SizedBox(height: 60),
               // Divider
               Container(
                 height: 1,
                 color: const Color.fromARGB(38, 0, 0, 0),
                 margin: const EdgeInsets.symmetric(horizontal: 18),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 60),
               // Features Icons
               Container(
                 width: 400,
@@ -231,7 +232,10 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                                   Icon(Icons.water_drop,
                                       size: 29, color: mainColor),
                                   SizedBox(height: 6),
-                                  Text("Available",
+                                  Text(
+                                      widget.isWaterAvailbale
+                                          ? 'Available'
+                                          : 'Univailable',
                                       style: TextStyle(
                                           fontSize: 14, color: Colors.white)),
                                 ],
@@ -241,7 +245,10 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                                   Icon(Icons.track_changes,
                                       size: 29, color: mainColor),
                                   SizedBox(height: 6),
-                                  Text("track",
+                                  Text(
+                                      widget.isTrackAvailable
+                                          ? 'Available'
+                                          : 'Univailable',
                                       style: TextStyle(
                                           fontSize: 14, color: Colors.white)),
                                 ],
@@ -251,7 +258,10 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                                 children: [
                                   Icon(Icons.grass, size: 29, color: mainColor),
                                   SizedBox(height: 6),
-                                  Text("normal",
+                                  Text(
+                                      widget.isGrassNormal
+                                          ? 'normal'
+                                          : 'industry',
                                       style: TextStyle(
                                           fontSize: 14, color: Colors.white)),
                                 ],
@@ -260,7 +270,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                                 children: [
                                   Icon(Icons.group, size: 29, color: mainColor),
                                   SizedBox(height: 6),
-                                  Text("10",
+                                  Text(widget.capacity,
                                       style: TextStyle(
                                           fontSize: 14, color: Colors.white)),
                                 ],
@@ -287,7 +297,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      "A football field with durable artificial grass, perfect for all-weather games. The surface is smooth, with clear white lines marking key areas like the penalty box. Surrounding the field are safety fences and seating for spectators. Bright floodlights make it ideal for exciting night matches.",
+                      widget.description,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 12,
@@ -304,12 +314,14 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                           Column(
                             children: [
                               Text(
-                                "water is avalablie",
+                                widget.isWaterAvailbale
+                                    ? 'water is avalablie'
+                                    : 'no water ',
                                 style: TextStyle(color: Colors.white),
                               ),
                               SizedBox(height: 9),
                               Text(
-                                "seats 10 people",
+                                'Accommodates ${widget.capacity} people',
                                 style: TextStyle(color: Colors.white),
                               ),
                             ],
@@ -318,12 +330,16 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                           Column(
                             children: [
                               Text(
-                                "running track ",
+                                widget.isTrackAvailable
+                                    ? 'running track'
+                                    : 'no running track',
                                 style: TextStyle(color: Colors.white),
                               ),
                               SizedBox(height: 9),
                               Text(
-                                "grass is normal",
+                                widget.isGrassNormal
+                                    ? 'grass is normal'
+                                    : 'grass is indusrty',
                                 style: TextStyle(color: Colors.white),
                               ),
                             ],
@@ -633,15 +649,12 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                                 ),
                               ),
                               SizedBox(width: 100.0),
-                              Positioned(
-                                right: 16.0,
-                                child: Text(
-                                  "3:45 pm",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontFamily: "eras-itc-light",
-                                    color: Colors.grey,
-                                  ),
+                              Text(
+                                "3:45 pm",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontFamily: "eras-itc-light",
+                                  color: Colors.grey,
                                 ),
                               ),
                             ],
@@ -715,7 +728,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          '200,0',
+                          widget.stadiumPrice + '.00',
                           style: TextStyle(
                               color: Color(0xff00B92E),
                               fontSize: 32.0,
@@ -723,7 +736,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                               fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          ' .LE',
+                          ' LE',
                           style: TextStyle(
                               color: Color(0xff00B92E),
                               fontSize: 16.0,

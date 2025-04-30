@@ -50,6 +50,7 @@ dependencies:
   day_night_time_picker: ^1.2.0
   animated_toggle_switch: ^0.8.4
   uuid: ^3.0.7
+  bottom_picker: ^3.1.0
 
 
 dev_dependencies:

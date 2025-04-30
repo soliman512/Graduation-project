@@ -11,7 +11,6 @@ class Home_Owner extends StatefulWidget {
   State<Home_Owner> createState() => _HomeState();
 }
 
-
 class _HomeState extends State<Home_Owner> {
   TextEditingController searchController = TextEditingController();
   String searchQuery = '';
@@ -21,6 +20,7 @@ class _HomeState extends State<Home_Owner> {
       child: Scaffold(
         backgroundColor: Colors.white,
         extendBodyBehindAppBar: false,
+        drawer: Create_Drawer(),
         appBar: AppBar(
           toolbarHeight: 80.0,
           scrolledUnderElevation: 0,
@@ -111,14 +111,12 @@ class _HomeState extends State<Home_Owner> {
                 Navigator.push(
                   context,
                   PageRouteBuilder(
-                    transitionDuration:
-                        Duration(milliseconds: 1500), 
-
+                    transitionDuration: Duration(milliseconds: 1500),
                     pageBuilder: (context, animation, secondaryAnimation) =>
                         AddNewStadium(),
                     transitionsBuilder:
                         (context, animation, secondaryAnimation, child) {
-                      const begin = Offset(0.0, 1.0); 
+                      const begin = Offset(0.0, 1.0);
                       const end = Offset.zero;
                       const curve = Curves.easeInOut;
 
@@ -329,8 +327,7 @@ class _HomeState extends State<Home_Owner> {
                     },
                   ),
 
-
-SizedBox(height: 100),
+                  SizedBox(height: 100),
                 ],
               ),
             ),

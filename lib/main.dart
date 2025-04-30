@@ -40,7 +40,7 @@ import 'package:graduation_project_main/Home_stadium_owner/Ticket.dart';
 import 'stdown_addNewStd/stdwon_addNewStadium.dart';
 
 // Other screens
-import 'stadium_information_player_pg/stadium_information_player_pg.dart';
+// import 'stadium_information_player_pg/stadium_information_player_pg.dart';
 import 'payment/payment.dart';
 import 'no_internetConnection/no_internetConnection.dart';
 
@@ -141,9 +141,9 @@ class MyApp extends StatelessWidget {
           '/tickets': (context) => Tickets(),
           '/profilepage': (context) => ProfilePlayer(),
 
-          // Stadium information and management
-          '/stadium_information_player_pg': (context) =>
-              Stadium_info_playerPG(),
+          // // Stadium information and management
+          // '/stadium_information_player_pg': (context) =>
+          //     Stadium_info_playerPG(),
           '/stdWon_addNewStadium': (context) => AddNewStadium(),
           '/stdown_editStadium': (context) => EditStadium_stdown(),
 

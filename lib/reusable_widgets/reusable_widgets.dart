@@ -12,9 +12,10 @@ class StadiumCard extends StatelessWidget {
   final String price;
   final int rating;
   final List<File> selectedImages;
-
+  final VoidCallback? onTap;
   StadiumCard({
     Key? key,
+    this.onTap,
     required this.title,
     required this.location,
     required this.price,
@@ -25,7 +26,7 @@ class StadiumCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: onTap ?? () {},
       child: Container(
         width: double.infinity,
         margin: EdgeInsets.symmetric(horizontal: 2.0),
@@ -76,7 +77,10 @@ class StadiumCard extends StatelessWidget {
                       ),
                       SizedBox(width: 4),
                       Text(
-                        title,
+                        title.length > 10
+                            ? title.substring(0, 14) + '...'
+                            : title,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 20,
                           fontFamily: "eras-itc-bold",
@@ -119,7 +123,10 @@ class StadiumCard extends StatelessWidget {
                         ),
                         SizedBox(width: 5),
                         Text(
-                          location,
+                          location.length > 10
+                              ? location.substring(0, 20) + '...'
+                              : location,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: Color.fromARGB(255, 130, 128, 128),
                             fontSize: 13,
@@ -359,19 +366,21 @@ class _Create_DrawerState extends State<Create_Drawer> {
                   SizedBox(width: 40.0),
                   Expanded(
                     child: DrawerItem(
-                        title: "About us",
-                        icon: Icon(Icons.info,
-                            size: 30.0,
-                            color: const Color.fromARGB(255, 0, 255, 64)),
-                        onTap: () {}),
-                  ),
-                  SizedBox(width: 32.0),
-                  Expanded(
-                    child: DrawerItem(
                         title: "Logout",
                         icon: Image.asset(
                             "assets/home_loves_tickets_top/imgs/vector_drawerLog_out.png",
                             width: 30.0),
+                        onTap: () {
+                          Navigator.pushNamed(context, '/Welcome');
+                        }),
+                  ),
+                  SizedBox(width: 32.0),
+                  Expanded(
+                    child: DrawerItem(
+                        title: "About us",
+                        icon: Icon(Icons.info,
+                            size: 30.0,
+                            color: const Color.fromARGB(255, 0, 255, 64)),
                         onTap: () {}),
                   ),
                   SizedBox(width: 40.0),
