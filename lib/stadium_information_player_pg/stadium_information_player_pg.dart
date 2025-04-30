@@ -28,8 +28,6 @@ class Stadium_info_playerPG extends StatefulWidget {
 }
 
 class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
-  double sendCommentClose = 25.0;
-  TextEditingController _commentController = TextEditingController();
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
@@ -118,11 +116,11 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                 widget.stadiumName,
                 style: TextStyle(
                   fontSize: 20.0,
-                  fontFamily: "eras-itc-bold",
+                  fontFamily: "eras-itc-demi",
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
               // price
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -161,43 +159,51 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                 ],
               ),
 
-              //location
               const SizedBox(height: 20),
+              //location
+              Row(
+                children: [
+                  SizedBox(width: 20.0),
+                  Icon(Icons.location_on, color: Colors.grey, size: 18),
+                  Text(
+                    widget.stadiumLocation,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
+                    maxLines: 2,
+                  ),
+                ],
+              ),
+              SizedBox(height: 40.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                Icon(Icons.location_on, color: Colors.grey, size: 18),
-                Row(
-                  children: [
-                    SizedBox(width: 10.0),
-                    Text(
-                      widget.stadiumLocation,
+                  Expanded(child: Divider()), // Divider on the left side
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Text(
+                      'features',
                       style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
-                      ),
-                      maxLines: 2,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black38),
                     ),
-                    SizedBox(width: 40.0),
-                  ],
-                ),
-              ]),
-              const SizedBox(height: 60),
-              // Divider
-              Container(
-                height: 1,
-                color: const Color.fromARGB(38, 0, 0, 0),
-                margin: const EdgeInsets.symmetric(horizontal: 18),
+                  ),
+                  Expanded(child: Divider()), // Divider on the right side
+                ],
               ),
-              const SizedBox(height: 60),
+              SizedBox(height: 60.0),
               // Features Icons
               Container(
-                width: 400,
+                width: double.infinity,
                 height: 80,
-                margin: EdgeInsets.all(20),
+                margin: EdgeInsets.symmetric(horizontal: 20),
                 padding: EdgeInsets.all(5),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20)),
                     color: Colors.black),
                 child: Stack(
                     alignment: AlignmentDirectional.center,
@@ -279,116 +285,106 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                           ))
                     ]),
               ),
-              SizedBox(height: 20),
-              // Description
-              Padding(
-                padding: const EdgeInsets.all(18.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+              SizedBox(height: 4),
+              Container(
+                width: double.infinity,
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.all(20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Description",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontFamily: "eras-itc-demi",
-                        fontSize: 18,
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.isWaterAvailbale
+                              ? 'water is avalablie'
+                              : 'no water ',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        SizedBox(height: 9),
+                        Text(
+                          '${widget.capacity} players',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      widget.description,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.black,
-                      ),
-                    ),
-                    SizedBox(height: 40),
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Column(
-                            children: [
-                              Text(
-                                widget.isWaterAvailbale
-                                    ? 'water is avalablie'
-                                    : 'no water ',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              SizedBox(height: 9),
-                              Text(
-                                'Accommodates ${widget.capacity} people',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ],
-                          ),
-                          SizedBox(width: 30),
-                          Column(
-                            children: [
-                              Text(
-                                widget.isTrackAvailable
-                                    ? 'running track'
-                                    : 'no running track',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              SizedBox(height: 9),
-                              Text(
-                                widget.isGrassNormal
-                                    ? 'grass is normal'
-                                    : 'grass is indusrty',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
+                    SizedBox(width: 30),
+                    Column(
+                      children: [
+                        Text(
+                          widget.isTrackAvailable
+                              ? 'running track'
+                              : 'no running track',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        SizedBox(height: 9),
+                        Text(
+                          widget.isGrassNormal
+                              ? 'grass is normal'
+                              : 'grass is indusrty',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    )
                   ],
                 ),
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20)),
+                ),
               ),
-              SizedBox(height: 60),
-
-              // Choose date of match section
+              SizedBox(height: 40.0),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Expanded(
-                    child: Divider(
-                      color: Color.fromARGB(255, 202, 202, 202),
-                      thickness: 1,
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 5.0),
+                  Expanded(child: Divider()), // Divider on the left side
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: Text(
-                      "Choose date of match",
+                      'description',
                       style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w200,
-                        color: Colors.black,
-                        fontFamily: "eras-itc-demi",
-                      ),
-                      textAlign: TextAlign.center,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black38),
                     ),
                   ),
-                  Expanded(
-                    child: Divider(
-                      color: Color.fromARGB(255, 202, 202, 202),
-                      thickness: 1,
-                    ),
-                  ),
+                  Expanded(child: Divider()), // Divider on the right side
                 ],
               ),
-
+              SizedBox(height: 40.0),
+              // Description
+              Text(
+                widget.description,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.black,
+                ),
+              ),
+              //choose match date
+              SizedBox(height: 40.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(child: Divider()), // Divider on the left side
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Text(
+                      'choose match date',
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black38),
+                    ),
+                  ),
+                  Expanded(child: Divider()), // Divider on the right side
+                ],
+              ),
+              SizedBox(height: 40.0),
               // Date, Time, Duration buttons
-              SizedBox(height: 24.0),
               Container(
                 width: double.infinity,
                 margin: EdgeInsets.symmetric(horizontal: 15.0),
@@ -396,32 +392,30 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Expanded(
-                      child: Container(
-                        width: 110.0,
-                        height: 40.0,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/home');
-                          },
-                          style: ButtonStyle(
-                            backgroundColor:
-                                WidgetStateProperty.all(Color(0xADADAD)),
-                            shape: WidgetStateProperty.all(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0))),
-                            foregroundColor:
-                                WidgetStateProperty.all(Color(0xFF000000)),
-                            side: WidgetStateProperty.all(BorderSide(
-                                color: Color(0xff00B92E), width: 0.5)),
-                            shadowColor:
-                                WidgetStateProperty.all(Colors.transparent),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, '/home');
+                        },
+                        child: Container(
+                          width: 110.0,
+                          height: 40.0,
+                          decoration: BoxDecoration(
+                            color: Color(0xADADAD),
+                            borderRadius: BorderRadius.circular(10.0),
+                            border: Border.all(
+                              color: Color(0xff00B92E),
+                              width: 0.5,
+                            ),
                           ),
-                          child: Text(
-                            "Day",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontFamily: "eras-itc-light",
-                              fontWeight: FontWeight.w700,
+                          child: Center(
+                            child: Text(
+                              "Day",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontFamily: "eras-itc-light",
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF000000),
+                              ),
                             ),
                           ),
                         ),
@@ -429,30 +423,28 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                     ),
                     SizedBox(width: 16.0),
                     Expanded(
-                      child: Container(
-                        width: 110.0,
-                        height: 40.0,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          style: ButtonStyle(
-                            backgroundColor:
-                                WidgetStateProperty.all(Color(0xADADAD)),
-                            shape: WidgetStateProperty.all(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0))),
-                            foregroundColor:
-                                WidgetStateProperty.all(Color(0xFF000000)),
-                            side: WidgetStateProperty.all(BorderSide(
-                                color: Color(0xff00B92E), width: 0.5)),
-                            shadowColor:
-                                WidgetStateProperty.all(Colors.transparent),
+                      child: GestureDetector(
+                        onTap: () {},
+                        child: Container(
+                          width: 110.0,
+                          height: 40.0,
+                          decoration: BoxDecoration(
+                            color: Color(0xADADAD),
+                            borderRadius: BorderRadius.circular(10.0),
+                            border: Border.all(
+                              color: Color(0xff00B92E),
+                              width: 0.5,
+                            ),
                           ),
-                          child: Text(
-                            "Time",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontFamily: "eras-itc-light",
-                              fontWeight: FontWeight.w700,
+                          child: Center(
+                            child: Text(
+                              "Time",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontFamily: "eras-itc-light",
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF000000),
+                              ),
                             ),
                           ),
                         ),
@@ -460,30 +452,28 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                     ),
                     SizedBox(width: 16.0),
                     Expanded(
-                      child: Container(
-                        width: 110.0,
-                        height: 40.0,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          style: ButtonStyle(
-                            backgroundColor:
-                                WidgetStateProperty.all(Color(0xADADAD)),
-                            shape: WidgetStateProperty.all(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0))),
-                            foregroundColor:
-                                WidgetStateProperty.all(Color(0xFF000000)),
-                            side: WidgetStateProperty.all(BorderSide(
-                                color: Color(0xff00B92E), width: 0.5)),
-                            shadowColor:
-                                WidgetStateProperty.all(Colors.transparent),
+                      child: GestureDetector(
+                        onTap: () {},
+                        child: Container(
+                          width: 110.0,
+                          height: 40.0,
+                          decoration: BoxDecoration(
+                            color: Color(0xADADAD),
+                            borderRadius: BorderRadius.circular(10.0),
+                            border: Border.all(
+                              color: Color(0xff00B92E),
+                              width: 0.5,
+                            ),
                           ),
-                          child: Text(
-                            "Duration",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontFamily: "eras-itc-light",
-                              fontWeight: FontWeight.w700,
+                          child: Center(
+                            child: Text(
+                              "Duration",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontFamily: "eras-itc-light",
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF000000),
+                              ),
                             ),
                           ),
                         ),
@@ -492,113 +482,27 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                   ],
                 ),
               ),
-              SizedBox(height: 49.0),
-
               // Comments Section
+              SizedBox(height: 40.0),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Expanded(
-                    child: Divider(
-                      color: Color.fromARGB(255, 202, 202, 202),
-                      thickness: 1,
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 5.0),
+                  Expanded(child: Divider()), // Divider on the left side
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: Text(
-                      "Comments",
+                      'reviews',
                       style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w200,
-                        color: Colors.black,
-                        fontFamily: "eras-itc-demi",
-                      ),
-                      textAlign: TextAlign.center,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black38),
                     ),
                   ),
-                  Expanded(
-                    child: Divider(
-                      color: Color.fromARGB(255, 202, 202, 202),
-                      thickness: 1,
-                    ),
-                  ),
+                  Expanded(child: Divider()), // Divider on the right side
                 ],
               ),
-
+              SizedBox(height: 40.0),
               SizedBox(height: 10),
-              // Add Comment
-              Container(
-                width: double.infinity,
-                margin: EdgeInsets.symmetric(horizontal: 16.0),
-                decoration: BoxDecoration(
-                    color: Color(0x9DD9D9D9),
-                    borderRadius: BorderRadius.circular(8.0)),
-                child: TextField(
-                  controller: _commentController,
-                  onChanged: (s) {
-                    setState(() {
-                      if (_commentController.text.isEmpty) {
-                        sendCommentClose = 25.0;
-                      } else {
-                        sendCommentClose = 0.0;
-                      }
-                    });
-                  },
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w200,
-                    color: Colors.black,
-                    fontFamily: "eras-itc-demi",
-                  ),
-                  keyboardType: TextInputType.text,
-                  showCursor: true,
-                  cursorColor: Color(0xff00B92E),
-                  autocorrect: true,
-                  textInputAction: TextInputAction.newline,
-                  decoration: InputDecoration(
-                      border: InputBorder.none,
-                      suffix: Stack(
-                        children: [
-                          ElevatedButton(
-                              onPressed: () {},
-                              style: ButtonStyle(
-                                shape: WidgetStateProperty.all(CircleBorder()),
-                                backgroundColor:
-                                    WidgetStateProperty.all(Color(0xff00B92E)),
-                              ),
-                              child: Icon(
-                                Icons.send_rounded,
-                                size: 16,
-                                color: Color(0xFFFFFFFF),
-                              )),
-                          AnimatedContainer(
-                            duration: Duration(milliseconds: 200),
-                            margin: EdgeInsets.only(left: 15.0),
-                            width: sendCommentClose,
-                            height: 25.0,
-                            decoration: BoxDecoration(
-                              color: Color(0xFF00B92E),
-                              shape: BoxShape.circle,
-                            ),
-                            child: null,
-                          ),
-                        ],
-                      ),
-                      prefixIcon: Container(
-                        margin: EdgeInsets.only(right: 12.0),
-                        child: Image.asset(
-                            'assets/stadium_information_player_pg/imgs/comment.png'),
-                      ),
-                      hintText: 'Add Comment',
-                      hintStyle: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w200,
-                        color: Colors.black45,
-                        fontFamily: "eras-itc-light",
-                      )),
-                ),
-              ),
-              SizedBox(height: 16.0),
               // Comment Box
               Container(
                 width: double.infinity,

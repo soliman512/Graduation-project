@@ -186,3 +186,36 @@ List<String>? placesOfCityOnSelected;
 String? citySelected;
 String? placeSelected;
 TextEditingController neighborhoodEnterd = TextEditingController();
+
+
+List<Widget> egyptGovernoratesWidgets = egyptGovernorates.map((governorate) {
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Text(
+        governorate,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ),
+  );
+}).toList();
+List<Widget> gevornmentPlacesWidgets = egyptGovernoratesAndCenters
+        .containsKey(citySelected)
+    ? egyptGovernoratesAndCenters[citySelected]!.map((place) {
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Text(
+              place,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        );
+      }).toList()
+    : []; // Return an empty list if the selected city doesn't exist in the map
