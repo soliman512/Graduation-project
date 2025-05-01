@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
@@ -24,8 +25,20 @@ class _Login_playerState extends State<Login_player> {
     try {
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
-      showSnackBar(context, "Done ...");
-      Navigator.pushNamed(context, '/home');
+      final user = credential.user;
+
+      final ownerDoc = await FirebaseFirestore.instance
+          .collection('owners')
+          .doc(user!.uid)
+          .get();
+
+      if (ownerDoc.exists) {
+        showSnackBar(context, "Done ... ");
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        showSnackBar(context, "This account is not an Player account!");
+        await FirebaseAuth.instance.signOut();
+      }
     } on FirebaseAuthException catch (e) {
       String errorMessage;
 

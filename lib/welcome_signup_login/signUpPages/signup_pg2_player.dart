@@ -655,7 +655,7 @@ class _Signup_pg2_playerState extends State<Signup_pg2_player> {
                           height: 60.0,
                         ),
                         //sign up
-                        SizedBox(
+                        SizedBox( 
                           height: 50.0,
                           child: Create_GradiantGreenButton(
                             onButtonPressed: () async {

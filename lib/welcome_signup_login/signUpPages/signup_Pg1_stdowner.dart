@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
+import 'package:graduation_project_main/welcome_signup_login/signUpPages/signup_pg2_stdowner.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Signup_pg1_StdOwner extends StatefulWidget {
   @override
@@ -16,6 +18,8 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
   bool visibleOfPlace = false;
   bool visibleOfNeighborhood = false;
   bool visibleOfButton = false;
+  bool visibleOfDateOfBirth = false;
+  DateTime? selectedDate;
 
   bool checkInputs() {
     if (visibleOfPlace == true && visibleOfNeighborhood == true) {
@@ -34,9 +38,21 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
     }
   }
 
-  final TextEditingController usernameController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
-  DateTime? selectedDate;
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController phoneNumberController = TextEditingController();
+  TextEditingController yearController = TextEditingController();
+  TextEditingController monthController = TextEditingController();
+  TextEditingController dayController = TextEditingController();
+  // Variable to store the date of birth value
+  String dateOfBirth = "";
+
+  Future<void> storeData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('username', usernameController.text);
+    await prefs.setString('phoneNumber', phoneNumberController.text);
+    await prefs.setString('dateOfBirth', dateOfBirth);
+    await prefs.setString('location', Location ?? '');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,174 +125,189 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
 
                     //username
                     Create_Input(
-                        onChange: (username) {
-                          usernameController.text = username;
-                        },
-                        isPassword: false,
-                        keyboardType: TextInputType.text,
-                        textInputAction: TextInputAction.none,
-                        hintText: "Username",
-                        addPrefixIcon: Icon(
-                          Icons.account_circle_outlined,
-                          color: mainColor,
-                        )),
-                    SizedBox(
-                      height: 30.0,
+                    controller: usernameController,
+                    isPassword: false,
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.next,
+                    hintText: "Username",
+                    addPrefixIcon: Icon(
+                      Icons.account_circle_outlined,
+                      color: mainColor,
                     ),
+                  ),
+                  SizedBox(
+                    height: 30.0,
+                  ),
+                    
 
                     //phone
-                    Create_Input(
-                        onChange: (phone) {
-                          phoneController.text = phone;
-                        },
-                        isPassword: false,
-                        keyboardType: TextInputType.number,
-                        textInputAction: TextInputAction.next,
-                        hintText: "Phone Number",
-                        addPrefixIcon: Icon(Icons.phone, color: mainColor)),
+                   Create_Input(
+                    controller: phoneNumberController,
+                    isPassword: false,
+                    keyboardType: TextInputType.phone,
+                    textInputAction: TextInputAction.next,
+                    hintText: "Phone Number",
+                    addPrefixIcon: Icon(
+                      Icons.phone,
+                      color: mainColor,
+                    ),
+                  ),
                     SizedBox(
                       height: 30.0,
                     ),
 
                     // set location
                     Create_Input(
-                      on_tap: () {
-                        setState(() {
-                          locationPopup = !locationPopup;
-                          locationPopupHeight = locationPopup ? 500.0 : 0.0;
-                        });
-                      },
-                      controller: Location == null
-                          ? TextEditingController()
-                          : TextEditingController(text: Location),
-                      isPassword: false,
-                      keyboardType: TextInputType.text,
-                      textInputAction: TextInputAction.done,
-                      isReadOnly: true,
-                      hintText: "your location",
-                      addPrefixIcon: Icon(
-                        Icons.location_on_outlined,
-                        color: mainColor,
-                      ),
+                    onChange: (value) {
+                      Location = value;
+                    },
+                    on_tap: () {
+                      setState(() {
+                        locationPopup = !locationPopup;
+                        locationPopupHeight = locationPopup ? 500.0 : 0.0;
+                      });
+                    },
+                    controller: Location == null
+                        ? TextEditingController()
+                        : TextEditingController(text: Location),
+                    isPassword: false,
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.done,
+                    isReadOnly: true,
+                    hintText: "your location",
+                    addPrefixIcon: Icon(
+                      Icons.location_on_outlined,
+                      color: mainColor,
                     ),
+                  ),
                     SizedBox(height: 30.0),
 
                     //date birh
-                    Create_Input(
-                        controller: selectedDate == null
-                            ? TextEditingController()
-                            : TextEditingController(
-                                text:
-                                    "${selectedDate?.day}/${selectedDate?.month}/${selectedDate?.year}"),
-                        onChange: (date) {
-                          selectedDate = date;
-                        },
-                        on_tap: () async {
-                          DateTime? newDateTime = await showRoundedDatePicker(
-                            context: context,
-                            height: 200,
-                            background: const Color.fromARGB(54, 0, 0, 0),
-                            description: "Date of birth",
-                            theme: ThemeData(
-                              primarySwatch: Colors.green,
-                              hintColor:
-                                  mainColor, // Ensure accent color is green
-                              colorScheme: ColorScheme.light(
-                                primary: const Color.fromARGB(120, 0, 185, 46),
-                                onPrimary: mainColor,
-                              ),
-                              textButtonTheme: TextButtonThemeData(
-                                style: TextButton.styleFrom(
-                                  foregroundColor:
-                                      mainColor, // Set text color for OK and Cancel
-                                ),
-                              ),
+                   Create_Input(
+                    controller: selectedDate == null
+                        ? TextEditingController()
+                        : TextEditingController(
+                            text:
+                                "${selectedDate?.day}/${selectedDate?.month}/${selectedDate?.year}"),
+                    onChange: (date) {
+                      dateOfBirth = date;
+                    },
+                    on_tap: () async {
+                      DateTime? newDateTime = await showRoundedDatePicker(
+                        context: context,
+                        height: 200,
+                        background: const Color.fromARGB(54, 0, 0, 0),
+                        description: "Date of birth",
+                        theme: ThemeData(
+                          primarySwatch: Colors.green,
+                          hintColor: mainColor, // Ensure accent color is green
+                          colorScheme: ColorScheme.light(
+                            primary: const Color.fromARGB(120, 0, 185, 46),
+                            onPrimary: mainColor,
+                          ),
+                          textButtonTheme: TextButtonThemeData(
+                            style: TextButton.styleFrom(
+                              foregroundColor:
+                                  mainColor, // Set text color for OK and Cancel
                             ),
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(DateTime.now().year - 60),
-                            lastDate: DateTime(DateTime.now().year + 1),
-                            borderRadius: 30,
-                          );
+                          ),
+                        ),
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(DateTime.now().year - 60),
+                        lastDate: DateTime(DateTime.now().year + 1),
+                        borderRadius: 30,
+                      );
 
-                          if (newDateTime != null) {
-                            setState(() {
-                              selectedDate = newDateTime;
-                            });
-                          }
-                        },
-                        isReadOnly: true,
-                        isPassword: false,
-                        keyboardType: TextInputType.text,
-                        textInputAction: TextInputAction.done,
-                        hintText: "Date of birth",
-                        addPrefixIcon:
-                            Icon(Icons.calendar_today, color: mainColor)),
+                      if (newDateTime != null) {
+                        setState(() {
+                          selectedDate = newDateTime;
+                          // Update the dateOfBirth value
+                          dateOfBirth = "${selectedDate?.day}/${selectedDate?.month}/${selectedDate?.year}";
+                        });
+                      }
+                    },
+                    isReadOnly: true,
+                    isPassword: false,
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.next,
+                    hintText: "Date of Birth",
+                    addPrefixIcon: Icon(
+                      Icons.date_range_rounded,
+                      color: mainColor,
+                    ),
+                  ),
                     SizedBox(
                       height: 60.0,
                     ),
 
                     //next
                     SizedBox(
-                      height: 50.0,
-                      child: Create_GradiantGreenButton(
-                          content: Text(
-                            'Next',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 24.0,
-                                fontFamily: 'eras-itc-bold'),
-                          ),
-                          onButtonPressed: () {
-                            if (PhoneNumber(phoneController.text) &&
-                                usernameController.text.isNotEmpty &&
-                                selectedDate != null &&
-                                Location != null) {
-                              // initValueOfLocation();
-                              Navigator.pushNamed(
-                                  context, '/sign_up_pg2_stdowner');
-                            } else {
-                              showDialog(
-                                context: context,
-                                barrierColor:
-                                    const Color.fromARGB(113, 0, 0, 0),
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    elevation: 120,
-                                    backgroundColor: Colors.white,
-                                    title: Row(
-                                      children: [
-                                        Icon(Icons.error, color: Colors.red),
-                                        SizedBox(width: 8.0),
-                                        Text("Error"),
-                                      ],
-                                    ),
-                                    content: Text(
-                                      "Please fill in all required fields correctly.",
-                                      style: TextStyle(
-                                        fontSize: 12.0,
-                                        color:
-                                            const Color.fromARGB(255, 0, 0, 0),
-                                      ),
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text("OK",
-                                            style: TextStyle(
-                                              fontSize: 12.0,
-                                              color: mainColor,
-                                            )),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            }
-                          }),
-                    ),
-                    SizedBox(height: 10.0),
+  height: 50.0,
+  child: Create_GradiantGreenButton(
+    content: Text(
+      'Next',
+      style: TextStyle(
+        color: Colors.white,
+        fontFamily: 'eras-itc-bold',
+        fontSize: 24.0
+      ),
+    ),
+    onButtonPressed: () async {
+      // Debugging: Print values to check
+      print("Username: ${usernameController.text}");
+      print("Phone Number: ${phoneNumberController.text}");
+      print("Location: $Location");
+      print("Date of Birth: $dateOfBirth");
+
+      // Ensure all fields are filled
+      if (usernameController.text.trim().isNotEmpty &&
+          phoneNumberController.text.trim().isNotEmpty &&
+          Location != null &&
+          Location!.trim().isNotEmpty &&
+          dateOfBirth.trim().isNotEmpty) {
+        
+        await storeData();  // Save the data to SharedPreferences
+
+        // After storing the data, navigate to the next page (signup_pg2_StdOwner)
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Signup_pg2_StdOwner(
+              username: usernameController.text.trim(),
+              phoneNumber: phoneNumberController.text.trim(),
+              location: Location!,
+              dateOfBirth: dateOfBirth,
+            ),
+          ),
+        );
+      } else {
+        // Show an alert dialog to inform the user to fill all fields
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Incomplete Information'),
+              content: Text('Please fill all the required fields.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    'OK',
+                    style: TextStyle(fontSize: 15, color: Colors.green),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    },
+  ),
+),
+
+                    SizedBox(height: 30.0),
                     //don't have account
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,

@@ -129,7 +129,7 @@ class MyApp extends StatelessWidget {
 
           // Stadium owner signup routes
           '/sign_up_pg1_stdowner': (context) => Signup_pg1_StdOwner(),
-          '/sign_up_pg2_stdowner': (context) => Signup_pg2_StdOwner(),
+          '/sign_up_pg2_stdowner': (context) => Signup_pg2_StdOwner(username: '', phoneNumber: '', dateOfBirth: '', location: '',),
 
           // Stadium owner routes
           '/home_owner': (context) => Home_Owner(),
