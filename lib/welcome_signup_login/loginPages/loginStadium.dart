@@ -257,7 +257,7 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                       margin: EdgeInsets.fromLTRB(20, 20, 0, 0),
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, '/Recorve_account');
+                          Navigator.pushNamed(context, '/Recorve_account_STU');
                         },
                         style: ButtonStyle(
                             elevation: WidgetStateProperty.all(0),

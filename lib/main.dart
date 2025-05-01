@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:graduation_project_main/stdown_addNewStd/stdown_editStadium.dart';
+import 'package:graduation_project_main/welcome_signup_login/recorve%20account/RecoverAcountSTU.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -121,6 +122,7 @@ class MyApp extends StatelessWidget {
           '/login_player': (context) => Login_player(),
           '/login_stadium': (context) => Login_Stadiumonwer(),
           '/Recorve_account': (context) => Recorve_Account(),
+          '/Recorve_account_STU': (context) => Recorve_Account_STU(),
 
           // Player signup routes
           '/sign_up_pg1_player': (context) => Signup_pg1_player(),
