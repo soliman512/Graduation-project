@@ -17,38 +17,6 @@ class AddNewStadium extends StatefulWidget {
   State<AddNewStadium> createState() => _AddNewStadiumState();
 }
 
-List<Widget> egyptGovernoratesWidgets = egyptGovernorates.map((governorate) {
-  return Center(
-    child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Text(
-        governorate,
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    ),
-  );
-}).toList();
-List<Widget> gevornmentPlacesWidgets = egyptGovernoratesAndCenters
-        .containsKey(citySelected)
-    ? egyptGovernoratesAndCenters[citySelected]!.map((place) {
-        return Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Text(
-              place,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        );
-      }).toList()
-    : []; // Return an empty list if the selected city doesn't exist in the map
-
 class _AddNewStadiumState extends State<AddNewStadium> {
   // controllers
   final TextEditingController stadiumNameController = TextEditingController();
@@ -510,24 +478,40 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 20)),
                                           SizedBox(height: 15),
-                                          TextField(
-                                            controller: neighborhoodEnterd,
-                                            decoration: InputDecoration(
-                                              hintText:
-                                                  'Enter your neighborhood',
-                                              border: OutlineInputBorder(),
-                                            ),
+                                          Create_RequiredInput(
+                                            onChange: (value) {
+                                              neighborhoodEnterd.text = value;
+                                            },
+                                            lableText:
+                                                'Enter your neighborhood',
+                                            initValue: neighborhoodEnterd.text,
+                                            textInputType: TextInputType.text,
+                                            add_prefix: Icon(Icons.location_on,
+                                                color: mainColor),
                                           ),
                                           SizedBox(height: 15),
-                                          ElevatedButton(
-                                            onPressed: () {
+                                          GestureDetector(
+                                            onTap: () {
                                               setState(() {
                                                 location =
                                                     '$citySelected - $placeSelected - ${neighborhoodEnterd.text}';
                                               });
                                               Navigator.pop(context);
                                             },
-                                            child: Text('Save'),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                gradient: greenGradientColor,
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 24, vertical: 12),
+                                              child: Icon(
+                                                Icons.check,
+                                                color: Colors.white,
+                                                size: 24,
+                                              ),
+                                            ),
                                           ),
                                         ],
                                       ),

@@ -82,7 +82,7 @@ class StadiumCard extends StatelessWidget {
                             : title,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 16,
                           fontFamily: "eras-itc-bold",
                           fontWeight: FontWeight.bold,
                         ),

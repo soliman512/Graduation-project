@@ -1,7 +1,7 @@
+import 'package:bottom_picker/bottom_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
-import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 
 class Signup_pg1_StdOwner extends StatefulWidget {
   @override
@@ -9,34 +9,18 @@ class Signup_pg1_StdOwner extends StatefulWidget {
 }
 
 class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
-  bool locationPopup = false;
-  double locationPopupHeight = 0.0;
-
-// location visiblity and visibl of items on location
-  bool visibleOfPlace = false;
-  bool visibleOfNeighborhood = false;
-  bool visibleOfButton = false;
-
-  bool checkInputs() {
-    if (visibleOfPlace == true && visibleOfNeighborhood == true) {
-      visibleOfButton = true;
-      return true;
-    }
-    return false;
-  }
-
-  String? Location;
-  void initValueOfLocation() {
-    if (citySelected == null) {
-      Location = "";
-    } else {
-      Location = "$citySelected-$placeSelected-${neighborhoodEnterd.text}";
-    }
-  }
-
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
-  DateTime? selectedDate;
+  String? location;
+  DateTime? dateOfBirth;
+
+  void initValueOfLocation() {
+    if (citySelected == null) {
+      location = "";
+    } else {
+      location = "$citySelected-$placeSelected-${neighborhoodEnterd.text}";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,14 +125,162 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                     // set location
                     Create_Input(
                       on_tap: () {
-                        setState(() {
-                          locationPopup = !locationPopup;
-                          locationPopupHeight = locationPopup ? 500.0 : 0.0;
-                        });
+                        BottomPicker(
+                          items: egyptGovernoratesWidgets,
+                          height: 600.0,
+                          titlePadding:
+                              EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
+                          buttonContent: Icon(Icons.navigate_next_rounded,
+                              color: Colors.white, size: 22.0),
+                          buttonPadding: 10.0,
+                          buttonStyle: BoxDecoration(
+                            gradient: greenGradientColor,
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          pickerTextStyle:
+                              TextStyle(fontSize: 20.0, color: Colors.black),
+                          pickerTitle: Text('Select Governorate',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w800, fontSize: 24.0)),
+                          pickerDescription: Text(
+                              'Choose the governorate where the stadium is located',
+                              style: TextStyle(fontWeight: FontWeight.w400)),
+                          onSubmit: (selectedIndex) {
+                            String governorate =
+                                egyptGovernorates[selectedIndex];
+                            setState(() {
+                              citySelected = governorate;
+                            });
+                            // Navigator.pop(context);
+
+                            Future.delayed(Duration(milliseconds: 300), () {
+                              // Start place picker
+                              List<Widget> placeWidgets =
+                                  egyptGovernoratesAndCenters[citySelected]!
+                                      .map((place) => Center(
+                                            child: Text(
+                                              place,
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                          ))
+                                      .toList();
+
+                              BottomPicker(
+                                items: placeWidgets,
+                                height: 600.0,
+                                titlePadding:
+                                    EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
+                                buttonContent: Icon(Icons.navigate_next_rounded,
+                                    color: Colors.white, size: 22.0),
+                                buttonPadding: 10.0,
+                                buttonStyle: BoxDecoration(
+                                  gradient: greenGradientColor,
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
+                                pickerTextStyle: TextStyle(
+                                    fontSize: 20.0, color: Colors.black),
+                                pickerTitle: Text('Select Place',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 24.0)),
+                                pickerDescription: Text(
+                                    'Choose the place where the stadium is located',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w400)),
+                                onSubmit: (selectedPlaceIndex) {
+                                  String place = egyptGovernoratesAndCenters[
+                                      citySelected]![selectedPlaceIndex];
+                                  setState(() {
+                                    placeSelected = place;
+                                  });
+                                  Future.delayed(Duration(milliseconds: 300),
+                                      () {
+                                    showModalBottomSheet(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.vertical(
+                                            top: Radius.circular(20)),
+                                      ),
+                                      builder: (context) {
+                                        return Padding(
+                                          padding: EdgeInsets.only(
+                                            bottom: MediaQuery.of(context)
+                                                    .viewInsets
+                                                    .bottom +
+                                                20,
+                                            top: 20,
+                                            left: 20,
+                                            right: 20,
+                                          ),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Text('Enter Neighborhood',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 20)),
+                                              SizedBox(height: 15),
+                                              Create_RequiredInput(
+                                                onChange: (value) {
+                                                  neighborhoodEnterd.text =
+                                                      value;
+                                                },
+                                                lableText:
+                                                    'Enter your neighborhood',
+                                                initValue:
+                                                    neighborhoodEnterd.text,
+                                                textInputType:
+                                                    TextInputType.text,
+                                                add_prefix: Icon(
+                                                    Icons.location_on,
+                                                    color: mainColor),
+                                              ),
+                                              SizedBox(height: 15),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    location =
+                                                        '$citySelected - $placeSelected - ${neighborhoodEnterd.text}';
+                                                  });
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    gradient:
+                                                        greenGradientColor,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                  ),
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 24,
+                                                      vertical: 12),
+                                                  child: Icon(
+                                                    Icons.check,
+                                                    color: Colors.white,
+                                                    size: 24,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  });
+                                },
+                              ).show(context);
+                            });
+                          },
+                        ).show(context);
                       },
-                      controller: Location == null
+                      controller: location == null
                           ? TextEditingController()
-                          : TextEditingController(text: Location),
+                          : TextEditingController(text: location),
                       isPassword: false,
                       keyboardType: TextInputType.text,
                       textInputAction: TextInputAction.done,
@@ -163,46 +295,40 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
 
                     //date birh
                     Create_Input(
-                        controller: selectedDate == null
+                        controller: dateOfBirth == null
                             ? TextEditingController()
                             : TextEditingController(
                                 text:
-                                    "${selectedDate?.day}/${selectedDate?.month}/${selectedDate?.year}"),
+                                    "${dateOfBirth?.day}/${dateOfBirth?.month}/${dateOfBirth?.year}"),
                         onChange: (date) {
-                          selectedDate = date;
+                          dateOfBirth = date;
                         },
-                        on_tap: () async {
-                          DateTime? newDateTime = await showRoundedDatePicker(
-                            context: context,
-                            height: 200,
-                            background: const Color.fromARGB(54, 0, 0, 0),
-                            description: "Date of birth",
-                            theme: ThemeData(
-                              primarySwatch: Colors.green,
-                              hintColor:
-                                  mainColor, // Ensure accent color is green
-                              colorScheme: ColorScheme.light(
-                                primary: const Color.fromARGB(120, 0, 185, 46),
-                                onPrimary: mainColor,
-                              ),
-                              textButtonTheme: TextButtonThemeData(
-                                style: TextButton.styleFrom(
-                                  foregroundColor:
-                                      mainColor, // Set text color for OK and Cancel
-                                ),
-                              ),
+                        on_tap: () {
+                          BottomPicker.date(
+                            maxDateTime: DateTime.now(),
+                            minDateTime: DateTime(1800),
+                            initialDateTime: DateTime.now(),
+                            titlePadding:
+                                EdgeInsets.fromLTRB(10.0, 10.0, 0.0, 0.0),
+                            buttonContent: Icon(Icons.check,
+                                color: Colors.white, size: 22.0),
+                            buttonPadding: 10.0,
+                            buttonStyle: BoxDecoration(
+                              gradient: greenGradientColor,
+                              borderRadius: BorderRadius.circular(15.0),
                             ),
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(DateTime.now().year - 60),
-                            lastDate: DateTime(DateTime.now().year + 1),
-                            borderRadius: 30,
-                          );
-
-                          if (newDateTime != null) {
-                            setState(() {
-                              selectedDate = newDateTime;
-                            });
-                          }
+                            pickerTextStyle:
+                                TextStyle(fontSize: 20.0, color: Colors.black),
+                            pickerTitle: Text('when you were born ?',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 24.0)),
+                            onSubmit: (newDateValue) {
+                              setState(() {
+                                dateOfBirth = newDateValue;
+                              });
+                            },
+                          ).show(context);
                         },
                         isReadOnly: true,
                         isPassword: false,
@@ -229,8 +355,8 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                           onButtonPressed: () {
                             if (PhoneNumber(phoneController.text) &&
                                 usernameController.text.isNotEmpty &&
-                                selectedDate != null &&
-                                Location != null) {
+                                dateOfBirth != null &&
+                                location != null) {
                               // initValueOfLocation();
                               Navigator.pushNamed(
                                   context, '/sign_up_pg2_stdowner');
@@ -300,395 +426,6 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                   ],
                 ),
               ),
-              //location popup
-              Stack(
-                children: [
-                  Visibility(
-                    visible: locationPopup,
-                    child: Container(
-                      width: double.infinity,
-                      color: Colors.transparent,
-                    ),
-                  ),
-                  Center(
-                    child: AnimatedContainer(
-                        duration: Duration(milliseconds: 500),
-                        width: double.infinity,
-                        height: locationPopupHeight,
-                        margin: EdgeInsets.symmetric(horizontal: 32.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(30.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.75),
-                              blurRadius: 100.0,
-                              offset: Offset(0, 0),
-                            ),
-                          ],
-                        ),
-                        child: Stack(
-                          children: [
-                            //close button
-                            Positioned(
-                              top: 10.0,
-                              right: 10.0,
-                              child: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    locationPopup = false;
-                                    locationPopupHeight = 0.0;
-                                  });
-                                },
-                                icon: Icon(Icons.close),
-                              ),
-                            ),
-                            //content
-                            Center(
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  children: [
-                                    SizedBox(
-                                      height: 30.0,
-                                    ),
-                                    Text("select your location",
-                                        style: TextStyle(
-                                            fontSize: 20.0,
-                                            color: const Color.fromARGB(
-                                                80, 0, 0, 0),
-                                            fontFamily: 'eras-itc-demi')),
-                                    SizedBox(height: 12.0),
-                                    Text(
-                                      'if you don’t find your place please write your place before \nyour neighborhood',
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 10.0,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ), //inputs
-                                    SizedBox(height: 60.0),
-                                    //city
-                                    ListTile(
-                                      leading: Container(
-                                        padding: EdgeInsets.all(8.0),
-                                        width: 40.0,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Colors.white,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Color(0x7C000000),
-                                              blurRadius: 10.0,
-                                            ),
-                                          ],
-                                        ),
-                                        child: Image.asset(
-                                          'assets/home_loves_tickets_top/imgs/city_Vector.png',
-                                          fit: BoxFit.contain,
-                                        ),
-                                      ),
-                                      title: Container(
-                                        width: double.infinity,
-                                        margin: EdgeInsets.symmetric(
-                                          horizontal: 20.0,
-                                        ),
-                                        height: 40.0,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Color(0x7C000000),
-                                              blurRadius: 10.0,
-                                            ),
-                                          ],
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                        ),
-                                        child: Center(
-                                          child: DropdownButton<String>(
-                                            onChanged: (String? cityValue) {
-                                              setState(() {
-                                                visibleOfPlace = true;
-                                                citySelected = cityValue;
-                                                placesOfCityOnSelected = null;
-                                                placeSelected = null;
-                                              });
-                                              placesOfCityOnSelected =
-                                                  egyptGovernoratesAndCenters[
-                                                      cityValue];
-                                            },
-                                            items:
-                                                egyptGovernorates.map((city) {
-                                              return DropdownMenuItem<String>(
-                                                value: city,
-                                                child: Text(city),
-                                              );
-                                            }).toList(),
-                                            menuMaxHeight: 300.0,
-                                            value: citySelected,
-                                            hint: Text('select City'),
-                                            icon: Icon(
-                                              Icons
-                                                  .arrow_drop_down_circle_outlined,
-                                              size: 30.0,
-                                              color: mainColor,
-                                            ),
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 18.0,
-                                            ),
-                                            alignment: Alignment.center,
-                                            underline: null,
-                                            borderRadius: BorderRadius.circular(
-                                              20.0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    //place
-                                    Visibility(
-                                      visible: visibleOfPlace,
-                                      child: Padding(
-                                        padding: EdgeInsets.only(top: 20.0),
-                                        child: ListTile(
-                                          leading: Container(
-                                            padding: EdgeInsets.all(8.0),
-                                            width: 40.0,
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: Colors.white,
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Color(0x7C000000),
-                                                  blurRadius: 10.0,
-                                                ),
-                                              ],
-                                            ),
-                                            child: Image.asset(
-                                              'assets/home_loves_tickets_top/imgs/stash_pin-place.png',
-                                              fit: BoxFit.contain,
-                                            ),
-                                          ),
-                                          title: Container(
-                                            width: double.infinity,
-                                            margin: EdgeInsets.symmetric(
-                                              horizontal: 20.0,
-                                            ),
-                                            height: 40.0,
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Color(0x7C000000),
-                                                  blurRadius: 10.0,
-                                                ),
-                                              ],
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                10.0,
-                                              ),
-                                            ),
-                                            child: Center(
-                                              child: DropdownButton<String>(
-                                                items: placesOfCityOnSelected
-                                                    ?.map((
-                                                  String place,
-                                                ) {
-                                                  return DropdownMenuItem<
-                                                      String>(
-                                                    child: Text(place),
-                                                    value: place,
-                                                  );
-                                                }).toList(),
-                                                onChanged:
-                                                    (String? placeValue) {
-                                                  setState(() {
-                                                    visibleOfNeighborhood =
-                                                        true;
-                                                    placeSelected = placeValue;
-                                                  });
-                                                },
-                                                menuMaxHeight: 300.0,
-                                                value: placeSelected,
-                                                hint: Text('select place'),
-                                                icon: Icon(
-                                                  Icons
-                                                      .arrow_drop_down_circle_outlined,
-                                                  size: 30.0,
-                                                  color: mainColor,
-                                                ),
-                                                style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 18.0,
-                                                ),
-                                                alignment: Alignment.center,
-                                                underline: null,
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                  20.0,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    // //neighborhood
-                                    Visibility(
-                                      visible: visibleOfNeighborhood,
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: 20.0,
-                                        ),
-                                        child: ListTile(
-                                          leading: Container(
-                                            padding: EdgeInsets.all(8.0),
-                                            width: 40.0,
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: Colors.white,
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Color(0x7C000000),
-                                                  blurRadius: 10.0,
-                                                ),
-                                              ],
-                                            ),
-                                            child: Image.asset(
-                                              'assets/home_loves_tickets_top/imgs/nighborhood.png',
-                                              fit: BoxFit.contain,
-                                            ),
-                                          ),
-                                          title: Container(
-                                            width: double.infinity,
-                                            margin: EdgeInsets.symmetric(
-                                              horizontal: 20.0,
-                                            ),
-                                            height: 40.0,
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Color(0x7C000000),
-                                                  blurRadius: 10.0,
-                                                ),
-                                              ],
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                10.0,
-                                              ),
-                                            ),
-                                            child: TextField(
-                                              controller: neighborhoodEnterd,
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 18.0,
-                                              ),
-                                              keyboardType: TextInputType.text,
-                                              textInputAction:
-                                                  TextInputAction.done,
-                                              decoration: InputDecoration(
-                                                border: InputBorder.none,
-                                                contentPadding: EdgeInsets.only(
-                                                  bottom: 10.0,
-                                                ),
-                                                hintText: 'neighborhood',
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    SizedBox(height: 20.0),
-                                    // //button
-                                    Visibility(
-                                      visible: checkInputs(),
-                                      child: SizedBox(
-                                        height: 50.0,
-                                        child: Create_GradiantGreenButton(
-                                          content: Text(
-                                            'Done',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontFamily: 'eras-itc-demi',
-                                                fontSize: 20.0),
-                                          ),
-                                          onButtonPressed: () {
-                                            if (citySelected == 'another' &&
-                                                    neighborhoodEnterd
-                                                        .text.isEmpty ||
-                                                placeSelected == 'another' &&
-                                                    neighborhoodEnterd
-                                                        .text.isEmpty) {
-                                              showDialog(
-                                                context: context,
-                                                barrierColor:
-                                                    const Color.fromARGB(
-                                                        113, 0, 0, 0),
-                                                builder:
-                                                    (BuildContext context) {
-                                                  return AlertDialog(
-                                                    elevation: 120,
-                                                    backgroundColor:
-                                                        Colors.white,
-                                                    title: Row(
-                                                      children: [
-                                                        Icon(Icons.error,
-                                                            color: Colors.red),
-                                                        SizedBox(width: 8.0),
-                                                        Text("infull location"),
-                                                      ],
-                                                    ),
-                                                    content: Text(
-                                                      "Please, write a full location in neightborhood field.",
-                                                      style: TextStyle(
-                                                        fontSize: 12.0,
-                                                        color: const Color
-                                                            .fromARGB(
-                                                            255, 0, 0, 0),
-                                                      ),
-                                                    ),
-                                                    actions: [
-                                                      TextButton(
-                                                        onPressed: () {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                        },
-                                                        child: Text("OK",
-                                                            style: TextStyle(
-                                                              fontSize: 12.0,
-                                                              color: mainColor,
-                                                            )),
-                                                      ),
-                                                    ],
-                                                  );
-                                                },
-                                              );
-                                            } else {
-                                              setState(() {
-                                                initValueOfLocation();
-                                                locationPopupHeight = 0.0;
-                                                locationPopup = false;
-                                              });
-                                            }
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        )),
-                  ),
-                ],
-              )
             ],
           )),
     );

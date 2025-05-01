@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
-import 'package:graduation_project_main/welcome_signup_login/loginPages/loginPlayer.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
 // import 'package:email_validator/email_validator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
