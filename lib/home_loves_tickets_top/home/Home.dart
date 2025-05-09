@@ -102,12 +102,20 @@ class _HomeState extends State<Home> {
   }
 
   //notifications:
-  Widget notifications() {
-    return Icon(
-      Icons.notifications_none_outlined,
-      size: 24,
-      color: Colors.black,
-    );
+  final CollectionReference itemsCollection =
+      FirebaseFirestore.instance.collection('players_notifications');
+  daysBefore(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+    if (difference.inDays > 0) {
+      return '${difference.inDays} days ago';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} hours ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} minutes ago';
+    } else {
+      return '';
+    }
   }
 
   @override
@@ -130,55 +138,95 @@ class _HomeState extends State<Home> {
                         margin: EdgeInsets.only(top: 30.0),
                         width: double.infinity,
                         height: MediaQuery.of(context).size.height * 0.7,
-                        padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
-                        child: SingleChildScrollView(
-                          physics: const BouncingScrollPhysics(), // Add bouncing scroll effect
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              for (int noitiCount = 0;
-                                  noitiCount < 10;
-                                  noitiCount++) 
-                                Dismissible( // Wrap in Dismissible for swipe actions
-                                  // Unique key required for Dismissible widget to track items
-                                  // and handle animations/state correctly during dismissal
-                                  key: Key('notification_$noitiCount'),
-                                  direction: DismissDirection.horizontal,
-                                  background: Container( // Left swipe background
-                                    color: Colors.transparent,
-                                    alignment: Alignment.centerLeft,
-                                    // padding: EdgeInsets.only(left: 20),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Icon(Icons.delete, color: Colors.red),
-                                        Icon(Icons.delete, color: Colors.red),
-                                      ],
-                                    ),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 10.0, vertical: 20.0),
+                        child: StreamBuilder<QuerySnapshot>(
+                            stream: itemsCollection.snapshots(),
+                            builder: (context,
+                                AsyncSnapshot<QuerySnapshot> snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                  child: SizedBox(
+                                    child: CircularProgressIndicator(
+                                        color: Colors.white30),
+                                    height: 100,
+                                    width: 100.0,
                                   ),
-                                  
-                                  onDismissed: (direction) {
-                                    // // Handle swipe actions
-                                    // if (direction == DismissDirection.startToEnd) {
-                                    //   // Handle left swipe
-                                    // } else {
-                                    //   // Handle right swipe
-                                    // }
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(top: 30.0),
-                                    child: TicketCard(
-                                        stadiumName: "Al Ahly Stadium",
-                                        price: "200",
-                                        date: "2024-01-20", 
-                                        time: "7:00 PM",
-                                        isEnd: false,
-                                        daysBefore: "2 days ago"),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
+                                );
+                              }
+                              if (snapshot.hasError) {
+                                return Text('Error: ${snapshot.error}');
+                              }
+                              if (!snapshot.hasData ||
+                                  snapshot.data!.docs.isEmpty) {
+                                return Center(
+                                    child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                      Text('No notifications',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20.0,
+                                              fontWeight: FontWeight.w600)),
+                                      SizedBox(height: 20.0),
+                                      Icon(
+
+                                        Icons.notifications_paused_rounded,
+                                        color: Colors.white,
+                                        size: 100.0,
+                                      ),
+                                    ]));
+                              }
+                              final documents = snapshot.data!.docs;
+
+                              return ListView.builder(
+                                  itemCount: documents.length,
+                                  itemBuilder: (context, index) {
+                                    final data = documents[index].data()
+                                        as Map<String, dynamic>;
+                                    final DateTime date =
+                                        (data['date'] as Timestamp).toDate();
+
+                                    return Dismissible(
+                                      // Wrap in Dismissible for swipe actions
+                                      key: Key(documents[index].id),
+                                      background: Container(
+                                        // Left swipe background
+                                        color: Colors.transparent,
+                                        alignment: Alignment.centerLeft,
+                                        // padding: EdgeInsets.only(left: 20),
+                                        child: Icon(Icons.delete,
+                                            color: Colors.red),
+                                      ),
+                                      secondaryBackground: Container(
+                                        // Right swipe background
+                                        color: Colors.transparent,
+                                        alignment: Alignment.centerRight,
+                                        // padding: EdgeInsets.only(left: 20),
+                                        child: Icon(Icons.delete,
+                                            color: Colors.red),
+                                      ),
+                                      onDismissed: (deleteNotification) {
+                                        itemsCollection
+                                            .doc(documents[index].id)
+                                            .delete();
+                                      },
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 30.0),
+                                        child: TicketCard(
+                                            stadiumName: data['stadiumName'],
+                                            price: data['price'].toString(),
+                                            date: date.toString(),
+                                            time: "7:00 PM",
+                                            isEnd: data['isEnd'],
+                                            daysBefore: daysBefore(date)),
+                                      ),
+                                    );
+                                  });
+                            }),
                       ),
                     );
                   },
