@@ -464,38 +464,32 @@ class _Create_DrawerState extends State<Create_Drawer> {
     );
   }
 }
-
-//statful widget for the appbar
 // ignore: must_be_immutable
-class Create_AppBar extends StatefulWidget implements PreferredSizeWidget {
+class Create_AppBar extends StatelessWidget implements PreferredSizeWidget {
+  @override
   Size get preferredSize => Size.fromHeight(80.0);
 
   Widget title;
+  VoidCallback notificationState;
   Create_AppBar({
     required this.title,
+    required this.notificationState,
   });
 
-  @override
-  State<Create_AppBar> createState() => _Create_AppBarState();
-}
-
-class _Create_AppBarState extends State<Create_AppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
       toolbarHeight: 80.0,
-// foregroundColor: Color(0xFFFFFFFF),
       elevation: 0,
       backgroundColor: Color(0xFFFFFFFF),
-//bars
+      scrolledUnderElevation: 0,
+      //bars
       leading: Container(
         margin: EdgeInsets.only(left: 10.0),
         child: Builder(builder: (context) {
           return IconButton(
             onPressed: () {
-              setState(() {
-                Scaffold.of(context).openDrawer();
-              });
+              Scaffold.of(context).openDrawer();
             },
             icon: Image.asset("assets/home_loves_tickets_top/imgs/bars.png",
                 width: 24.0),
@@ -504,14 +498,12 @@ class _Create_AppBarState extends State<Create_AppBar> {
         }),
       ),
 
-// notifications
+      // notifications
       actions: [
         Container(
           margin: EdgeInsets.only(right: 10.0),
           child: IconButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/Welcome');
-            },
+            onPressed: notificationState,
             icon: Image.asset(
                 "assets/home_loves_tickets_top/imgs/notifications.png",
                 width: 24.0),
@@ -519,8 +511,8 @@ class _Create_AppBarState extends State<Create_AppBar> {
         )
       ],
 
-//title "vamonos"
-      title: widget.title,
+      //title "vamonos"
+      title: title,
 
       centerTitle: true,
     );

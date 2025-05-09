@@ -216,6 +216,7 @@ class Tickets extends StatelessWidget {
             backgroundColor: Color(0xFFFFFFFF),
             extendBodyBehindAppBar: false,
             appBar: Create_AppBar(
+              notificationState: (){},
               title: RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(

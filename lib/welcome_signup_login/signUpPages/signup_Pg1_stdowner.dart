@@ -2,6 +2,7 @@ import 'package:bottom_picker/bottom_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
+import 'package:graduation_project_main/welcome_signup_login/signUpPages/signup_pg2_stdowner.dart';
 
 class Signup_pg1_StdOwner extends StatefulWidget {
   @override
@@ -358,8 +359,17 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                                 dateOfBirth != null &&
                                 location != null) {
                               // initValueOfLocation();
-                              Navigator.pushNamed(
-                                  context, '/sign_up_pg2_stdowner');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Signup_pg2_StdOwner(
+                                    username: usernameController.text,
+                                    phoneNumber: phoneController.text, 
+                                    dateOfBirth: dateOfBirth.toString(),
+                                    location: location!,
+                                  ),
+                                ),
+                              );
                             } else {
                               showDialog(
                                 context: context,

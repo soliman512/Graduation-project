@@ -62,13 +62,17 @@ class _WelcomeState extends State<Welcome> {
                   WidthForabout = 0.0;
                 }
               });
+
+                // Navigator.pushNamed(context, '/no_internetConnection');
+              
             },
             icon: aboutState,
           ),
           actions: [
             IconButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/booking_successful');
+                Navigator.pushNamed(context, '/splash');
+
               },
               icon: Icon(Icons.language, color: Color(0xFFFFFFFF)),
             ),
