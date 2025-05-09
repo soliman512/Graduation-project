@@ -12,193 +12,198 @@ Widget buildCard({
     child: Container(
       width: 360.0,
       decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(15),
-      border: Border.all(
-        color: mainColor,
-        width: 2,
-      ),
-      boxShadow: [
-        BoxShadow(
-        color: Colors.black.withOpacity(0.1),
-        blurRadius: 5,
-        offset: Offset(0, 2),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(
+          color: mainColor,
+          width: 2,
         ),
-      ],
-      ),
-      child: Stack(
-      children: [
-        // Decorative ball image positioned at the top-right corner
-        Positioned(
-        top: -26,
-        right: -26,
-        child: Image.asset(
-          "assets/home_loves_tickets_top/imgs/ball.png",
-          width: 100.0,
-        ),
-        ),
-        Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image container for the card
-          Container(
-          width: 150,
-          height: 120,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.asset(
-            imageUrl,
-            width: double.infinity,
-            height: double.infinity,
-            fit: BoxFit.cover,
-            ),
-          ),
-          ),
-          // Content section
-          Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Title of the card
-              Text(
-              title,
-              style: TextStyle(
-                fontSize: 20,
-                fontFamily: 'eras-itc-bold',
-                fontWeight: FontWeight.bold,
-              ),
-              ),
-              // Location row with icon
-              Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                Icons.location_on,
-                size: 12,
-                color: Colors.grey,
-                ),
-                SizedBox(width: 4),
-                Text(
-                location,
-                style: TextStyle(
-                  fontSize: 8,
-                  color: Colors.grey,
-                ),
-                ),
-              ],
-              ),
-              // Rating and price row
-              Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                // Star rating
-                Row(
-                  children: [
-                  for (int i = 0; i < 5; i++)
-                    Icon(
-                    Icons.star,
-                    color: Color(0xffFFCC00),
-                    size: 10,
-                    ),
-                  SizedBox(width: 2),
-                  Text(
-                    "5",
-                    style: TextStyle(fontSize: 10),
-                  ),
-                  ],
-                ),
-                Spacer(),
-                // Price text
-                Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: Text(
-                  price,
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Color(0xff00B92E),
-                    fontFamily: 'eras-itc-bold',
-                    fontWeight: FontWeight.bold,
-                  ),
-                  ),
-                ),
-                ],
-              ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        // Handle remove action
-                      },
-                      child: Container(
-                      // width: 100,
-                      height: 24,
-                      child: OutlinedButton(
-                        onPressed: () {},
-                        style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.red, width: 2),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        backgroundColor: Colors.white,
-                        ),
-                        child: Text(
-                        "Remove",
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 8,
-                          fontFamily: 'eras-itc-bold',
-                        ),
-                        ),
-                      ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 4.0,),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        // Handle book action
-                      },
-                      child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        gradient: greenGradientColor,),
-                      // width: 100,
-                      height: 24,
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                        backgroundColor: WidgetStateProperty.all(Colors.transparent),
-                        foregroundColor: WidgetStateProperty.all(Colors.white),
-                        ),
-                        onPressed: () {},
-                        child: Text(
-                        "Book",
-                        style: TextStyle(
-                          fontSize: 8,
-                          fontFamily: 'eras-itc-bold',
-                        ),
-                        ),
-                      ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-            ],
-            ),
-          ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 5,
+            offset: Offset(0, 2),
           ),
         ],
-        ),
-      ],
+      ),
+      child: Stack(
+        children: [
+          // Decorative ball image positioned at the top-right corner
+          Positioned(
+            top: -26,
+            right: -26,
+            child: Image.asset(
+              "assets/home_loves_tickets_top/imgs/ball.png",
+              width: 100.0,
+            ),
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Image container for the card
+              Container(
+                width: 150,
+                height: 120,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.asset(
+                    imageUrl,
+                    width: double.infinity,
+                    height: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              // Content section
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Title of the card
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: 'eras-itc-bold',
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      // Location row with icon
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.location_on,
+                            size: 12,
+                            color: Colors.grey,
+                          ),
+                          SizedBox(width: 4),
+                          Text(
+                            location,
+                            style: TextStyle(
+                              fontSize: 8,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                      // Rating and price row
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            // Star rating
+                            Row(
+                              children: [
+                                for (int i = 0; i < 5; i++)
+                                  Icon(
+                                    Icons.star,
+                                    color: Color(0xffFFCC00),
+                                    size: 10,
+                                  ),
+                                SizedBox(width: 2),
+                                Text(
+                                  "5",
+                                  style: TextStyle(fontSize: 10),
+                                ),
+                              ],
+                            ),
+                            Spacer(),
+                            // Price text
+                            Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Text(
+                                price,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: Color(0xff00B92E),
+                                  fontFamily: 'eras-itc-bold',
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                // Handle remove action
+                              },
+                              child: Container(
+                                // width: 100,
+                                height: 24,
+                                child: OutlinedButton(
+                                  onPressed: () {},
+                                  style: OutlinedButton.styleFrom(
+                                    side:
+                                        BorderSide(color: Colors.red, width: 2),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    backgroundColor: Colors.white,
+                                  ),
+                                  child: Text(
+                                    "Remove",
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 8,
+                                      fontFamily: 'eras-itc-bold',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 4.0,
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                // Handle book action
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  gradient: greenGradientColor,
+                                ),
+                                // width: 100,
+                                height: 24,
+                                child: ElevatedButton(
+                                  style: ButtonStyle(
+                                    backgroundColor: WidgetStateProperty.all(
+                                        Colors.transparent),
+                                    foregroundColor:
+                                        WidgetStateProperty.all(Colors.white),
+                                  ),
+                                  onPressed: () {},
+                                  child: Text(
+                                    "Book",
+                                    style: TextStyle(
+                                      fontSize: 8,
+                                      fontFamily: 'eras-itc-bold',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     ),
   );
@@ -259,7 +264,6 @@ Widget buildCard({
 //   );
 // }
 
-
 class Favourites extends StatefulWidget {
   @override
   State<Favourites> createState() => _FavouritesState();
@@ -273,6 +277,7 @@ class _FavouritesState extends State<Favourites> {
       backgroundColor: Color(0xFFFFFFFF),
       extendBodyBehindAppBar: false,
       appBar: Create_AppBar(
+        notificationState: () {},
         title: RichText(
           textAlign: TextAlign.center,
           text: TextSpan(

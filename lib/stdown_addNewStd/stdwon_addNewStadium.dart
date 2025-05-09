@@ -900,27 +900,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                       child: TextField(
                         keyboardType: TextInputType.none,
                         onTap: () {
-                          //   Navigator.of(context).push(
-                          //     showPicker(
-                          //       context: context,
-                          //       value: Time(hour: 7, minute: 00),
-                          //       sunrise: TimeOfDay(
-                          //         hour: 6,
-                          //         minute: 0,
-                          //       ), // optional
-                          //       sunset: TimeOfDay(
-                          //         hour: 18,
-                          //         minute: 0,
-                          //       ), // optional
-                          //       duskSpanInMinutes: 120, // optional
-                          //       onChange: (value) {
-                          //         setState(() {
-                          //           timeStart =
-                          //               '${value.hourOfPeriod.toString().padLeft(2, '0')} : ${value.minute.toString().padLeft(2, '0')} ${value.period == DayPeriod.am ? 'AM' : 'PM'}';
-                          //         });
-                          //       },
-                          //     ),
-                          //   );
+                          
                           BottomPicker.time(
                             titlePadding:
                                 EdgeInsets.fromLTRB(10.0, 10.0, 0.0, 0.0),
@@ -983,27 +963,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                         keyboardType: TextInputType.none,
                         controller: TextEditingController(text: timeEnd),
                         onTap: () {
-                          // Navigator.of(context).push(
-                          //   showPicker(
-                          //     context: context,
-                          //     value: Time(hour: 23, minute: 00),
-                          //     sunrise: TimeOfDay(
-                          //       hour: 6,
-                          //       minute: 0,
-                          //     ), // optional
-                          //     sunset: TimeOfDay(
-                          //       hour: 18,
-                          //       minute: 0,
-                          //     ), // optional
-                          //     duskSpanInMinutes: 120, // optional
-                          //     onChange: (value) {
-                          //       setState(() {
-                          //         timeEnd =
-                          //             '${value.hourOfPeriod.toString().padLeft(2, '0')} : ${value.minute.toString().padLeft(2, '0')} ${value.period == DayPeriod.am ? 'AM' : 'PM'}';
-                          //       });
-                          //     },
-                          //   ),
-                          // );
+                        
                           BottomPicker.time(
                             titlePadding:
                                 EdgeInsets.fromLTRB(10.0, 10.0, 0.0, 0.0),

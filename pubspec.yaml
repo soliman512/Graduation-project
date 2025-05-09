@@ -89,6 +89,7 @@ flutter:
     - assets/no_internet_connection/imgs/
     - assets/sharedBackground.png
     - assets/loading.gif
+    - assets/splashBackground.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

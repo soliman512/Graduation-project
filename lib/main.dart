@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:graduation_project_main/stdown_addNewStd/stdown_editStadium.dart';
+import 'package:graduation_project_main/welcome_signup_login/recorve%20account/RecoverAcountSTU.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -23,7 +24,7 @@ import 'welcome_signup_login/loginPages/loginPlayer.dart';
 import 'welcome_signup_login/signUpPages/signup_Pg1_Player.dart';
 import 'welcome_signup_login/signUpPages/signup_Pg2_Player.dart';
 import 'welcome_signup_login/signUpPages/signup_Pg1_stdowner.dart';
-import 'welcome_signup_login/signUpPages/signup_pg2_stdowner.dart';
+// import 'welcome_signup_login/signUpPages/signup_pg2_stdowner.dart';
 import 'welcome_signup_login/signUpPages/addAccountImage_player.dart';
 import 'welcome_signup_login/verify/verifyemail.dart';
 import 'welcome_signup_login/recorve account/RecorveAcount.dart';
@@ -121,6 +122,7 @@ class MyApp extends StatelessWidget {
           '/login_player': (context) => Login_player(),
           '/login_stadium': (context) => Login_Stadiumonwer(),
           '/Recorve_account': (context) => Recorve_Account(),
+          '/Recorve_account_STU': (context) => Recorve_Account_STU(),
 
           // Player signup routes
           '/sign_up_pg1_player': (context) => Signup_pg1_player(),
@@ -129,7 +131,7 @@ class MyApp extends StatelessWidget {
 
           // Stadium owner signup routes
           '/sign_up_pg1_stdowner': (context) => Signup_pg1_StdOwner(),
-          '/sign_up_pg2_stdowner': (context) => Signup_pg2_StdOwner(),
+          // '/sign_up_pg2_stdowner': (context) => Signup_pg2_StdOwner(username: '', phoneNumber: '', dateOfBirth: '', location: '',),
 
           // Stadium owner routes
           '/home_owner': (context) => Home_Owner(),
@@ -141,9 +143,9 @@ class MyApp extends StatelessWidget {
           '/tickets': (context) => Tickets(),
           '/profilepage': (context) => ProfilePlayer(),
 
-          // // Stadium information and management
+          // Stadium information and management
           // '/stadium_information_player_pg': (context) =>
-          //     Stadium_info_playerPG(),
+              // Stadium_info_playerPG(),
           '/stdWon_addNewStadium': (context) => AddNewStadium(),
           '/stdown_editStadium': (context) => EditStadium_stdown(),
 

@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
+import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
 
 class Login_Stadiumonwer extends StatefulWidget {
   @override
@@ -9,25 +12,75 @@ class Login_Stadiumonwer extends StatefulWidget {
 
 class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
   bool visiblePassword = true;
-  Icon unShowPassword = Icon(
-    Icons.visibility,
-    color: mainColor,
-  );
-  Icon showPassword = Icon(
-    Icons.visibility_off,
-    color: const Color.fromARGB(158, 44, 44, 44),
-  );
-  Icon showPasswordState = Icon(
-    Icons.visibility,
-    color: mainColor,
-  );
-  TextEditingController password = TextEditingController();
-  TextEditingController email = TextEditingController();
+ 
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  bool isLoading = false;
+  signIn() async {
+  setState(() {
+    isLoading = true;
+  });
+
+  try {
+    final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: emailController.text,
+      password: passwordController.text,
+    );
+
+    final user = credential.user;
+
+    // التحقق من أن المستخدم موجود في مجموعة "owners"
+    final ownerDoc = await FirebaseFirestore.instance
+        .collection('owners')
+        .doc(user!.uid)
+        .get();
+
+    if (ownerDoc.exists) {
+      showSnackBar(context, "Done ... ");
+      Navigator.pushReplacementNamed(context, '/home_owner');
+    } else {
+      showSnackBar(context, "This account is not an Owner account!");
+      await FirebaseAuth.instance.signOut();
+    }
+
+  } on FirebaseAuthException catch (e) {
+    String errorMessage;
+
+    print("snackbar  ${e.code}");
+    switch (e.code) {
+      case 'invalid-credential':
+      case 'user-not-found':
+        errorMessage = "Email not found";
+        break;
+      case 'wrong-password':
+        errorMessage = "Wrong-Password";
+        break;
+      case 'invalid-email':
+        errorMessage = 'invalid-email';
+        break;
+      default:
+        errorMessage = "An unexpected error occurred.Try again.";
+    }
+    showSnackBar(context, errorMessage);
+  } finally {
+    setState(() {
+      isLoading = false;
+    });
+  }
+}
+
+
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.white,
+          backgroundColor: Colors.white,
           extendBodyBehindAppBar: false,
           //app bar
           appBar: AppBar(
@@ -86,18 +139,45 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                     ),
 
                     //email address
-                    Create_Input(
-                      onChange: (value) {
-                        this.email.text = value;
-                      },
-                      // controller: email,
-                      isPassword: false,
-                      keyboardType: TextInputType.emailAddress,
-                      textInputAction: TextInputAction.next,
-                      hintText: "Email Address",
-                      addPrefixIcon: Icon(
-                        Icons.account_circle_outlined,
-                        color: mainColor,
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 32.0),
+                      color: Color(0xC7FFFFFF),
+                      width: double.infinity,
+                      height: 44.0,
+                      child: TextField(
+                        controller: emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
+                        obscureText: false,
+                        cursorColor: mainColor,
+                        decoration: InputDecoration(
+                          focusColor: mainColor,
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: mainColor,
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.account_circle_outlined,
+                            color: mainColor,
+                          ),
+                          contentPadding: EdgeInsets.symmetric(vertical: 5),
+                          hintText: "Email Address",
+                          hintStyle: TextStyle(
+                            color: Color(0x4F000000),
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Color(0x4F000000),
+                              width: 1.0,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
                       ),
                     ),
                     //just for space
@@ -106,36 +186,67 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                     ),
 
                     //password
-                    Create_Input(
-                      onChange: (value) {
-                        this.password.text = value;
-                      },
-                      // controller: password,
-                      isPassword: visiblePassword,
-                      keyboardType: TextInputType.text,
-                      textInputAction: TextInputAction.done,
-                      hintText: "Password",
-                      addPrefixIcon: Icon(Icons.lock_outline, color: mainColor),
-                      addSuffixIcon: IconButton(
-                        icon: showPasswordState,
-                        onPressed: () {
-                          setState(() {
-                            visiblePassword = !visiblePassword;
-                            showPasswordState =
-                                showPasswordState == showPassword
-                                    ? unShowPassword
-                                    : showPassword;
-                          });
-                        },
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 32.0),
+                      color: Color(0xC7FFFFFF),
+                      width: double.infinity,
+                      height: 44.0,
+                      child: TextField(
+                        controller: passwordController,
+                        keyboardType: TextInputType.text,
+                        textInputAction: TextInputAction.done,
+                        obscureText: visiblePassword,
+                        cursorColor: mainColor,
+                        decoration: InputDecoration(
+                          focusColor: mainColor,
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: mainColor,
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.password_rounded,
+                            color: mainColor,
+                          ),
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                visiblePassword = !visiblePassword;
+                              });
+                            },
+                            icon: visiblePassword
+                                ? Icon(Icons.visibility, color: mainColor)
+                                : Icon(Icons.visibility_off,
+                                    color: Colors.grey),
+                            color: mainColor,
+                          ),
+                          contentPadding: EdgeInsets.symmetric(vertical: 5),
+                          hintText: "Password",
+                          hintStyle: TextStyle(
+                            color: Color(0x4F000000),
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Color(0x4F000000),
+                              width: 1.0,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
                       ),
                     ),
+
                     //forgot
                     Container(
                       alignment: Alignment.centerLeft,
                       margin: EdgeInsets.fromLTRB(20, 20, 0, 0),
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, '/Recorve_account');
+                          Navigator.pushNamed(context, '/Recorve_account_STU');
                         },
                         style: ButtonStyle(
                             elevation: WidgetStateProperty.all(0),
@@ -168,8 +279,10 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                                 fontSize: 24.0,
                                 fontFamily: 'eras-itc-bold'),
                           ),
-                          onButtonPressed: () {
-                            Navigator.pushNamed(context, '/home_owner');
+                          onButtonPressed: () async {
+                            await signIn();
+                            // showSnackBar(context, "Done ... ");
+                            if (!mounted) return;
                           }),
                     ),
                     SizedBox(
@@ -228,9 +341,8 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                                   // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Image.asset(
-                                      "assets/welcome_signup_login/imgs/google.png",
-                                      width: 32.0
-                                    ),
+                                        "assets/welcome_signup_login/imgs/google.png",
+                                        width: 32.0),
                                     Text('google',
                                         style: TextStyle(
                                             color: Color(0xFFFF3D00),
@@ -257,7 +369,7 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                           //facebook
                           Expanded(
                             child: SizedBox(
-                              height:60.0,
+                              height: 60.0,
                               child: ElevatedButton(
                                 onPressed: () {},
                                 child: Wrap(
@@ -296,10 +408,21 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('don\'t have account? ',style: TextStyle(color:Colors.black, fontSize:16.0,fontWeight: FontWeight.w300)),
-                        TextButton(onPressed: (){
-                          Navigator.pushNamed(context, '/sign_up_pg1_stdowner');
-                        }, child: Text('sign up', style: TextStyle(color:mainColor, fontSize:16.0, )))
+                        Text('don\'t have account? ',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.w300)),
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                  context, '/sign_up_pg1_stdowner');
+                            },
+                            child: Text('sign up',
+                                style: TextStyle(
+                                  color: mainColor,
+                                  fontSize: 16.0,
+                                )))
                       ],
                     )
                   ],

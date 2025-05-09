@@ -82,7 +82,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                   )),
               leading: IconButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/login_signup_player');
+                  Navigator.pushNamed(context, '/login_stadium');
                 },
                 icon: Image.asset("assets/welcome_signup_login/imgs/back.png"),
                 color: Color(0xff000000),

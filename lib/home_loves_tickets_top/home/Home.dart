@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/stadium_information_player_pg/stadium_information_player_pg.dart';
 import 'package:bottom_picker/bottom_picker.dart';
+import 'package:graduation_project_main/widgets/ticket_card.dart';
 
 /// Home screen widget that displays list of stadiums with search and filter functionality
 class Home extends StatefulWidget {
@@ -22,7 +24,7 @@ class _HomeState extends State<Home> {
   String searchQuery = '';
   TextEditingController searchController = TextEditingController();
 
-   // Location filter state
+  // Location filter state
   // bool locationPopup = false;
   // double locationPopupHeight = 0.0;
   // bool visibleOfPlace = false;
@@ -99,6 +101,15 @@ class _HomeState extends State<Home> {
     );
   }
 
+  //notifications:
+  Widget notifications() {
+    return Icon(
+      Icons.notifications_none_outlined,
+      size: 24,
+      color: Colors.black,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -107,11 +118,76 @@ class _HomeState extends State<Home> {
         extendBodyBehindAppBar: false,
         drawer: Create_Drawer(),
         appBar: Create_AppBar(
+            notificationState: () => showDialog(
+                  barrierColor: const Color.fromARGB(237, 0, 0, 0),
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Dialog(
+                      backgroundColor: Colors.transparent,
+                      alignment: Alignment.topCenter,
+                      insetPadding: EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Container(
+                        margin: EdgeInsets.only(top: 30.0),
+                        width: double.infinity,
+                        height: MediaQuery.of(context).size.height * 0.7,
+                        padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+                        child: SingleChildScrollView(
+                          physics: const BouncingScrollPhysics(), // Add bouncing scroll effect
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              for (int noitiCount = 0;
+                                  noitiCount < 10;
+                                  noitiCount++) 
+                                Dismissible( // Wrap in Dismissible for swipe actions
+                                  // Unique key required for Dismissible widget to track items
+                                  // and handle animations/state correctly during dismissal
+                                  key: Key('notification_$noitiCount'),
+                                  direction: DismissDirection.horizontal,
+                                  background: Container( // Left swipe background
+                                    color: Colors.transparent,
+                                    alignment: Alignment.centerLeft,
+                                    // padding: EdgeInsets.only(left: 20),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Icon(Icons.delete, color: Colors.red),
+                                        Icon(Icons.delete, color: Colors.red),
+                                      ],
+                                    ),
+                                  ),
+                                  
+                                  onDismissed: (direction) {
+                                    // // Handle swipe actions
+                                    // if (direction == DismissDirection.startToEnd) {
+                                    //   // Handle left swipe
+                                    // } else {
+                                    //   // Handle right swipe
+                                    // }
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 30.0),
+                                    child: TicketCard(
+                                        stadiumName: "Al Ahly Stadium",
+                                        price: "200",
+                                        date: "2024-01-20", 
+                                        time: "7:00 PM",
+                                        isEnd: false,
+                                        daysBefore: "2 days ago"),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
             title: Add_AppName(
-          align: TextAlign.center,
-          font_size: 24.0,
-          color: Colors.black,
-        )),
+              align: TextAlign.center,
+              font_size: 24.0,
+              color: Colors.black,
+            )),
 
         // Bottom navigation bar
         floatingActionButton: Container(
