@@ -17,6 +17,38 @@ class AddNewStadium extends StatefulWidget {
   State<AddNewStadium> createState() => _AddNewStadiumState();
 }
 
+List<Widget> egyptGovernoratesWidgets = egyptGovernorates.map((governorate) {
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Text(
+        governorate,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ),
+  );
+}).toList();
+List<Widget> gevornmentPlacesWidgets = egyptGovernoratesAndCenters
+        .containsKey(citySelected)
+    ? egyptGovernoratesAndCenters[citySelected]!.map((place) {
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Text(
+              place,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        );
+      }).toList()
+    : []; // Return an empty list if the selected city doesn't exist in the map
+
 class _AddNewStadiumState extends State<AddNewStadium> {
   // controllers
   final TextEditingController stadiumNameController = TextEditingController();
@@ -478,40 +510,24 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 20)),
                                           SizedBox(height: 15),
-                                          Create_RequiredInput(
-                                            onChange: (value) {
-                                              neighborhoodEnterd.text = value;
-                                            },
-                                            lableText:
-                                                'Enter your neighborhood',
-                                            initValue: neighborhoodEnterd.text,
-                                            textInputType: TextInputType.text,
-                                            add_prefix: Icon(Icons.location_on,
-                                                color: mainColor),
+                                          TextField(
+                                            controller: neighborhoodEnterd,
+                                            decoration: InputDecoration(
+                                              hintText:
+                                                  'Enter your neighborhood',
+                                              border: OutlineInputBorder(),
+                                            ),
                                           ),
                                           SizedBox(height: 15),
-                                          GestureDetector(
-                                            onTap: () {
+                                          ElevatedButton(
+                                            onPressed: () {
                                               setState(() {
                                                 location =
                                                     '$citySelected - $placeSelected - ${neighborhoodEnterd.text}';
                                               });
                                               Navigator.pop(context);
                                             },
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                gradient: greenGradientColor,
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                              ),
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 24, vertical: 12),
-                                              child: Icon(
-                                                Icons.check,
-                                                color: Colors.white,
-                                                size: 24,
-                                              ),
-                                            ),
+                                            child: Text('Save'),
                                           ),
                                         ],
                                       ),
@@ -900,7 +916,27 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                       child: TextField(
                         keyboardType: TextInputType.none,
                         onTap: () {
-                          
+                          //   Navigator.of(context).push(
+                          //     showPicker(
+                          //       context: context,
+                          //       value: Time(hour: 7, minute: 00),
+                          //       sunrise: TimeOfDay(
+                          //         hour: 6,
+                          //         minute: 0,
+                          //       ), // optional
+                          //       sunset: TimeOfDay(
+                          //         hour: 18,
+                          //         minute: 0,
+                          //       ), // optional
+                          //       duskSpanInMinutes: 120, // optional
+                          //       onChange: (value) {
+                          //         setState(() {
+                          //           timeStart =
+                          //               '${value.hourOfPeriod.toString().padLeft(2, '0')} : ${value.minute.toString().padLeft(2, '0')} ${value.period == DayPeriod.am ? 'AM' : 'PM'}';
+                          //         });
+                          //       },
+                          //     ),
+                          //   );
                           BottomPicker.time(
                             titlePadding:
                                 EdgeInsets.fromLTRB(10.0, 10.0, 0.0, 0.0),
@@ -963,7 +999,27 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                         keyboardType: TextInputType.none,
                         controller: TextEditingController(text: timeEnd),
                         onTap: () {
-                        
+                          // Navigator.of(context).push(
+                          //   showPicker(
+                          //     context: context,
+                          //     value: Time(hour: 23, minute: 00),
+                          //     sunrise: TimeOfDay(
+                          //       hour: 6,
+                          //       minute: 0,
+                          //     ), // optional
+                          //     sunset: TimeOfDay(
+                          //       hour: 18,
+                          //       minute: 0,
+                          //     ), // optional
+                          //     duskSpanInMinutes: 120, // optional
+                          //     onChange: (value) {
+                          //       setState(() {
+                          //         timeEnd =
+                          //             '${value.hourOfPeriod.toString().padLeft(2, '0')} : ${value.minute.toString().padLeft(2, '0')} ${value.period == DayPeriod.am ? 'AM' : 'PM'}';
+                          //       });
+                          //     },
+                          //   ),
+                          // );
                           BottomPicker.time(
                             titlePadding:
                                 EdgeInsets.fromLTRB(10.0, 10.0, 0.0, 0.0),

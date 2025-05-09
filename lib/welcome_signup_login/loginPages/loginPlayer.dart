@@ -27,12 +27,12 @@ class _Login_playerState extends State<Login_player> {
           email: emailController.text, password: passwordController.text);
       final user = credential.user;
 
-      final ownerDoc = await FirebaseFirestore.instance
-          .collection('owners')
+      final playerDoc = await FirebaseFirestore.instance
+          .collection('users')
           .doc(user!.uid)
           .get();
 
-      if (ownerDoc.exists) {
+      if (playerDoc.exists) {
         showSnackBar(context, "Done ... ");
         Navigator.pushReplacementNamed(context, '/home');
       } else {
