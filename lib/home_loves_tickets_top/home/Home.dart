@@ -8,6 +8,7 @@ import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/stadium_information_player_pg/stadium_information_player_pg.dart';
 import 'package:bottom_picker/bottom_picker.dart';
 import 'package:graduation_project_main/widgets/ticket_card.dart';
+import 'package:intl/intl.dart';
 
 /// Home screen widget that displays list of stadiums with search and filter functionality
 class Home extends StatefulWidget {
@@ -118,6 +119,103 @@ class _HomeState extends State<Home> {
     }
   }
 
+  List<Map<String, dynamic>> notifications = [
+    {
+      'stadiumName': 'Al Ahly Stadium',
+      'price': 500,
+      'isEnd': false,
+      'date': DateTime.now(), // Current notification
+    },
+    {
+      'stadiumName': 'Cairo Stadium', 
+      'price': 600,
+      'isEnd': true,
+      'date': DateTime(2024, 1, 15, 14, 30), // Jan 15, 2024 2:30 PM
+    },
+    {
+      'stadiumName': 'Alexandria Stadium',
+      'price': 450,
+      'isEnd': false,
+      'date': DateTime(2024, 1, 10, 9, 15), // Jan 10, 2024 9:15 AM
+    },
+    {
+      'stadiumName': 'Olympic Stadium',
+      'price': 800,
+      'isEnd': true,
+      'date': DateTime(2024, 1, 5, 16, 45), // Jan 5, 2024 4:45 PM
+    },
+    {
+      'stadiumName': 'Borg El Arab Stadium',
+      'price': 700,
+      'isEnd': false,
+      'date': DateTime(2023, 12, 28, 11, 20), // Dec 28, 2023 11:20 AM
+    },
+    {
+      'stadiumName': 'El Salam Stadium',
+      'price': 550,
+      'isEnd': true,
+      'date': DateTime(2023, 12, 20, 13, 10), // Dec 20, 2023 1:10 PM
+    },
+    {
+      'stadiumName': 'Petrosport Stadium',
+      'price': 400,
+      'isEnd': false,
+      'date': DateTime(2023, 12, 15, 15, 30), // Dec 15, 2023 3:30 PM
+    },
+    {
+      'stadiumName': 'Arab Contractors Stadium',
+      'price': 350,
+      'isEnd': true,
+      'date': DateTime(2023, 12, 10, 10, 45), // Dec 10, 2023 10:45 AM
+    },
+    {
+      'stadiumName': 'El Gouna Stadium',
+      'price': 900,
+      'isEnd': false,
+      'date': DateTime(2023, 12, 5, 12, 15), // Dec 5, 2023 12:15 PM
+    },
+    {
+      'stadiumName': 'Police Stadium',
+      'price': 300,
+      'isEnd': true,
+      'date': DateTime(2023, 11, 28, 17, 30), // Nov 28, 2023 5:30 PM
+    },
+    {
+      'stadiumName': 'Military Academy Stadium',
+      'price': 450,
+      'isEnd': false,
+      'date': DateTime(2023, 11, 20, 14, 20), // Nov 20, 2023 2:20 PM
+    },
+    {
+      'stadiumName': 'El Sekka Stadium',
+      'price': 250,
+      'isEnd': true,
+      'date': DateTime(2023, 11, 15, 9, 45), // Nov 15, 2023 9:45 AM
+    },
+  ];
+
+  // Add notification data to Firestore collection
+  Future<void> addNotificationsToFirestore() async {
+    final CollectionReference notificationsCollection = FirebaseFirestore.instance.collection('notifications');
+
+    for (var notification in notifications) {
+      await notificationsCollection.add({
+        'stadiumName': notification['stadiumName'],
+        'price': notification['price'],
+        'isEnd': notification['isEnd'],
+        'date': notification['date'],
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    addNotificationsToFirestore();
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -172,7 +270,6 @@ class _HomeState extends State<Home> {
                                               fontWeight: FontWeight.w600)),
                                       SizedBox(height: 20.0),
                                       Icon(
-
                                         Icons.notifications_paused_rounded,
                                         color: Colors.white,
                                         size: 100.0,
@@ -188,7 +285,12 @@ class _HomeState extends State<Home> {
                                         as Map<String, dynamic>;
                                     final DateTime date =
                                         (data['date'] as Timestamp).toDate();
-
+                                    final String dayName =
+                                        DateFormat('EEEE').format(date);
+                                    final TimeOfDay time =
+                                        TimeOfDay.fromDateTime(
+                                            (data['date'] as Timestamp)
+                                                .toDate());
                                     return Dismissible(
                                       // Wrap in Dismissible for swipe actions
                                       key: Key(documents[index].id),
@@ -219,8 +321,10 @@ class _HomeState extends State<Home> {
                                         child: TicketCard(
                                             stadiumName: data['stadiumName'],
                                             price: data['price'].toString(),
-                                            date: date.toString(),
-                                            time: "7:00 PM",
+                                            date: date.toString() +
+                                                ' - ' +
+                                                dayName,
+                                            time: time.format(context),
                                             isEnd: data['isEnd'],
                                             daysBefore: daysBefore(date)),
                                       ),
