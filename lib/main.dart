@@ -147,7 +147,7 @@ class MyApp extends StatelessWidget {
           // '/stadium_information_player_pg': (context) =>
               // Stadium_info_playerPG(),
           '/stdWon_addNewStadium': (context) => AddNewStadium(),
-          '/stdown_editStadium': (context) => EditStadium_stdown(),
+          // '/stdown_editStadium': (context) => EditStadium_stdown(),
 
           // Payment and utility routes
           '/payment': (context) => Payment(),

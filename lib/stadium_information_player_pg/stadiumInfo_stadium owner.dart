@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
+import 'package:graduation_project_main/stdown_addNewStd/stdown_editStadium.dart';
 
 // ignore: must_be_immutable
-class Stadium_info_playerPG extends StatefulWidget {
+class Stadium_info_stadiumOwner extends StatefulWidget {
   String stadiumName = '';
   String stadiumPrice = '';
   String stadiumLocation = '';
@@ -12,7 +13,7 @@ class Stadium_info_playerPG extends StatefulWidget {
   String capacity = '';
   String description = '';
 
-  Stadium_info_playerPG({
+  Stadium_info_stadiumOwner({
     required this.stadiumName,
     required this.stadiumPrice,
     required this.stadiumLocation,
@@ -24,10 +25,11 @@ class Stadium_info_playerPG extends StatefulWidget {
   });
 
   @override
-  State<Stadium_info_playerPG> createState() => _Stadium_info_playerPGState();
+  State<Stadium_info_stadiumOwner> createState() =>
+      _Stadium_info_stadiumOwnerState();
 }
 
-class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
+class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
@@ -61,6 +63,45 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
               child: Icon(Icons.arrow_back),
             ),
           ),
+          //edit button
+          actions: [
+            SizedBox(width: 20),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditSelectedStadium(
+                      name: widget.stadiumName,
+                      price: widget.stadiumPrice,
+                      description: widget.description,
+                      capacity: widget.capacity,
+                      location: widget.stadiumLocation,
+                      // images: widget.images,
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                margin: EdgeInsets.all(6),
+                width: 50,
+                height: 50,
+                padding: EdgeInsets.all(6.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(30),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 6,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Icon(Icons.edit, color: mainColor),
+              ),
+            ),
+          ],
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -80,9 +121,8 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                         });
                       },
                       children: [
-                        for (int i = 0; i < 4; i++)
-                          Image.asset('assets/cards_home_player/imgs/test.jpg',
-                              fit: BoxFit.cover),
+                        Image.asset('assets/cards_home_player/imgs/test.jpg',
+                            fit: BoxFit.cover),
                       ],
                     ),
                     Positioned(
@@ -90,7 +130,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(
-                          4,
+                          1,
                           (index) => AnimatedContainer(
                             duration: const Duration(milliseconds: 300),
                             margin: const EdgeInsets.symmetric(horizontal: 6),
@@ -158,13 +198,12 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                   ]),
                 ],
               ),
-
               const SizedBox(height: 20),
               //location
               Row(
                 children: [
                   SizedBox(width: 20.0),
-                  Icon(Icons.location_on, color: Colors.grey, size: 18),
+                  Icon(Icons.location_on, color: mainColor, size: 18),
                   Text(
                     widget.stadiumLocation,
                     style: TextStyle(
@@ -356,134 +395,20 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
               ),
               SizedBox(height: 40.0),
               // Description
-              Text(
-                widget.description,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.black,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(
+                  widget.description,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.black,
+                  ),
                 ),
               ),
               //choose match date
               SizedBox(height: 40.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(child: Divider()), // Divider on the left side
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Text(
-                      'choose match date',
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black38),
-                    ),
-                  ),
-                  Expanded(child: Divider()), // Divider on the right side
-                ],
-              ),
-              SizedBox(height: 40.0),
-              // Date, Time, Duration buttons
-              Container(
-                width: double.infinity,
-                margin: EdgeInsets.symmetric(horizontal: 15.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, '/home');
-                        },
-                        child: Container(
-                          width: 110.0,
-                          height: 40.0,
-                          decoration: BoxDecoration(
-                            color: Color(0xADADAD),
-                            borderRadius: BorderRadius.circular(10.0),
-                            border: Border.all(
-                              color: Color(0xff00B92E),
-                              width: 0.5,
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              "Day",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontFamily: "eras-itc-light",
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFF000000),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 16.0),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          width: 110.0,
-                          height: 40.0,
-                          decoration: BoxDecoration(
-                            color: Color(0xADADAD),
-                            borderRadius: BorderRadius.circular(10.0),
-                            border: Border.all(
-                              color: Color(0xff00B92E),
-                              width: 0.5,
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              "Time",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontFamily: "eras-itc-light",
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFF000000),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 16.0),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          width: 110.0,
-                          height: 40.0,
-                          decoration: BoxDecoration(
-                            color: Color(0xADADAD),
-                            borderRadius: BorderRadius.circular(10.0),
-                            border: Border.all(
-                              color: Color(0xff00B92E),
-                              width: 0.5,
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              "Duration",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontFamily: "eras-itc-light",
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFF000000),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
               // Comments Section
-              SizedBox(height: 40.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -511,10 +436,10 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   border: Border.all(
-                    color: Color(0xff00B92E),
+                    color: const Color.fromARGB(38, 0, 185, 46),
                     width: 2,
                   ),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(15),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black45,
@@ -523,93 +448,103 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
                     ),
                   ],
                 ),
-                child: Wrap(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Profile Image and Name
+                    Column(
+                      children: [
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundImage: AssetImage(
+                              "assets/stadium_information_player_pg/imgs/person.jpeg"),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          "Esther Howard",
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: const Color.fromARGB(255, 0, 0, 0),
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'eras-itc-demi'),
+                        ),
+                        Row(
+                          children: [
+                            for (int i = 0; i < 5; i++)
+                              Icon(
+                                Icons.star,
+                                color: Color(0xffFFCC00),
+                                size: 16,
+                              ),
+                            SizedBox(width: 4),
+                            Text(
+                              "5.5",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black54,
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                    SizedBox(width: 16),
+                    // Vertical Divider
                     Container(
-                      width: double.infinity,
-                      child: Stack(
+                      height: 80,
+                      width: 1,
+                      color: Colors.black12,
+                    ),
+                    SizedBox(width: 16),
+                    // Comment Content
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             children: [
-                              Container(
-                                child: ClipOval(
-                                  child: Image.asset(
-                                    "assets/stadium_information_player_pg/imgs/person.jpeg",
-                                    width: 30,
-                                    height: 30,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(left: 8.0),
-                                child: Text(
-                                  "ahmed_789",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontFamily: "eras-itc-demi",
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 100.0),
                               Text(
-                                "3:45 pm",
+                                "BOOKING IN ",
                                 style: TextStyle(
-                                  fontSize: 14,
-                                  fontFamily: "eras-itc-light",
-                                  color: Colors.grey,
+                                    fontSize: 12,
+                                    color: mainColor,
+                                    fontWeight: FontWeight.w500,
+                                    fontFamily: 'eras-itc-demi'),
+                              ),
+                              Text(
+                                "2025/3/12",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black54,
                                 ),
                               ),
                             ],
                           ),
+                          SizedBox(height: 8),
+                          Text(
+                            'This should give you the exact structure shown in the image. Let me know if you need further adjustments!',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.black87,
+                            ),
+                          ),
                         ],
                       ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.symmetric(vertical: 8.0),
-                      child: Text(
-                        "Amazing experience! The field was in perfect condition, and the facilities were top-notch. We had a great time playing here Highly recommend it!",
-                        style: TextStyle(
-                          fontSize: 12.0,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Icon(Icons.star, color: Color(0xffFFCC00), size: 16),
-                        Icon(Icons.star, color: Color(0xffFFCC00), size: 16),
-                        Icon(Icons.star_half,
-                            color: Color(0xffFFCC00), size: 16),
-                        Icon(Icons.star_border,
-                            color: Color(0xffFFCC00), size: 16),
-                        Icon(Icons.star_border,
-                            color: Color(0xffFFCC00), size: 16),
-                        Text(
-                          "2.5",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Color.fromARGB(255, 134, 133, 133),
-                          ),
-                        ),
-                      ],
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 16.0),
             ],
           ),
         ),
         bottomNavigationBar: Container(
           padding: EdgeInsets.all(10.0),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: const Color.fromARGB(0, 255, 255, 255),
             boxShadow: [
               BoxShadow(
-                color: Colors.black45,
-                blurRadius: 20,
+                color: const Color.fromARGB(20, 0, 0, 0),
+                blurRadius: 40,
               ),
             ],
             borderRadius: BorderRadius.only(
@@ -618,60 +553,108 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG> {
             ),
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
+                flex: 2,
                 child: Container(
-                  height: 50,
+                  height: 70,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(19),
-                  ),
-                  child: Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          widget.stadiumPrice + '.00',
-                          style: TextStyle(
-                              color: Color(0xff00B92E),
-                              fontSize: 32.0,
-                              fontFamily: 'eras-itc-bold',
-                              fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          ' LE',
-                          style: TextStyle(
-                              color: Color(0xff00B92E),
-                              fontSize: 16.0,
-                              fontFamily: 'eras-itc-bold',
-                              fontWeight: FontWeight.bold,
-                              fontStyle: FontStyle.italic),
-                        ),
-                      ],
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(15),
+                      bottomLeft: Radius.circular(15),
+                      bottomRight: Radius.circular(5),
+                      topRight: Radius.circular(5),
                     ),
+                    border: Border.all(color: mainColor, width: 1),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "23",
+                        style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: mainColor,
+                            fontFamily: 'eras-itc-demi'),
+                      ),
+                      Text(
+                        "Completed",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: mainColor,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
+              SizedBox(width: 6.0),
               Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/payment');
-                  },
-                  child: Container(
-                    height: 50.0,
-                    decoration: BoxDecoration(
-                        gradient: greenGradientColor,
-                        borderRadius: BorderRadius.circular(30.0)),
-                    child: Center(
-                      child: Text(
-                        "Book",
+                flex: 1,
+                child: Container(
+                  height: 70,
+                  decoration: BoxDecoration(
+                    gradient: greenGradientColor,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "5",
                         style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
                             color: Colors.white,
-                            fontFamily: 'eras-itc-bold',
-                            fontSize: 24.0),
+                            fontFamily: 'eras-itc-demi'),
                       ),
+                      Text(
+                        "Live",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(width: 6.0),
+              Expanded(
+                flex: 2,
+                child: Container(
+                  height: 70,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(15),
+                      bottomRight: Radius.circular(15),
+                      bottomLeft: Radius.circular(5),
+                      topLeft: Radius.circular(5),
                     ),
+                    border: Border.all(color: Colors.grey, width: 1),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "2",
+                        style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey,
+                            fontFamily: 'eras-itc-demi'),
+                      ),
+                      Text(
+                        "Canceled",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

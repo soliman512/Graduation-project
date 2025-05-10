@@ -150,53 +150,11 @@ class _HomeState extends State<Home> {
       'isEnd': false,
       'date': DateTime(2023, 12, 28, 11, 20), // Dec 28, 2023 11:20 AM
     },
-    {
-      'stadiumName': 'El Salam Stadium',
-      'price': 550,
-      'isEnd': true,
-      'date': DateTime(2023, 12, 20, 13, 10), // Dec 20, 2023 1:10 PM
-    },
-    {
-      'stadiumName': 'Petrosport Stadium',
-      'price': 400,
-      'isEnd': false,
-      'date': DateTime(2023, 12, 15, 15, 30), // Dec 15, 2023 3:30 PM
-    },
-    {
-      'stadiumName': 'Arab Contractors Stadium',
-      'price': 350,
-      'isEnd': true,
-      'date': DateTime(2023, 12, 10, 10, 45), // Dec 10, 2023 10:45 AM
-    },
-    {
-      'stadiumName': 'El Gouna Stadium',
-      'price': 900,
-      'isEnd': false,
-      'date': DateTime(2023, 12, 5, 12, 15), // Dec 5, 2023 12:15 PM
-    },
-    {
-      'stadiumName': 'Police Stadium',
-      'price': 300,
-      'isEnd': true,
-      'date': DateTime(2023, 11, 28, 17, 30), // Nov 28, 2023 5:30 PM
-    },
-    {
-      'stadiumName': 'Military Academy Stadium',
-      'price': 450,
-      'isEnd': false,
-      'date': DateTime(2023, 11, 20, 14, 20), // Nov 20, 2023 2:20 PM
-    },
-    {
-      'stadiumName': 'El Sekka Stadium',
-      'price': 250,
-      'isEnd': true,
-      'date': DateTime(2023, 11, 15, 9, 45), // Nov 15, 2023 9:45 AM
-    },
   ];
 
   // Add notification data to Firestore collection
   Future<void> addNotificationsToFirestore() async {
-    final CollectionReference notificationsCollection = FirebaseFirestore.instance.collection('notifications');
+    final CollectionReference notificationsCollection = FirebaseFirestore.instance.collection('players_notifications');
 
     for (var notification in notifications) {
       await notificationsCollection.add({
