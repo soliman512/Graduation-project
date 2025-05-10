@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -156,6 +157,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
         startTime: timeStart,
         endTime: timeEnd,
         workingDays: daysSelected,
+        userID: FirebaseAuth.instance.currentUser?.uid ?? 'No User ID'
       );
 
       Navigator.pushNamed(context, '/home_owner');
@@ -175,6 +177,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
     required String startTime,
     required String endTime,
     required List<String> workingDays,
+    required String userID,
   }) async {
     final stadiumData = {
       "name": name,
@@ -189,6 +192,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
       "endTime": endTime,
       "workingDays": workingDays,
       "createdAt": FieldValue.serverTimestamp(),
+      "userID" : userID,
     };
 
     try {
@@ -298,6 +302,13 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                 SizedBox(height: 12.0),
                 Image.asset(
                     'assets/stdowner_addNewStadium/imgs/NewStadium.png'),
+                    Text(
+                      FirebaseAuth.instance.currentUser?.uid ?? 'No User ID',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                    ),
                 // name input
                 Create_RequiredInput(
                   onChange: (value) {

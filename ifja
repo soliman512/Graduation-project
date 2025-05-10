@@ -1,0 +1,47 @@
+[33mcommit 140206526f2ee9a0f814e7d6eb468f6992d5d75f[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfinishIt[m[33m)[m
+Author: soliman_512 <soliman512ali@gmail.com>
+Date:   Fri May 9 20:22:01 2025 +0300
+
+    fix unkown problems
+
+[33mcommit 2519709dac504b10e4c1babcd5b763de43c56499[m[33m ([m[1;31morigin/finishIt[m[33m)[m
+Author: soliman_512 <soliman512ali@gmail.com>
+Date:   Fri May 9 14:50:01 2025 +0300
+
+    link notification with firestore
+
+[33mcommit 3087199e8ffc9883abc0f74bd155d6d150447ff6[m
+Author: soliman_512 <soliman512ali@gmail.com>
+Date:   Fri May 9 11:10:37 2025 +0300
+
+    merge auth stadium owner , turn on notification
+
+[33mcommit e29ee9517c21b4c48d013c67e23bef5fff6964f4[m
+Author: soliman_512 <soliman512ali@gmail.com>
+Date:   Thu May 1 02:48:57 2025 +0300
+
+    use bottom picker in all picker inputs
+
+[33mcommit 1f5262f9cfb5d95bfc169769bc832615d53c8e55[m[33m ([m[1;32mcore[m[33m)[m
+Author: soliman_512 <soliman512ali@gmail.com>
+Date:   Wed Apr 30 22:52:31 2025 +0300
+
+    turn on filter and and send data from home player page to details page for stadium, unit ui for select time and location
+
+[33mcommit cf3ce1f451d511e8373a022be5d56d71d7135871[m
+Author: soliman_512 <soliman512ali@gmail.com>
+Date:   Tue Apr 29 15:38:44 2025 +0300
+
+    add loading.png
+
+[33mcommit cdf9abba0d2f4f57e124be14d0211e3e0f41813e[m
+Author: soliman_512 <soliman512ali@gmail.com>
+Date:   Tue Apr 29 12:01:53 2025 +0300
+
+    new main branch after fixing all run and login problems
+
+[33mcommit a5d2871c8002b2f90822a47e83c5234d8ffea6e7[m[33m ([m[1;31morigin/firebase[m[33m, [m[1;32mfirebase[m[33m)[m
+Author: abdelaziz <zezoadel289@gmail.com>
+Date:   Wed Mar 19 22:02:11 2025 +0200
+
+    firebase

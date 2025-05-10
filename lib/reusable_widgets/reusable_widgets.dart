@@ -77,7 +77,7 @@ class StadiumCard extends StatelessWidget {
                       ),
                       SizedBox(width: 4),
                       Text(
-                        title.length > 10
+                        title.length > 14
                             ? title.substring(0, 14) + '...'
                             : title,
                         overflow: TextOverflow.ellipsis,
@@ -464,6 +464,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
     );
   }
 }
+
 // ignore: must_be_immutable
 class Create_AppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
