@@ -6,29 +6,40 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
-// import 'package:day_night_time_picker/day_night_time_picker.dart';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:bottom_picker/bottom_picker.dart';
 import 'package:intl/intl.dart';
 
 class EditSelectedStadium extends StatefulWidget {
-  
-  final String name;
-  final String price;
-  final String description;
-  final String capacity;
-  final String location;
-  final List<File>? images;
+  final String stadiumName;
+  final String stadiumLocation;
+  final String stadiumPrice;
+  final String stadiumDescription;
+  final String stadiumCapacity;
+  final List<String> stadiumImagesUrl;
+  final String stadiumId;
+  final List<String> stadiumWorkingDays;
+  final String stadiumStartTime;
+  final String stadiumEndTime;
+  final bool stadiumHasWater;
+  final bool stadiumHasTrack;
+  final bool stadiumIsNaturalGrass;
 
-  const EditSelectedStadium({
-    Key? key,
-    required this.name,
-    required this.price,
-    required this.description,
-    required this.capacity,
-    required this.location,
-    this.images,
-  }) : super(key: key);
+  EditSelectedStadium({
+    required this.stadiumName,
+    required this.stadiumLocation,
+    required this.stadiumPrice,
+    required this.stadiumDescription,
+    required this.stadiumCapacity,
+    required this.stadiumImagesUrl,
+    required this.stadiumId,
+    required this.stadiumWorkingDays,
+    required this.stadiumStartTime,
+    required this.stadiumEndTime,
+    required this.stadiumHasWater,
+    required this.stadiumHasTrack,
+    required this.stadiumIsNaturalGrass,
+  });
 
   @override
   State<EditSelectedStadium> createState() => _EditSelectedStadiumState();
@@ -48,89 +59,136 @@ List<Widget> egyptGovernoratesWidgets = egyptGovernorates.map((governorate) {
     ),
   );
 }).toList();
-List<Widget> gevornmentPlacesWidgets = egyptGovernoratesAndCenters
-        .containsKey(citySelected)
-    ? egyptGovernoratesAndCenters[citySelected]!.map((place) {
-        return Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Text(
-              place,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+
+List<Widget> gevornmentPlacesWidgets =
+    egyptGovernoratesAndCenters.containsKey(citySelected)
+        ? egyptGovernoratesAndCenters[citySelected]!.map((place) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Text(
+                  place,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
-            ),
-          ),
-        );
-      }).toList()
-    : []; // Return an empty list if the selected city doesn't exist in the map
+            );
+          }).toList()
+        : [];
 
 class _EditSelectedStadiumState extends State<EditSelectedStadium> {
-  // controllers
-  final TextEditingController stadiumNameController = TextEditingController();
-  final TextEditingController stadiumPriceController = TextEditingController();
-  final TextEditingController stadiumDescriptionController =
-      TextEditingController();
-  final TextEditingController stadiumCapacityController =
-      TextEditingController();
-  final TextEditingController neighborhoodEnterd =
-      TextEditingController(); // if not defined
+  // Controllers
+  late TextEditingController stadiumNameController;
+  late TextEditingController stadiumPriceController;
+  late TextEditingController stadiumDescriptionController;
+  late TextEditingController stadiumCapacityController;
+  late TextEditingController neighborhoodEnterd;
 
-// location
+  // Location
   String? citySelected;
   String? placeSelected;
-  String location = '';
+  late String location;
 
-  String testLocatin = '';
-// time settings
-  String timeStart = '';
-  String timeEnd = '';
+  // Time settings
+  late String timeStart;
+  late String timeEnd;
 
-// days
+  // Days
   bool isDaysOpened = false;
-  List<String> daysSelected = [];
+  late List<String> daysSelected;
+  late List<Map<String, dynamic>> selectDays;
 
-  List<Map<String, dynamic>> selectDays = [
-    {'day': 'Saturday', 'isSelected': false},
-    {'day': 'Sunday', 'isSelected': false},
-    {'day': 'Monday', 'isSelected': false},
-    {'day': 'Tuesday', 'isSelected': false},
-    {'day': 'Wednesday', 'isSelected': false},
-    {'day': 'Thursday', 'isSelected': false},
-    {'day': 'Friday', 'isSelected': false},
-  ];
-
-// visibilities
+  // Visibilities
   bool locationPopup = false;
   double locationPopupHeight = 0.0;
   bool visibleOfPlace = false;
   bool visibleOfNeighborhood = false;
   bool visibleOfButton = false;
 
-// images
-  List<File> selectedImages = [];
-  List<String> selectedImagesUrl = [];
+  // Images
+  late List<File> selectedImages;
+  late List<String> selectedImagesUrl;
   final ImagePicker multibleImages_picker = ImagePicker();
 
-// features
-  bool isWaterAvailable = true;
-  bool isTrackAvailable = false;
-  bool isGrassNormal = false;
+  // Features
+  late bool isWaterAvailable;
+  late bool isTrackAvailable;
+  late bool isGrassNormal;
 
   @override
   void initState() {
     super.initState();
-    // Set default values from constructor
-    stadiumNameController.text = widget.name;
-    stadiumPriceController.text = widget.price;
-    stadiumDescriptionController.text = widget.description;
-    stadiumCapacityController.text = widget.capacity;
-    location = widget.location;
-    selectedImages = List<File>.from(widget.images ?? []);
+
+    // Initialize controllers with widget data
+    stadiumNameController = TextEditingController(text: widget.stadiumName);
+    stadiumPriceController = TextEditingController(text: widget.stadiumPrice);
+    stadiumDescriptionController =
+        TextEditingController(text: widget.stadiumDescription);
+    stadiumCapacityController =
+        TextEditingController(text: widget.stadiumCapacity);
+    neighborhoodEnterd = TextEditingController();
+
+    // Initialize location
+    List<String> locationParts = widget.stadiumLocation.split('-');
+    if (locationParts.length == 3) {
+      citySelected = locationParts[0];
+      placeSelected = locationParts[1];
+      neighborhoodEnterd.text = locationParts[2];
+      location = widget.stadiumLocation;
+    } else {
+      location = '';
+    }
+
+    // Initialize time
+    timeStart = widget.stadiumStartTime;
+    timeEnd = widget.stadiumEndTime;
+
+    // Initialize working days
+    daysSelected = List.from(widget.stadiumWorkingDays);
+    selectDays = [
+      {
+        'day': 'Saturday',
+        'isSelected': widget.stadiumWorkingDays.contains('Saturday')
+      },
+      {
+        'day': 'Sunday',
+        'isSelected': widget.stadiumWorkingDays.contains('Sunday')
+      },
+      {
+        'day': 'Monday',
+        'isSelected': widget.stadiumWorkingDays.contains('Monday')
+      },
+      {
+        'day': 'Tuesday',
+        'isSelected': widget.stadiumWorkingDays.contains('Tuesday')
+      },
+      {
+        'day': 'Wednesday',
+        'isSelected': widget.stadiumWorkingDays.contains('Wednesday')
+      },
+      {
+        'day': 'Thursday',
+        'isSelected': widget.stadiumWorkingDays.contains('Thursday')
+      },
+      {
+        'day': 'Friday',
+        'isSelected': widget.stadiumWorkingDays.contains('Friday')
+      },
+    ];
+
+    // Initialize images
+    selectedImages = [];
+    selectedImagesUrl = List.from(widget.stadiumImagesUrl);
+
+    // Initialize features
+    isWaterAvailable = widget.stadiumHasWater;
+    isTrackAvailable = widget.stadiumHasTrack;
+    isGrassNormal = widget.stadiumIsNaturalGrass;
   }
 
-// check if ready to show button
+  // Check if ready to show button
   bool checkInputs() {
     if (visibleOfPlace && visibleOfNeighborhood) {
       visibleOfButton = true;
@@ -139,7 +197,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
     return false;
   }
 
-// generate final location
+  // Generate final location
   void initValueOflocation() {
     if (citySelected == null) {
       location = '';
@@ -148,7 +206,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
     }
   }
 
-// choose multiple images
+  // Choose multiple images
   Future<void> getImages() async {
     final pickFile = await multibleImages_picker.pickMultiImage(
       imageQuality: 80,
@@ -168,31 +226,71 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
     }
   }
 
-// Handle Update Button Press
-  void _handleUpdateButtonPressed() async {
-    // Check if any required field is empty
+  // Handle Update Button Press
+  void _handleUpdateButtonPressed() {
     if (_isFormIncomplete()) {
       _showIncompleteDataDialog();
-      return;
+    } else {
+      updateStadiumInFirestore(
+        stadiumId: widget.stadiumId,
+        name: stadiumNameController.text,
+        location: location,
+        hasWater: isWaterAvailable,
+        hasTrack: isTrackAvailable,
+        isNaturalGrass: isGrassNormal,
+        price: double.parse(stadiumPriceController.text),
+        description: stadiumDescriptionController.text,
+        capacity: int.parse(stadiumCapacityController.text),
+        startTime: timeStart,
+        endTime: timeEnd,
+        workingDays: daysSelected,
+        imagesUrl: selectedImagesUrl,
+        userID: FirebaseAuth.instance.currentUser?.uid ?? 'No User ID',
+      );
+
+      Navigator.pushNamed(context, '/home_owner');
     }
-    // Prepare the updated data
-    final updatedData = {
-      "name": stadiumNameController.text,
+  }
+
+  // Update stadium in Firestore
+  Future<void> updateStadiumInFirestore({
+    required String stadiumId,
+    required String name,
+    required String location,
+    required bool hasWater,
+    required bool hasTrack,
+    required bool isNaturalGrass,
+    required double price,
+    required String description,
+    required int capacity,
+    required String startTime,
+    required String endTime,
+    required List<String> workingDays,
+    required String userID,
+    required List<String> imagesUrl,
+  }) async {
+    final stadiumData = {
+      "name": name,
       "location": location,
-      "hasWater": isWaterAvailable,
-      "hasTrack": isTrackAvailable,
-      "isNaturalGrass": isGrassNormal,
-      "price": double.parse(stadiumPriceController.text),
-      "description": stadiumDescriptionController.text,
-      "capacity": int.parse(stadiumCapacityController.text),
-      "startTime": timeStart,
-      "endTime": timeEnd,
-      "workingDays": daysSelected,
-      // Add image URLs if you upload images to storage
+      "hasWater": hasWater,
+      "hasTrack": hasTrack,
+      "isNaturalGrass": isNaturalGrass,
+      "price": price,
+      "description": description,
+      "capacity": capacity,
+      "startTime": startTime,
+      "endTime": endTime,
+      "workingDays": workingDays,
+      "updatedAt": FieldValue.serverTimestamp(),
+      "userID": userID,
+      "images": imagesUrl,
     };
+
     try {
-    
-      // Show success message
+      await FirebaseFirestore.instance
+          .collection("stadiums")
+          .doc(stadiumId)
+          .update(stadiumData);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Stadium updated successfully'),
@@ -200,10 +298,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
           duration: Duration(seconds: 2),
         ),
       );
-      // Navigate back or to home
-      Navigator.pushNamed(context, '/home_owner');
     } catch (e) {
-      // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error: $e'),
@@ -214,20 +309,20 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
     }
   }
 
-// Check if any required field is empty
+  // Check if any required field is empty
   bool _isFormIncomplete() {
     return stadiumNameController.text.isEmpty ||
         stadiumPriceController.text.isEmpty ||
         stadiumDescriptionController.text.isEmpty ||
         stadiumCapacityController.text.isEmpty ||
         location.isEmpty ||
-        timeStart.toString().isEmpty ||
-        timeEnd.toString().isEmpty ||
+        timeStart.isEmpty ||
+        timeEnd.isEmpty ||
         daysSelected.isEmpty ||
-        selectedImages.isEmpty;
+        selectedImagesUrl.isEmpty;
   }
 
-// Show alert dialog if the form is incomplete
+  // Show alert dialog if the form is incomplete
   void _showIncompleteDataDialog() {
     showDialog(
       context: context,
@@ -249,16 +344,19 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
     );
   }
 
-  final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+//open image to show and delete
+  Image? openImage;
+  bool isImageOpend = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       backgroundColor: Colors.white,
       appBar: AppBar(
         toolbarHeight: 80.0,
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: Colors.transparent,
         automaticallyImplyLeading: false,
         elevation: 0.0,
         leading: IconButton(
@@ -267,22 +365,22 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: const Text("Discard data?"),
-                    content: const Text("Are you sure you want to discard?"),
+                    title: const Text("Discard changes?"),
+                    content: const Text(
+                        "Are you sure you want to discard your changes?"),
                     actions: [
                       TextButton(
                         onPressed: () {
                           Navigator.pushNamed(context, '/home_owner');
                         },
-                        child: const Text("discard",
+                        child: const Text("Discard",
                             style: TextStyle(color: Colors.red)),
                       ),
                       TextButton(
                         onPressed: () {
-                          // Handle the first button press
                           Navigator.of(context).pop();
                         },
-                        child: const Text("return"),
+                        child: const Text("Return"),
                       ),
                     ],
                   );
@@ -293,17 +391,16 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
         ),
       ),
       body: Stack(children: [
-        // backgroundImage_balls,
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30.0),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 12.0),
+                SizedBox(height: 92.0),
                 Image.asset(
                     'assets/stdowner_addNewStadium/imgs/NewStadium.png'),
-                // name input
+                // Name input
                 Create_RequiredInput(
                   onChange: (value) {
                     stadiumNameController.text = value;
@@ -319,106 +416,110 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Expanded(child: Divider()), // Divider on the left side
+                    Expanded(child: Divider()),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'stadium data',
+                        'Stadium Data',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                             color: Colors.black38),
                       ),
                     ),
-                    Expanded(child: Divider()), // Divider on the right side
+                    Expanded(child: Divider()),
                   ],
                 ),
                 SizedBox(height: 60.0),
-                //add image
+                // Add image
                 Container(
                   height: 250.0,
                   padding: EdgeInsets.all(8.0),
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(10.0),
-                    border: Border.all(color: mainColor, width: 1.0),
+                  color: Colors.white.withOpacity(0.8),
+                  borderRadius: BorderRadius.circular(10.0),
+                  border: Border.all(color: mainColor, width: 1.0),
                   ),
-                  child: selectedImages.isEmpty
-                      ? //ask to add image
-                      Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/stdowner_addNewStadium/imgs/threeCards.png',
-                            ),
-                            GestureDetector(
-                              onTap: getImages,
-                              child: Container(
-                                margin: EdgeInsets.symmetric(
-                                  horizontal: 100.0,
-                                  vertical: 12.0,
-                                ),
-                                padding: EdgeInsets.symmetric(
-                                  vertical: 8.0,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    'Add Image',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18.0,
-                                    ),
-                                  ),
-                                ),
-                                decoration: BoxDecoration(
-                                  gradient: greenGradientColor,
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                              ),
-                            ),
-                            Text(
-                              '5MB maximum file size accepted \nin the following formats:  .jpg   .jpeg,   .png ',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 12.0),
-                            ),
-                          ],
-                        )
-                      :
-                      //images after adding
-                      GridView.builder(
-                          itemCount: selectedImages.length,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 4.0,
-                            mainAxisSpacing: 4.0,
-                            childAspectRatio: 1.0,
+                  child: GridView.builder(
+                  itemCount: selectedImages.isNotEmpty
+                    ? selectedImages.length + 1
+                    : selectedImagesUrl.length + 1,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 4.0,
+                    mainAxisSpacing: 4.0,
+                    childAspectRatio: 1.0,
+                  ),
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == 0) {
+                    return GestureDetector(
+                      onTap: getImages,
+                      child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10.0),
+                        border: Border.all(color: mainColor, width: 1.0),
+                      ),
+                      child: Center(
+                        child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.add, size: 40.0, color: mainColor),
+                          Text(
+                          'Add Image',
+                          style: TextStyle(
+                            color: mainColor,
+                            fontSize: 16.0,
                           ),
-                          itemBuilder: (BuildContext context, int index) {
-                            return Stack(
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(
-                                      10.0,
-                                    ),
-                                  ),
-                                  child: Image.file(
-                                    selectedImages[index],
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
+                          ),
+                        ],
                         ),
+                      ),
+                      ),
+                    );
+                    } else {
+                    int adjustedIndex = index - 1;
+                    return Stack(
+                      children: [
+                      GestureDetector(
+                        onTap: () {
+                        setState(() {
+                          isImageOpend = true;
+                        });
+                        openImage = selectedImages.isNotEmpty
+                          ? Image.file(
+                            selectedImages[adjustedIndex],
+                            fit: BoxFit.cover,
+                            )
+                          : Image.network(
+                            selectedImagesUrl[adjustedIndex],
+                            fit: BoxFit.cover,
+                            );
+                        },
+                        child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: selectedImages.isNotEmpty
+                          ? Image.file(
+                            selectedImages[adjustedIndex],
+                            fit: BoxFit.cover,
+                            )
+                          : Image.network(
+                            selectedImagesUrl[adjustedIndex],
+                            fit: BoxFit.cover,
+                            ),
+                        ),
+                      ),
+                      ],
+                    );
+                    }
+                  },
+                  ),
                 ),
-
                 SizedBox(height: 40.0),
-
-                //stadium location
+                // Stadium location
                 Create_RequiredInput(
                   onTap: () {
                     BottomPicker(
@@ -445,10 +546,8 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                         setState(() {
                           citySelected = governorate;
                         });
-                        // Navigator.pop(context);
 
                         Future.delayed(Duration(milliseconds: 300), () {
-                          // Start place picker
                           List<Widget> placeWidgets =
                               egyptGovernoratesAndCenters[citySelected]!
                                   .map((place) => Center(
@@ -546,7 +645,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                       },
                     ).show(context);
                   },
-                  lableText: 'Stadium location',
+                  lableText: 'Stadium Location',
                   initValue: location,
                   isReadOnly: true,
                   textInputType: TextInputType.text,
@@ -555,7 +654,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                   ),
                 ),
                 SizedBox(height: 32.0),
-                //stadium price
+                // Stadium price
                 Create_RequiredInput(
                   onChange: (value) {
                     stadiumPriceController.text = value;
@@ -580,8 +679,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                   ),
                 ),
                 SizedBox(height: 32.0),
-
-                //stadium description
+                // Stadium description
                 Create_RequiredInput(
                   onChange: (value) {
                     stadiumDescriptionController.text = value;
@@ -593,9 +691,8 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                     'assets/stdowner_addNewStadium/imgs/desc.png',
                   ),
                 ),
-
                 SizedBox(height: 32.0),
-                //capacity
+                // Capacity
                 Create_RequiredInput(
                   onChange: (value) {
                     stadiumCapacityController.text = value;
@@ -612,31 +709,30 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Expanded(child: Divider()), // Divider on the left side
+                    Expanded(child: Divider()),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'features',
+                        'Features',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                             color: Colors.black38),
                       ),
                     ),
-                    Expanded(child: Divider()), // Divider on the right side
+                    Expanded(child: Divider()),
                   ],
                 ),
                 SizedBox(height: 60.0),
-                //water, track, grass
+                // Water, track, grass
                 Wrap(
                   spacing: 4.0,
                   runSpacing: 8.0,
                   children: [
-                    //water
+                    // Water
                     Center(
                       child: Container(
                         width: double.infinity,
-                        //height: 220.0,
                         child: AnimatedToggleSwitch<bool>.dual(
                           current: isWaterAvailable,
                           first: false,
@@ -702,7 +798,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                                 )
                               : Center(
                                   child: Text(
-                                    'Water not available',
+                                    'Water not Available',
                                     style: TextStyle(
                                       fontFamily: 'eras-itc-bold',
                                       fontWeight: FontWeight.w600,
@@ -713,11 +809,10 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                       ),
                     ),
                     SizedBox(height: 12.0),
-                    // track
+                    // Track
                     Center(
                       child: Container(
                         width: double.infinity,
-                        //height: 220.0,
                         child: AnimatedToggleSwitch<bool>.dual(
                           current: isTrackAvailable,
                           first: false,
@@ -778,7 +873,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                           textBuilder: (value) => value
                               ? Center(
                                   child: Text(
-                                    'Available Track',
+                                    'Track Available',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontFamily: 'eras-itc-bold',
@@ -788,7 +883,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                                 )
                               : Center(
                                   child: Text(
-                                    'Unavailable Track',
+                                    'Track not Available',
                                     style: TextStyle(
                                       fontFamily: 'eras-itc-bold',
                                       fontWeight: FontWeight.w600,
@@ -799,11 +894,10 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                       ),
                     ),
                     SizedBox(height: 12.0),
-                    //grass
+                    // Grass
                     Center(
                       child: Container(
                         width: double.infinity,
-                        //height: 220.0,
                         child: AnimatedToggleSwitch<bool>.dual(
                           current: isGrassNormal,
                           first: false,
@@ -876,7 +970,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                                 )
                               : Center(
                                   child: Text(
-                                    'Normal Grass',
+                                    'Natural Grass',
                                     style: TextStyle(
                                       color: const Color.fromARGB(
                                         255,
@@ -898,22 +992,22 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Expanded(child: Divider()), // Divider on the left side
+                    Expanded(child: Divider()),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'time work',
+                        'Work Time',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                             color: Colors.black38),
                       ),
                     ),
-                    Expanded(child: Divider()), // Divider on the right side
+                    Expanded(child: Divider()),
                   ],
                 ),
                 SizedBox(height: 60.0),
-                //selct time:
+                // Select time
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -921,27 +1015,6 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                       child: TextField(
                         keyboardType: TextInputType.none,
                         onTap: () {
-                          //   Navigator.of(context).push(
-                          //     showPicker(
-                          //       context: context,
-                          //       value: Time(hour: 7, minute: 00),
-                          //       sunrise: TimeOfDay(
-                          //         hour: 6,
-                          //         minute: 0,
-                          //       ), // optional
-                          //       sunset: TimeOfDay(
-                          //         hour: 18,
-                          //         minute: 0,
-                          //       ), // optional
-                          //       duskSpanInMinutes: 120, // optional
-                          //       onChange: (value) {
-                          //         setState(() {
-                          //           timeStart =
-                          //               '${value.hourOfPeriod.toString().padLeft(2, '0')} : ${value.minute.toString().padLeft(2, '0')} ${value.period == DayPeriod.am ? 'AM' : 'PM'}';
-                          //         });
-                          //       },
-                          //     ),
-                          //   );
                           BottomPicker.time(
                             titlePadding:
                                 EdgeInsets.fromLTRB(10.0, 10.0, 0.0, 0.0),
@@ -957,7 +1030,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                             pickerTextStyle:
                                 TextStyle(fontSize: 20.0, color: Colors.black),
                             pickerTitle: Text(
-                                'when you will open stadium in each day ?'),
+                                'When will you open the stadium each day?'),
                             initialTime: Time(hours: 7, minutes: 30),
                             onSubmit: (timeStartValue) {
                               final formattedTime =
@@ -977,7 +1050,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                         readOnly: true,
                         textAlign: TextAlign.center,
                         decoration: InputDecoration(
-                          hintText: 'start from',
+                          hintText: 'Start From',
                           hintStyle: TextStyle(fontSize: 16.0),
                           fillColor: Colors.white60,
                           filled: true,
@@ -1019,7 +1092,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                             pickerTextStyle:
                                 TextStyle(fontSize: 20.0, color: Colors.black),
                             pickerTitle: Text(
-                                'when you will open stadium in each day ?'),
+                                'When will you close the stadium each day?'),
                             initialTime: Time(hours: 7, minutes: 30),
                             onSubmit: (timeEndValue) {
                               final formattedTime =
@@ -1038,7 +1111,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                         readOnly: true,
                         textAlign: TextAlign.center,
                         decoration: InputDecoration(
-                          hintText: 'End on',
+                          hintText: 'End On',
                           hintStyle: TextStyle(fontSize: 16.0),
                           fillColor: Colors.white60,
                           filled: true,
@@ -1065,22 +1138,22 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Expanded(child: Divider()), // Divider on the left side
+                    Expanded(child: Divider()),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'work days',
+                        'Work Days',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                             color: Colors.black38),
                       ),
                     ),
-                    Expanded(child: Divider()), // Divider on the right side
+                    Expanded(child: Divider()),
                   ],
                 ),
                 SizedBox(height: 60.0),
-                //work time
+                // Work days
                 Center(
                   child: GridView.builder(
                     shrinkWrap: true,
@@ -1113,11 +1186,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                           decoration: BoxDecoration(
                             gradient: selectDays[i]['isSelected']
                                 ? greenGradientColor
-                                : null, // No gradient if not selected
-                            // color: selectDays[i]['isSelected']
-                            //     ? Colors
-                            //         .transparent // Allow gradient to be visible
-                            // : Colors.grey[100],
+                                : null,
                             border: Border.all(
                               color: selectDays[i]['isSelected']
                                   ? Colors.transparent
@@ -1138,14 +1207,6 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              // Icon(
-                              //   Icons.calendar_today,
-                              //   size: 18,
-                              //   color: selectDays[i]['isSelected']
-                              //       ? Colors.white
-                              //       : Colors.grey,
-                              // ),
-                              // SizedBox(width: 8),
                               Text(
                                 selectDays[i]['day'],
                                 style: TextStyle(
@@ -1167,23 +1228,22 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Expanded(child: Divider()), // Divider on the left side
+                    Expanded(child: Divider()),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'Post your stadium',
+                        'Update Your Stadium',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                             color: Colors.black38),
                       ),
                     ),
-                    Expanded(child: Divider()), // Divider on the right side
+                    Expanded(child: Divider()),
                   ],
                 ),
                 SizedBox(height: 60.0),
-
-                //post,
+                // Update button
                 SizedBox(
                   height: 50.0,
                   child: Create_GradiantGreenButton(
@@ -1192,8 +1252,8 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                       'Update',
                       style: TextStyle(
                           color: Colors.white,
-                          fontFamily: 'eras-itc-bold',
-                          fontSize: 24.0),
+                          fontFamily: 'eras-itc-demi',
+                          fontSize: 20.0),
                     ),
                   ),
                 ),
@@ -1202,377 +1262,111 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
             ),
           ),
         ),
+        Visibility(
+          visible: isImageOpend,
+          child: Stack(
+            children: [
+              blackBackground,
+              Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                    // Close button
+                    Padding(
+                      padding: const EdgeInsets.only(right: 20.0),
+                      child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                        isImageOpend = false;
+                        openImage = null;
+                        });
+                      },
+                      child: CircleAvatar(
+                        backgroundColor: Colors.grey,
+                        radius: 20.0,
+                        child: Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        ),
+                      ),
+                      ),
+                    ),
+                    // Display image
+                    Container(
+                      width: double.infinity,
+                      margin: EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+                      height: 300.0,
+                      child: openImage,
+                      decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    // Remove image button
+                    GestureDetector(
+                      onTap: () {
+                      if (openImage != null) {
+                        String? openImagePath;
+                        if (openImage!.image is FileImage) {
+                          openImagePath = (openImage!.image as FileImage).file.path;
+                        } else if (openImage!.image is NetworkImage) {
+                          openImagePath = (openImage!.image as NetworkImage).url;
+                        }
 
-        //location popup
-//         Stack(
-//           children: [
-//             Visibility(
-//               visible: locationPopup,
-//               child: Container(
-//                 width: double.infinity,
-//                 color: Colors.transparent,
-//               ),
-//             ),
-//             Center(
-//               child: AnimatedContainer(
-//                   duration: Duration(milliseconds: 500),
-//                   width: double.infinity,
-//                   height: locationPopupHeight,
-//                   margin: EdgeInsets.symmetric(horizontal: 32.0),
-//                   decoration: BoxDecoration(
-//                     color: Colors.white,
-//                     borderRadius: BorderRadius.circular(30.0),
-//                     boxShadow: [
-//                       BoxShadow(
-//                         color: Colors.black.withOpacity(0.75),
-//                         blurRadius: 100.0,
-//                         offset: Offset(0, 0),
-//                       ),
-//                     ],
-//                   ),
-//                   child: Stack(
-//                     children: [
-// //close button
-//                       Positioned(
-//                         top: 10.0,
-//                         right: 10.0,
-//                         child: IconButton(
-//                           onPressed: () {
-//                             setState(() {
-//                               locationPopup = false;
-//                               locationPopupHeight = 0.0;
-//                             });
-//                           },
-//                           icon: Icon(Icons.close),
-//                         ),
-//                       ),
-// //content and done button
-//                       Center(
-//                         child: SingleChildScrollView(
-//                           child: Column(
-//                             children: [
-//                               SizedBox(
-//                                 height: 30.0,
-//                               ),
-//                               Text("select your location",
-//                                   style: TextStyle(
-//                                       fontSize: 20.0,
-//                                       color: const Color.fromARGB(80, 0, 0, 0),
-//                                       fontFamily: 'eras-itc-demi')),
-//                               SizedBox(height: 12.0),
-//                               Text(
-//                                 'if you don't find your place please write your place before \nyour neighborhood',
-//                                 style: TextStyle(
-//                                   color: Colors.black,
-//                                   fontSize: 10.0,
-//                                 ),
-//                                 textAlign: TextAlign.center,
-//                               ), //inputs
-//                               SizedBox(height: 60.0),
-//                               //city
-//                               ListTile(
-//                                 leading: Container(
-//                                   padding: EdgeInsets.all(8.0),
-//                                   width: 40.0,
-//                                   decoration: BoxDecoration(
-//                                     shape: BoxShape.circle,
-//                                     color: Colors.white,
-//                                     boxShadow: [
-//                                       BoxShadow(
-//                                         color: Color(0x7C000000),
-//                                         blurRadius: 10.0,
-//                                       ),
-//                                     ],
-//                                   ),
-//                                   child: Image.asset(
-//                                     'assets/home_loves_tickets_top/imgs/city_Vector.png',
-//                                     fit: BoxFit.contain,
-//                                   ),
-//                                 ),
-//                                 title: Container(
-//                                   width: double.infinity,
-//                                   margin: EdgeInsets.symmetric(
-//                                     horizontal: 20.0,
-//                                   ),
-//                                   height: 40.0,
-//                                   decoration: BoxDecoration(
-//                                     color: Colors.white,
-//                                     boxShadow: [
-//                                       BoxShadow(
-//                                         color: Color(0x7C000000),
-//                                         blurRadius: 10.0,
-//                                       ),
-//                                     ],
-//                                     borderRadius: BorderRadius.circular(10.0),
-//                                   ),
-//                                   child: Center(
-//                                     child: DropdownButton<String>(
-//                                       onChanged: (String? cityValue) {
-//                                         setState(() {
-//                                           visibleOfPlace = true;
-//                                           citySelected = cityValue;
-//                                           placesOfCityOnSelected = null;
-//                                           placeSelected = null;
-//                                         });
-//                                         placesOfCityOnSelected =
-//                                             egyptGovernoratesAndCenters[
-//                                                 cityValue];
-//                                       },
-//                                       items: egyptGovernorates.map((city) {
-//                                         return DropdownMenuItem<String>(
-//                                           value: city,
-//                                           child: Text(city),
-//                                         );
-//                                       }).toList(),
-//                                       menuMaxHeight: 300.0,
-//                                       value: citySelected,
-//                                       hint: Text('select City'),
-//                                       icon: Icon(
-//                                         Icons.arrow_drop_down_circle_outlined,
-//                                         size: 30.0,
-//                                         color: mainColor,
-//                                       ),
-//                                       style: TextStyle(
-//                                         color: Colors.black,
-//                                         fontSize: 18.0,
-//                                       ),
-//                                       alignment: Alignment.center,
-//                                       underline: null,
-//                                       borderRadius: BorderRadius.circular(
-//                                         20.0,
-//                                       ),
-//                                     ),
-//                                   ),
-//                                 ),
-//                               ),
+                        if (openImagePath != null) {
+                          int indexToRemove = selectedImages.isNotEmpty
+                              ? selectedImages.indexWhere((image) => image.path == openImagePath)
+                              : selectedImagesUrl.indexWhere((url) => url == openImagePath);
 
-//                               //place
-//                               Visibility(
-//                                 visible: visibleOfPlace,
-//                                 child: Padding(
-//                                   padding: EdgeInsets.only(top: 20.0),
-//                                   child: ListTile(
-//                                     leading: Container(
-//                                       padding: EdgeInsets.all(8.0),
-//                                       width: 40.0,
-//                                       decoration: BoxDecoration(
-//                                         shape: BoxShape.circle,
-//                                         color: Colors.white,
-//                                         boxShadow: [
-//                                           BoxShadow(
-//                                             color: Color(0x7C000000),
-//                                             blurRadius: 10.0,
-//                                           ),
-//                                         ],
-//                                       ),
-//                                       child: Image.asset(
-//                                         'assets/home_loves_tickets_top/imgs/stash_pin-place.png',
-//                                         fit: BoxFit.contain,
-//                                       ),
-//                                     ),
-//                                     title: Container(
-//                                       width: double.infinity,
-//                                       margin: EdgeInsets.symmetric(
-//                                         horizontal: 20.0,
-//                                       ),
-//                                       height: 40.0,
-//                                       decoration: BoxDecoration(
-//                                         color: Colors.white,
-//                                         boxShadow: [
-//                                           BoxShadow(
-//                                             color: Color(0x7C000000),
-//                                             blurRadius: 10.0,
-//                                           ),
-//                                         ],
-//                                         borderRadius: BorderRadius.circular(
-//                                           10.0,
-//                                         ),
-//                                       ),
-//                                       child: Center(
-//                                         child: DropdownButton<String>(
-//                                           items: placesOfCityOnSelected?.map((
-//                                             String place,
-//                                           ) {
-//                                             return DropdownMenuItem<String>(
-//                                               child: Text(place),
-//                                               value: place,
-//                                             );
-//                                           }).toList(),
-//                                           onChanged: (String? placeValue) {
-//                                             setState(() {
-//                                               visibleOfNeighborhood = true;
-//                                               placeSelected = placeValue;
-//                                             });
-//                                           },
-//                                           menuMaxHeight: 300.0,
-//                                           value: placeSelected,
-//                                           hint: Text('select place'),
-//                                           icon: Icon(
-//                                             Icons
-//                                                 .arrow_drop_down_circle_outlined,
-//                                             size: 30.0,
-//                                             color: mainColor,
-//                                           ),
-//                                           style: TextStyle(
-//                                             color: Colors.black,
-//                                             fontSize: 18.0,
-//                                           ),
-//                                           alignment: Alignment.center,
-//                                           underline: null,
-//                                           borderRadius: BorderRadius.circular(
-//                                             20.0,
-//                                           ),
-//                                         ),
-//                                       ),
-//                                     ),
-//                                   ),
-//                                 ),
-//                               ),
+                          if (indexToRemove != -1) {
+                            String removedImageUrl = selectedImagesUrl[indexToRemove];
+                            setState(() {
+                              selectedImagesUrl.removeAt(indexToRemove);
+                              isImageOpend = false;
+                              openImage = null;
+                            });
 
-//                               //neighborhood
-//                               Visibility(
-//                                 visible: visibleOfNeighborhood,
-//                                 child: Padding(
-//                                   padding: EdgeInsets.symmetric(
-//                                     vertical: 20.0,
-//                                   ),
-//                                   child: ListTile(
-//                                     leading: Container(
-//                                       padding: EdgeInsets.all(8.0),
-//                                       width: 40.0,
-//                                       decoration: BoxDecoration(
-//                                         shape: BoxShape.circle,
-//                                         color: Colors.white,
-//                                         boxShadow: [
-//                                           BoxShadow(
-//                                             color: Color(0x7C000000),
-//                                             blurRadius: 10.0,
-//                                           ),
-//                                         ],
-//                                       ),
-//                                       child: Image.asset(
-//                                         'assets/home_loves_tickets_top/imgs/nighborhood.png',
-//                                         fit: BoxFit.contain,
-//                                       ),
-//                                     ),
-//                                     title: Container(
-//                                       width: double.infinity,
-//                                       margin: EdgeInsets.symmetric(
-//                                         horizontal: 20.0,
-//                                       ),
-//                                       height: 40.0,
-//                                       decoration: BoxDecoration(
-//                                         color: Colors.white,
-//                                         boxShadow: [
-//                                           BoxShadow(
-//                                             color: Color(0x7C000000),
-//                                             blurRadius: 10.0,
-//                                           ),
-//                                         ],
-//                                         borderRadius: BorderRadius.circular(
-//                                           10.0,
-//                                         ),
-//                                       ),
-//                                       child: TextField(
-//                                         controller: neighborhoodEnterd,
-//                                         textAlign: TextAlign.center,
-//                                         style: TextStyle(
-//                                           color: Colors.black,
-//                                           fontSize: 18.0,
-//                                         ),
-//                                         keyboardType: TextInputType.text,
-//                                         textInputAction: TextInputAction.done,
-//                                         decoration: InputDecoration(
-//                                           border: InputBorder.none,
-//                                           contentPadding: EdgeInsets.only(
-//                                             bottom: 10.0,
-//                                           ),
-//                                           hintText: 'neighborhood',
-//                                         ),
-//                                       ),
-//                                     ),
-//                                   ),
-//                                 ),
-//                               ),
-
-//                               SizedBox(height: 20.0),
-//                               //button
-//                               Visibility(
-//                                 visible: checkInputs(),
-//                                 child: SizedBox(
-//                                   height: 50.0,
-//                                   child: Create_GradiantGreenButton(
-//                                     content: Text(
-//                                       'Done',
-//                                       style: TextStyle(
-//                                           color: Colors.white,
-//                                           fontFamily: 'eras-itc-demi',
-//                                           fontSize: 20.0),
-//                                     ),
-//                                     onButtonPressed: () {
-//                                       if (citySelected == 'another' &&
-//                                               neighborhoodEnterd.text.isEmpty ||
-//                                           placeSelected == 'another' &&
-//                                               neighborhoodEnterd.text.isEmpty) {
-//                                         showDialog(
-//                                           context: context,
-//                                           barrierColor: const Color.fromARGB(
-//                                               113, 0, 0, 0),
-//                                           builder: (BuildContext context) {
-//                                             return AlertDialog(
-//                                               elevation: 120,
-//                                               backgroundColor: Colors.white,
-//                                               title: Row(
-//                                                 children: [
-//                                                   Icon(Icons.error,
-//                                                       color: Colors.red),
-//                                                   SizedBox(width: 8.0),
-//                                                   Text("infull location"),
-//                                                 ],
-//                                               ),
-//                                               content: Text(
-//                                                 "Please, write a full location in neightborhood field.",
-//                                                 style: TextStyle(
-//                                                   fontSize: 12.0,
-//                                                   color: const Color.fromARGB(
-//                                                       255, 0, 0, 0),
-//                                                 ),
-//                                               ),
-//                                               actions: [
-//                                                 TextButton(
-//                                                   onPressed: () {
-//                                                     Navigator.of(context).pop();
-//                                                   },
-//                                                   child: Text("OK",
-//                                                       style: TextStyle(
-//                                                         fontSize: 12.0,
-//                                                         color: mainColor,
-//                                                       )),
-//                                                 ),
-//                                               ],
-//                                             );
-//                                           },
-//                                         );
-//                                       } else {
-//                                         setState(() {
-//                                           initValueOflocation();
-//                                           locationPopupHeight = 0.0;
-//                                           locationPopup = false;
-//                                         });
-//                                       }
-//                                     },
-//                                   ),
-//                                 ),
-//                               ),
-//                             ],
-//                           ),
-//                         ),
-//                       ),
-//                     ],
-//                   )),
-//             ),
-//           ],
-//         )
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Image removed successfully'),
+                                backgroundColor: Colors.black87,
+                                action: SnackBarAction(
+                                  label: 'Undo',
+                                  textColor: Colors.green,
+                                  onPressed: () {
+                                    setState(() {
+                                      selectedImagesUrl.insert(indexToRemove, removedImageUrl);
+                                    });
+                                  },
+                                ),
+                              ),
+                            );
+                          }
+                        }
+                      }
+                      },
+                      child: Container(
+                      margin: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                      height: 50.0,
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: Center(
+                        child: Icon(
+                        Icons.delete,
+                        color: Colors.white,
+                        ),
+                      ),
+                      ),
+                    ),
+                    ],
+                  
+                ),
+              ),
+            ],
+          ),
+        )
       ]),
     );
   }

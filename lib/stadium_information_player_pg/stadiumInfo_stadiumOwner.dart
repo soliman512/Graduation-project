@@ -1,18 +1,24 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/stdown_addNewStd/stdown_editStadium.dart';
 
 // ignore: must_be_immutable
 class Stadium_info_stadiumOwner extends StatefulWidget {
-  String stadiumName = '';
-  String stadiumPrice = '';
-  String stadiumLocation = '';
+  String stadiumName;
+  String stadiumPrice;
+  String stadiumLocation;
   bool isWaterAvailbale = false;
   bool isTrackAvailable = false;
   bool isGrassNormal = false;
-  String capacity = '';
-  String description = '';
-
+  String capacity;
+  String description;
+  List<String> workingDays;
+  String startTime;
+  String endTime;
+  String stadiumID;
+  List<String> imagesUrl = [];
+  // List<String> imagesUrl;
   Stadium_info_stadiumOwner({
     required this.stadiumName,
     required this.stadiumPrice,
@@ -22,6 +28,11 @@ class Stadium_info_stadiumOwner extends StatefulWidget {
     required this.isGrassNormal,
     required this.capacity,
     required this.description,
+    required this.workingDays,
+    required this.startTime,
+    required this.endTime,
+    required this.stadiumID,
+    required this.imagesUrl,
   });
 
   @override
@@ -72,12 +83,21 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => EditSelectedStadium(
-                      name: widget.stadiumName,
-                      price: widget.stadiumPrice,
-                      description: widget.description,
-                      capacity: widget.capacity,
-                      location: widget.stadiumLocation,
-                      // images: widget.images,
+                      stadiumName: widget.stadiumName,
+                      stadiumPrice: widget.stadiumPrice,
+                      stadiumDescription: widget.description,
+                      stadiumCapacity: widget.capacity,
+                      stadiumLocation: widget.stadiumLocation,
+                      stadiumId: widget.stadiumID,
+                      stadiumImagesUrl: widget.imagesUrl,
+                      stadiumHasWater: widget.isWaterAvailbale,
+                      stadiumHasTrack: widget.isTrackAvailable,
+                      stadiumIsNaturalGrass: widget.isGrassNormal,
+                      stadiumWorkingDays: widget.workingDays,
+                      stadiumStartTime: widget.startTime,
+                      stadiumEndTime: widget.endTime,
+                      // imagesUrl: widget.imagesUrl,
+
                     ),
                   ),
                 );
@@ -406,9 +426,9 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                   ),
                 ),
               ),
-              //choose match date
+              
+              // table with working days and time
               SizedBox(height: 40.0),
-              // Comments Section
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -416,7 +436,7 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: Text(
-                      'reviews',
+                      'work time and days',
                       style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -427,8 +447,193 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                 ],
               ),
               SizedBox(height: 40.0),
-              SizedBox(height: 10),
+              // Work time and days table
+              StreamBuilder<DocumentSnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('stadiums')
+                    .doc(widget.stadiumID)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+
+                  return Container(
+                    margin: EdgeInsets.symmetric(horizontal: 16.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: mainColor.withOpacity(0.3),
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: mainColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(13),
+                              topRight: Radius.circular(13),
+                            ),
+                          ),
+                          child: Text(
+                            'Work Time',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: "eras-itc-demi",
+                              color: mainColor,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Table(
+                            children: [
+                              TableRow(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'From',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey[800],
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      widget.startTime,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey[800],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              TableRow(
+                                children: [
+                                  Container(
+                                    height: 1,
+                                    color: Colors.grey[300],
+                                    margin: EdgeInsets.symmetric(vertical: 8),
+                                  ),
+                                  Container(
+                                    height: 1,
+                                    color: Colors.grey[300],
+                                    margin: EdgeInsets.symmetric(vertical: 8),
+                                  ),
+                                ],
+                              ),
+                              TableRow(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'To',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey[800],
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      widget.endTime,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey[800],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              TableRow(
+                                children: [
+                                  Container(
+                                    height: 1,
+                                    color: Colors.grey[300],
+                                    margin: EdgeInsets.symmetric(vertical: 8),
+                                  ),
+                                  Container(
+                                    height: 1,
+                                    color: Colors.grey[300],
+                                    margin: EdgeInsets.symmetric(vertical: 8),
+                                  ),
+                                ],
+                              ),
+                              TableRow(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'Days',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey[800],
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      ' • ' + widget.workingDays.join('\n • '),
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey[800],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              ),
+              SizedBox(height: 40.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(child: Divider()), // Divider on the left side
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Text(
+                      'feedbacks',
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black38),
+                    ),
+                  ),
+                  Expanded(child: Divider()), // Divider on the right side
+                ],
+              ),
+              SizedBox(height: 40.0),
               // Comment Box
+              for (int i = 0; i < 4; i++) ...[
               Container(
                 width: double.infinity,
                 margin: EdgeInsets.symmetric(horizontal: 16.0),
@@ -442,9 +647,9 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                   borderRadius: BorderRadius.circular(15),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black45,
-                      blurRadius: 5,
-                      offset: Offset(0, 2),
+                      color: const Color.fromARGB(14, 0, 0, 0),
+                      blurRadius: 2,
+                      // offset: Offset(0, 2),
                     ),
                   ],
                 ),
@@ -532,8 +737,10 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                       ),
                     ),
                   ],
+                  ),
                 ),
-              ),
+              SizedBox(height: 28),
+              ],
             ],
           ),
         ),

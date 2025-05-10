@@ -157,6 +157,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
         startTime: timeStart,
         endTime: timeEnd,
         workingDays: daysSelected,
+        imagesUrl: selectedImagesUrl,
         userID: FirebaseAuth.instance.currentUser?.uid ?? 'No User ID'
       );
 
@@ -178,6 +179,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
     required String endTime,
     required List<String> workingDays,
     required String userID,
+    required List<String> imagesUrl,
   }) async {
     final stadiumData = {
       "name": name,
@@ -193,6 +195,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
       "workingDays": workingDays,
       "createdAt": FieldValue.serverTimestamp(),
       "userID" : userID,
+      "images" : imagesUrl,
     };
 
     try {
@@ -302,13 +305,13 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                 SizedBox(height: 12.0),
                 Image.asset(
                     'assets/stdowner_addNewStadium/imgs/NewStadium.png'),
-                    Text(
-                      FirebaseAuth.instance.currentUser?.uid ?? 'No User ID',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
-                      ),
-                    ),
+                    // Text(
+                    //   FirebaseAuth.instance.currentUser?.uid ?? 'No User ID',
+                    //   style: TextStyle(
+                    //     fontSize: 14,
+                    //     color: Colors.grey,
+                    //   ),
+                    // ),
                 // name input
                 Create_RequiredInput(
                   onChange: (value) {
