@@ -198,8 +198,6 @@ class _HomeState extends State<Home_Owner> {
     return stadiums
         .where((stadium) => stadium['userID'] == currentUserId)
         .toList();
-
-
   }
 
   /// Builds the stadium list view, filtering by search and user ownership.
@@ -216,9 +214,7 @@ class _HomeState extends State<Home_Owner> {
     // Only show stadiums owned by the current user
     final userStadiums = _filterUserStadiums(filtered);
     if (userStadiums.isEmpty) {
-      return Center(
-        child: Image.asset('assets/cards_home_player/imgs/noStadium.png'),
-      );
+      return Center(child: Text('No Stadiums are fount'));
     }
     return _buildStadiumListView(userStadiums);
   }
@@ -229,7 +225,7 @@ class _HomeState extends State<Home_Owner> {
     final userStadiums = _filterUserStadiums(stadiums);
     if (userStadiums.isEmpty) {
       return Center(
-        child: Image.asset('assets/cards_home_player/imgs/noStadium.png'),
+        child: Image.asset('assets/home_loves_tickets_top/imgs/noStadium.png'),
       );
     }
     return ListView.builder(
