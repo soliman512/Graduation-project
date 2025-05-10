@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
-import 'package:graduation_project_main/stadium_information_player_pg/stadiumInfo_stadium%20owner.dart';
+import 'package:graduation_project_main/stadium_information_player_pg/stadiumInfo_stadiumOwner.dart';
 import 'package:graduation_project_main/stdown_addNewStd/stdwon_addNewStadium.dart';
 
 class Home_Owner extends StatefulWidget {
@@ -39,6 +39,11 @@ class _HomeState extends State<Home_Owner> {
           isGrassNormal: stadium['isNaturalGrass'],
           capacity: stadium['capacity'].toString(),
           description: stadium['description'],
+          stadiumID: stadium.id,
+          imagesUrl: List<String>.from(stadium['images'] ?? []),
+          workingDays: List<String>.from(stadium['workingDays'] ?? []),
+          startTime: stadium['startTime'],
+          endTime: stadium['endTime'],
           // userId: stadium['userID'],
           // docId: stadium.id,
         ),
