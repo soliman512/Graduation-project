@@ -25,6 +25,11 @@ class StadiumCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String trimText(String text, int maxLength) {
+      if (text.length <= maxLength) return text;
+      return text.substring(0, maxLength) + '...';
+    }
+
     return GestureDetector(
       onTap: onTap ?? () {},
       child: Container(
@@ -123,9 +128,7 @@ class StadiumCard extends StatelessWidget {
                         ),
                         SizedBox(width: 5),
                         Text(
-                          location.length > 10
-                              ? location.substring(0, 20) + '...'
-                              : location,
+                          trimText(location, 20),
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: Color.fromARGB(255, 130, 128, 128),
@@ -217,7 +220,7 @@ class Create_Drawer extends StatefulWidget {
 }
 
 class _Create_DrawerState extends State<Create_Drawer> {
-  String? username ;
+  String? username;
 
   @override
   void initState() {
@@ -378,10 +381,10 @@ class _Create_DrawerState extends State<Create_Drawer> {
                   Expanded(
                     child: DrawerItem(
                         title: "About us",
-                        icon: Icon(Icons.info,
-                            size: 30.0,
-                            color: const Color.fromARGB(255, 0, 255, 64)),
-                        onTap: () {}),
+                        icon: Icon(Icons.info, size: 30.0, color: mainColor),
+                        onTap: () {
+                          Navigator.pushNamed(context, '/aboutApp');
+                        }),
                   ),
                   SizedBox(width: 40.0),
                 ],

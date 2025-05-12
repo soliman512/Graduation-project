@@ -127,7 +127,7 @@ class _HomeState extends State<Home> {
       'date': DateTime.now(), // Current notification
     },
     {
-      'stadiumName': 'Cairo Stadium', 
+      'stadiumName': 'Cairo Stadium',
       'price': 600,
       'isEnd': true,
       'date': DateTime(2024, 1, 15, 14, 30), // Jan 15, 2024 2:30 PM
@@ -154,7 +154,8 @@ class _HomeState extends State<Home> {
 
   // Add notification data to Firestore collection
   Future<void> addNotificationsToFirestore() async {
-    final CollectionReference notificationsCollection = FirebaseFirestore.instance.collection('players_notifications');
+    final CollectionReference notificationsCollection =
+        FirebaseFirestore.instance.collection('players_notifications');
 
     for (var notification in notifications) {
       await notificationsCollection.add({
@@ -171,8 +172,6 @@ class _HomeState extends State<Home> {
     super.initState();
     addNotificationsToFirestore();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
