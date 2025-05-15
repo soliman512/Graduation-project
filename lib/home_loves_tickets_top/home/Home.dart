@@ -25,12 +25,6 @@ class _HomeState extends State<Home> {
   String searchQuery = '';
   TextEditingController searchController = TextEditingController();
 
-  // Location filter state
-  // bool locationPopup = false;
-  // double locationPopupHeight = 0.0;
-  // bool visibleOfPlace = false;
-  // bool visibleOfNeighborhood = false;
-  // bool visibleOfButton = false;
   String filterLocation_city = '';
   String filterLocation_place = '';
   String filterLocation_location = '';
@@ -56,6 +50,7 @@ class _HomeState extends State<Home> {
       itemCount: stadiums.length,
       itemBuilder: (context, index) {
         final stadium = stadiums[index];
+        final stadiumId = stadiums[index].id;
         return StadiumCard(
           onTap: () {
             Navigator.push(
@@ -70,6 +65,7 @@ class _HomeState extends State<Home> {
                           isGrassNormal: stadiums[index]['isNaturalGrass'],
                           capacity: stadiums[index]['capacity'].toString(),
                           description: stadiums[index]['description'],
+                          stadiumID: stadiumId,
                         )));
           },
           title: stadium['name'],
