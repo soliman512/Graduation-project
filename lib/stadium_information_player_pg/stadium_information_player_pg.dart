@@ -14,7 +14,7 @@ class Stadium_info_playerPG extends StatefulWidget {
   final String capacity;
   final String description;
   final String stadiumID;
- 
+
   Stadium_info_playerPG({
     required this.stadiumName,
     required this.stadiumPrice,
@@ -186,7 +186,8 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                               4,
                               (index) => AnimatedContainer(
                                 duration: const Duration(milliseconds: 300),
-                                margin: const EdgeInsets.symmetric(horizontal: 6),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 6),
                                 width: _currentPage == index ? 12 : 8,
                                 height: 8,
                                 decoration: BoxDecoration(
@@ -240,7 +241,8 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                         Row(
                           children: [
                             for (int i = 0; i < 5; i++)
-                              const Icon(Icons.star, color: Colors.amber, size: 15),
+                              const Icon(Icons.star,
+                                  color: Colors.amber, size: 15),
                           ],
                         ),
                         const Text(
@@ -297,9 +299,9 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                             Transform.rotate(
                               angle: 0.785,
                               child: const Icon(
-                              Icons.confirmation_num_outlined,
-                              size: 18,
-                              color: Colors.white,
+                                Icons.confirmation_num_outlined,
+                                size: 18,
+                                color: Colors.white,
                               ),
                             ),
                           ],
@@ -307,13 +309,14 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                       ),
                       onButtonPressed: () {
                         // Navigator.pushNamed
+                        Navigator.pushNamed(context, '/payment');
                       },
                     ),
                   ),
                 ),
                 const SizedBox(height: 60.0),
 
-                // description 
+                // description
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -528,7 +531,8 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                     : errorMessage != null
                         ? Center(child: Text(errorMessage!))
                         : Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                            margin:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               border: Border.all(
@@ -587,8 +591,9 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                                           Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: Text(
-                                              (stadiumData?.data()
-                                                      as Map<String, dynamic>?)?['startTime'],
+                                              (stadiumData?.data() as Map<
+                                                  String,
+                                                  dynamic>?)?['startTime'],
                                               style: const TextStyle(
                                                 fontSize: 16,
                                                 color: Colors.black,
@@ -629,8 +634,9 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                                           Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: Text(
-                                              (stadiumData?.data()
-                                                      as Map<String, dynamic>?)?['endTime'],
+                                              (stadiumData?.data() as Map<
+                                                  String,
+                                                  dynamic>?)?['endTime'],
                                               style: const TextStyle(
                                                 fontSize: 16,
                                                 color: Colors.black,
@@ -671,7 +677,11 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                                           Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: Text(
-                                             ' • ' + (stadiumData?.data() as Map<String, dynamic>?)?['workingDays']
+                                              ' • ' +
+                                                  (stadiumData?.data() as Map<
+                                                              String,
+                                                              dynamic>?)?[
+                                                          'workingDays']
                                                       ?.join('\n • '),
                                               style: const TextStyle(
                                                 fontSize: 16,
@@ -709,7 +719,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                   ],
                 ),
                 const SizedBox(height: 40.0),
-                // messages 
+                // messages
                 for (int i = 0; i < 4; i++) ...[
                   Container(
                     width: double.infinity,

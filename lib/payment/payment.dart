@@ -1,10 +1,129 @@
+import 'package:bottom_picker/bottom_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/constants/constants.dart';
+import 'package:numberpicker/numberpicker.dart';
 
-class Payment extends StatelessWidget {
-  // const Payment({super.key});
+class Payment extends StatefulWidget {
+  @override
+  State<Payment> createState() => _PaymentState();
+}
+
+class _PaymentState extends State<Payment> {
+  // inputs controller
+  String matchDate = '';
+  String matchTime = '';
+  String matchDuration = '';
+
+  void showDurationPicker(BuildContext context) {
+    int hours = 0;
+    int minutes = 0;
+
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        // Use StatefulBuilder to keep state inside the BottomSheet
+        return StatefulBuilder(
+          builder: (context, setStateModal) {
+            return Container(
+              padding: EdgeInsets.all(16),
+              height: MediaQuery.of(context).size.height * 0.4,
+              child: Column(
+                children: [
+                  Text(
+                    "Choose Match Duration",
+                    style: TextStyle(
+                      fontFamily: 'eras-itc-demi',
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Hours Picker
+                      Column(
+                        children: [
+                          Text(
+                            "Hours",
+                            style: TextStyle(
+                              color: const Color.fromARGB(92, 158, 158, 158),
+                            ),
+                          ),
+                          NumberPicker(
+                            value: hours,
+                            minValue: 0,
+                            maxValue: 5,
+                            onChanged: (value) => setStateModal(
+                                () => hours = value), // Update picker state
+                          ),
+                        ],
+                      ),
+                      SizedBox(width: 20),
+                      // Minutes Picker
+                      Column(
+                        children: [
+                          Text(
+                            "Minutes",
+                            style: TextStyle(
+                              color: const Color.fromARGB(92, 158, 158, 158),
+                            ),
+                          ),
+                          NumberPicker(
+                            value: minutes,
+                            minValue: 0,
+                            maxValue: 59,
+                            step: 30,
+                            onChanged: (value) => setStateModal(
+                                () => minutes = value), // ✅ Update picker state
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  SizedBox(
+                    height: 40.0,
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: Create_GradiantGreenButton(
+                      content: Text(
+                        'Confirm',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'eras-itc-demi',
+                          fontSize: 18.0,
+                        ),
+                      ),
+                      onButtonPressed: () {
+                        // Close the bottom sheet
+                        Navigator.pop(context);
+
+                        // Create duration and update main state
+                        Duration selectedDuration =
+                            Duration(hours: hours, minutes: minutes);
+
+                        // You must call setState in your main StatefulWidget
+                        // Replace `setState` with a callback if needed
+                        this.setState(() {
+                          matchDuration =
+                              "${selectedDuration.inHours}h  -  ${selectedDuration.inMinutes.remainder(60)}m";
+                        });
+                      },
+                    ),
+                  )
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -167,7 +286,7 @@ class Payment extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 40.0),
-                
+
                 // Container(
                 //   padding:
                 //       EdgeInsets.all(MediaQuery.of(context).size.width * 0.03),
@@ -271,9 +390,96 @@ class Payment extends StatelessWidget {
                 //     ],
                 //   ),
                 // ),
-                
 
- 
+                // date, time, duration
+                // payment way: fawary, credit card, cashr
+                Create_RequiredInput(
+                  isReadOnly: true,
+                  initValue: matchDate,
+                  add_prefix:
+                      Icon(Icons.calendar_today, color: mainColor, size: 12.0),
+                  textInputType: TextInputType.text,
+                  lableText: "match date",
+                  onTap: () {
+                    BottomPicker.date(
+                        pickerTitle: Text(
+                          "Select Date within the next 30 days",
+                          style: TextStyle(
+                              fontFamily: 'eras-itc-demi', fontSize: 14.0),
+                        ),
+                        titlePadding: EdgeInsets.only(
+                          top: 4.0,
+                          left: 4.0,
+                        ),
+                        minDateTime: DateTime.now(),
+                        maxDateTime: DateTime.now().add(Duration(days: 30)),
+                        onSubmit: (selectedDate) {
+                          setState(() {
+                            matchDate =
+                                "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
+                          });
+                        },
+                        buttonStyle: BoxDecoration(
+                          gradient: greenGradientColor,
+                          borderRadius: BorderRadius.circular(10),
+                        )).show(context);
+                  },
+                ),
+                SizedBox(
+                  height: 20.0,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Create_RequiredInput(
+                        isReadOnly: true,
+                        initValue: matchTime,
+                        add_prefix: Icon(Icons.calendar_today,
+                            color: mainColor, size: 12.0),
+                        textInputType: TextInputType.text,
+                        lableText: "time",
+                        onTap: () {
+                          BottomPicker.time(
+                            pickerTitle: Text(
+                              "Select Time",
+                              style: TextStyle(
+                                  fontFamily: 'eras-itc-demi', fontSize: 14.0),
+                            ),
+                            titlePadding: EdgeInsets.only(
+                              top: 4.0,
+                              left: 4.0,
+                            ),
+                            onSubmit: (selectedTime) {
+                              setState(() {
+                                matchTime = "${selectedTime.hourOfPeriod}:${selectedTime.minute} ${selectedTime.period == DayPeriod.am ? 'AM' : 'PM'}";
+                                    "${selectedTime.hour}:${selectedTime.minute}";
+                              });
+                            },
+                            buttonStyle: BoxDecoration(
+                              gradient: greenGradientColor,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            initialTime: null,
+                          ).show(context);
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      width: 10.0,
+                    ),
+                    Expanded(
+                      child: Create_RequiredInput(
+                        isReadOnly: true,
+                        initValue: matchDuration,
+                        add_prefix: Icon(Icons.calendar_today,
+                            color: mainColor, size: 12.0),
+                        textInputType: TextInputType.text,
+                        lableText: "duration",
+                        onTap: () => showDurationPicker(context),
+                      ),
+                    )
+                  ],
+                )
               ],
             ),
           ),

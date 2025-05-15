@@ -760,7 +760,9 @@ class Create_RequiredInput extends StatelessWidget {
     return TextField(
       onChanged: onChange,
       onTap: onTap,
-      controller: TextEditingController(text: initValue),
+      controller: initValue != null
+          ? TextEditingController(text: initValue)
+          : null,
       keyboardType: textInputType,
       readOnly: isReadOnly ?? false,
       maxLines: null,
