@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:graduation_project_main/shared/aboutApp.dart';
 // import 'package:graduation_project_main/stdown_addNewStd/stdown_editStadium.dart';
 import 'package:graduation_project_main/welcome_signup_login/recorve%20account/RecoverAcountSTU.dart';
+import 'package:graduation_project_main/welcome_signup_login/signUpPages/addAccountImage_owner.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -133,7 +134,7 @@ class MyApp extends StatelessWidget {
           // Stadium owner signup routes
           '/sign_up_pg1_stdowner': (context) => Signup_pg1_StdOwner(),
           // '/sign_up_pg2_stdowner': (context) => Signup_pg2_StdOwner(username: '', phoneNumber: '', dateOfBirth: '', location: '',),
-
+          '/addAccountImage_owner': (context) => addAccountImage_owner(),
           // Stadium owner routes
           '/home_owner': (context) => Home_Owner(),
           '/ticket_owner': (context) => Tickets_Owner(),

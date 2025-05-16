@@ -1,62 +1,56 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Signup_pg2_StdOwner extends StatefulWidget {
-  final String username;
-  final String phoneNumber;
-  final String dateOfBirth;
-  final String location;
-
-   Signup_pg2_StdOwner({
-    Key? key,
-    required this.username,
-    required this.phoneNumber,
-    required this.dateOfBirth,
-    required this.location,
-  }) ;
-
+  final String? profileImage;
+  Signup_pg2_StdOwner({this.profileImage});
   @override
   State<Signup_pg2_StdOwner> createState() => _Signup_pg2_StdOwnerState();
 }
 
 class _Signup_pg2_StdOwnerState extends State<Signup_pg2_StdOwner> {
-  bool checkBox_checkTerms = false;
-  bool visiblePassword = true;
-  bool confirm_passwordVisible = true;
-
   final _formKey = GlobalKey<FormState>();
   bool isLoading = false;
-
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  // Variables to store the loaded data
+  String username = "";
+  String phoneNumber = "";
+  String dateOfBirth = "";
+  String location = "";
 
-  // Password checks
+  bool visiblePassword = true;
+  bool confirm_passwordVisible = true;
+
   bool ispassword8char = false;
   bool ispassword1number = false;
   bool ispassworduppercase = false;
   bool ispasswordlowercase = false;
   bool ispasswordspecialchar = false;
 
+  bool termsChecked = false;
+
   @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    confirmPasswordController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    loadData();
   }
 
-  void onpasswordchange(String password) {
+  Future<void> loadData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      ispassword8char = password.length >= 8;
-      ispassword1number = password.contains(RegExp(r'[0-9]'));
-      ispassworduppercase = password.contains(RegExp(r'[A-Z]'));
-      ispasswordlowercase = password.contains(RegExp(r'[a-z]'));
-      ispasswordspecialchar = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+      username = prefs.getString('username') ?? "";
+      phoneNumber = prefs.getString('phoneNumber') ?? "";
+      dateOfBirth = prefs.getString('dateOfBirth') ?? "";
+      location = prefs.getString('location') ?? "";
     });
   }
 
@@ -64,21 +58,43 @@ class _Signup_pg2_StdOwnerState extends State<Signup_pg2_StdOwner> {
     setState(() {
       isLoading = true;
     });
-
     try {
-      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
+// إنشاء الحساب باستخدام Firebase Authentication
+      final credential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
       );
-      final uid = credential.user!.uid;
+      final String uid = credential.user!.uid;
 
-      await FirebaseFirestore.instance.collection('owners').doc(uid).set({
-        'username': widget.username,
-        'phoneNumber': widget.phoneNumber,
-        'dateOfBirth': widget.dateOfBirth,
-        'location': widget.location,
-        'email': emailController.text.trim(),
-      });
+      // Store additional user information in Firestore
+      // رفع الصورة إلى Supabase باستخدام uid كاسم للصورة
+      if (widget.profileImage != null && widget.profileImage!.isNotEmpty) {
+        final File file = File(widget.profileImage!);
+        final SupabaseClient supabase = Supabase.instance.client;
+
+        final String uniqueFileName = '$uid.png';
+
+        final String fullPath =
+            await supabase.storage.from('photo').upload(
+                  'public/$uniqueFileName',
+                  file,
+                  fileOptions:
+                      const FileOptions(cacheControl: '3600', upsert: false),
+                );
+
+        final String url =
+            await supabase.storage.from('photo').getPublicUrl(fullPath);
+
+        // تخزين بيانات المستخدم في Firestore
+        await FirebaseFirestore.instance.collection('owners').doc(uid).set({
+          'username': username,
+          'phoneNumber': phoneNumber,
+          'dateOfBirth': dateOfBirth,
+          'location': location,
+          'profileImage': url, // رابط الصورة
+        });
+      }
 
       showSnackBar(context, "Account created...");
       if (!mounted) return;
@@ -93,16 +109,19 @@ class _Signup_pg2_StdOwnerState extends State<Signup_pg2_StdOwner> {
       } else {
         showSnackBar(context, "An error occurred. Please try again.");
       }
-    } catch (e) {
-      showSnackBar(context, e.toString());
+    } catch (error) {
+      showSnackBar(context, error.toString());
     }
-
     setState(() {
       isLoading = false;
     });
   }
 
-  
+  void onpasswordchange(String password) {
+    setState(() {
+      ispassword8char = password.length >= 8;
+    });
+  }
 
   void onpasswordnumber(String password) {
     setState(() {
@@ -127,6 +146,14 @@ class _Signup_pg2_StdOwnerState extends State<Signup_pg2_StdOwner> {
       ispasswordspecialchar =
           password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
     });
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -173,13 +200,13 @@ class _Signup_pg2_StdOwnerState extends State<Signup_pg2_StdOwner> {
               backgroundImage_balls,
               SingleChildScrollView(
                 child: Form(
-                    key: _formKey,
+                  key: _formKey,
                   child: Column(
                     children: [
                       SizedBox(
                         height: 44.0,
                       ),
-                  
+
                       //logo
                       add_logo(80.0),
                       // title
@@ -198,345 +225,340 @@ class _Signup_pg2_StdOwnerState extends State<Signup_pg2_StdOwner> {
                       SizedBox(
                         height: 60.0,
                       ),
-                  
+
                       //inputs:
                       //email
                       Container(
-                            margin: EdgeInsets.symmetric(horizontal: 18.0),
-                            color: Color(0xC7FFFFFF),
-                            width: double.infinity,
-                            height: 60.0,
-                            child: TextFormField(
-                              validator: (email) {
-                                return email!.contains(RegExp(
-                                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"))
-                                    ? null
-                                    : "Enter a valid email";
-                              },
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              controller: emailController,
-                              keyboardType: TextInputType.emailAddress,
-                              textInputAction: TextInputAction.next,
-                              obscureText: false,
-                              cursorColor: mainColor,
-                              decoration: InputDecoration(
-                                focusColor: mainColor,
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: mainColor,
-                                    width: 2,
-                                  ),
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                prefixIcon: Icon(
-                                  Icons.account_circle_outlined,
-                                  color: mainColor,
-                                ),
-                                contentPadding: EdgeInsets.symmetric(vertical: 5),
-                                hintText: "Email",
-                                hintStyle: TextStyle(
-                                  color: Color(0x4F000000),
-                                  fontSize: 20.0,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color(0x4F000000),
-                                    width: 1.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
+                        margin: EdgeInsets.symmetric(horizontal: 18.0),
+                        color: Color(0xC7FFFFFF),
+                        width: double.infinity,
+                        height: 60.0,
+                        child: TextFormField(
+                          validator: (email) {
+                            return email!.contains(RegExp(
+                                    r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"))
+                                ? null
+                                : "Enter a valid email";
+                          },
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          controller: emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
+                          obscureText: false,
+                          cursorColor: mainColor,
+                          decoration: InputDecoration(
+                            focusColor: mainColor,
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: mainColor,
+                                width: 2,
                               ),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            prefixIcon: Icon(
+                              Icons.account_circle_outlined,
+                              color: mainColor,
+                            ),
+                            contentPadding: EdgeInsets.symmetric(vertical: 5),
+                            hintText: "Email",
+                            hintStyle: TextStyle(
+                              color: Color(0x4F000000),
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x4F000000),
+                                width: 1.0,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                           ),
+                        ),
+                      ),
                       SizedBox(
                         height: 20.0,
                       ),
                       //password
                       Container(
-                            margin: EdgeInsets.symmetric(horizontal: 18.0),
-                            color: Color(0xC7FFFFFF),
-                            width: double.infinity,
-                            height: 60.0,
-                            child: TextFormField(
-                              // change password
-                              onChanged: (password) {
-                                onpasswordchange(password);
-                                onpasswordnumber(password);
-                                onpassworduppercase(password);
-                                onpasswordlowercase(password);
-                                onpasswordspecialchar(password);
-                              },
-                              validator: (value) {
-                                return value!.length < 8
-                                    ? "Enter at least 8 characters"
-                                    : null;
-                              },
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              controller: passwordController,
-                              keyboardType: TextInputType.text,
-                              textInputAction: TextInputAction.next,
-                              obscureText: visiblePassword,
-                              cursorColor: mainColor,
-                              decoration: InputDecoration(
-                                focusColor: mainColor,
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: mainColor,
-                                    width: 2,
-                                  ),
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                prefixIcon: Icon(
-                                  Icons.password_rounded,
-                                  color: mainColor,
-                                ),
-                                suffixIcon: IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      visiblePassword = !visiblePassword;
-                                    });
-                                  },
-                                  icon: visiblePassword
-                                      ? Icon(Icons.visibility, color: mainColor)
-                                      : Icon(Icons.visibility_off,
-                                          color: Colors.grey),
-                                  color: mainColor,
-                                ),
-                                contentPadding: EdgeInsets.symmetric(vertical: 5),
-                                hintText: "Password",
-                                hintStyle: TextStyle(
-                                  color: Color(0x4F000000),
-                                  fontSize: 20.0,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color(0x4F000000),
-                                    width: 1.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
+                        margin: EdgeInsets.symmetric(horizontal: 18.0),
+                        color: Color(0xC7FFFFFF),
+                        width: double.infinity,
+                        height: 60.0,
+                        child: TextFormField(
+                          // change password
+                          onChanged: (password) {
+                            onpasswordchange(password);
+                            onpasswordnumber(password);
+                            onpassworduppercase(password);
+                            onpasswordlowercase(password);
+                            onpasswordspecialchar(password);
+                          },
+                          validator: (value) {
+                            return value!.length < 8
+                                ? "Enter at least 8 characters"
+                                : null;
+                          },
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          controller: passwordController,
+                          keyboardType: TextInputType.text,
+                          textInputAction: TextInputAction.next,
+                          obscureText: visiblePassword,
+                          cursorColor: mainColor,
+                          decoration: InputDecoration(
+                            focusColor: mainColor,
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: mainColor,
+                                width: 2,
                               ),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            prefixIcon: Icon(
+                              Icons.password_rounded,
+                              color: mainColor,
+                            ),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  visiblePassword = !visiblePassword;
+                                });
+                              },
+                              icon: visiblePassword
+                                  ? Icon(Icons.visibility, color: mainColor)
+                                  : Icon(Icons.visibility_off,
+                                      color: Colors.grey),
+                              color: mainColor,
+                            ),
+                            contentPadding: EdgeInsets.symmetric(vertical: 5),
+                            hintText: "Password",
+                            hintStyle: TextStyle(
+                              color: Color(0x4F000000),
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x4F000000),
+                                width: 1.0,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                              
+                        ),
+                      ),
+
                       SizedBox(
                         height: 20.0,
                       ),
-                  
+
                       //confirm password
-                      
-                             Container(
-                            margin: EdgeInsets.symmetric(horizontal: 18.0),
-                            color: Color(0xC7FFFFFF),
-                            width: double.infinity,
-                            height: 60.0,
-                            child: TextFormField(
-                              controller: confirmPasswordController,
-                              validator: (value) {
-                                if (value != passwordController.text) {
-                                  return "Passwords do not match";
-                                }
-                                return null;
-                              },
-                              keyboardType: TextInputType.text,
-                              textInputAction: TextInputAction.done,
-                              obscureText: confirm_passwordVisible,
-                              cursorColor: mainColor,
-                              decoration: InputDecoration(
-                                focusColor: mainColor,
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: mainColor,
-                                    width: 2,
-                                  ),
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                prefixIcon: Icon(
-                                  Icons.check_circle_outlined,
-                                  color: mainColor,
-                                ),
-                                suffixIcon: IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      confirm_passwordVisible =
-                                          !confirm_passwordVisible;
-                                    });
-                                  },
-                                  icon: confirm_passwordVisible
-                                      ? Icon(Icons.visibility, color: mainColor)
-                                      : Icon(Icons.visibility_off,
-                                          color: Colors.grey),
-                                  color: mainColor,
-                                ),
-                                contentPadding: EdgeInsets.symmetric(vertical: 5),
-                                hintText: "Confirm Password",
-                                hintStyle: TextStyle(
-                                  color: Color(0x4F000000),
-                                  fontSize: 20.0,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color(0x4F000000),
-                                    width: 1.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
+
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 18.0),
+                        color: Color(0xC7FFFFFF),
+                        width: double.infinity,
+                        height: 60.0,
+                        child: TextFormField(
+                          controller: confirmPasswordController,
+                          validator: (value) {
+                            if (value != passwordController.text) {
+                              return "Passwords do not match";
+                            }
+                            return null;
+                          },
+                          keyboardType: TextInputType.text,
+                          textInputAction: TextInputAction.done,
+                          obscureText: confirm_passwordVisible,
+                          cursorColor: mainColor,
+                          decoration: InputDecoration(
+                            focusColor: mainColor,
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: mainColor,
+                                width: 2,
                               ),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            prefixIcon: Icon(
+                              Icons.check_circle_outlined,
+                              color: mainColor,
+                            ),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  confirm_passwordVisible =
+                                      !confirm_passwordVisible;
+                                });
+                              },
+                              icon: confirm_passwordVisible
+                                  ? Icon(Icons.visibility, color: mainColor)
+                                  : Icon(Icons.visibility_off,
+                                      color: Colors.grey),
+                              color: mainColor,
+                            ),
+                            contentPadding: EdgeInsets.symmetric(vertical: 5),
+                            hintText: "Confirm Password",
+                            hintStyle: TextStyle(
+                              color: Color(0x4F000000),
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x4F000000),
+                                width: 1.0,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                           ),
+                        ),
+                      ),
 
-
-
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            child: Icon(
+                              Icons.check,
+                              color: Colors.white,
+                              size: 15,
+                            ),
+                            margin: EdgeInsets.only(left: 45.0),
+                            height: 20,
+                            width: 20,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color:
+                                  ispassword8char ? Colors.green : Colors.white,
+                              border: Border.all(
+                                  color: Color.fromARGB(255, 189, 189, 189)),
+                            ),
+                          ),
                           SizedBox(
-                          height: 20,
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              child: Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 15,
-                              ),
-                              margin: EdgeInsets.only(left: 45.0),
-                              height: 20,
-                              width: 20,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: ispassword8char
-                                    ? Colors.green
-                                    : Colors.white,
-                                border: Border.all(
-                                    color: Color.fromARGB(255, 189, 189, 189)),
-                              ),
+                            width: 10,
+                          ),
+                          Text("At least 8 characters")
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            child: Icon(
+                              Icons.check,
+                              color: Colors.white,
+                              size: 15,
                             ),
-                            SizedBox(
-                              width: 10,
+                            margin: EdgeInsets.only(left: 45.0),
+                            height: 20,
+                            width: 20,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: ispassword1number
+                                  ? Colors.green
+                                  : Colors.white,
+                              border: Border.all(
+                                  color: Color.fromARGB(255, 189, 189, 189)),
                             ),
-                            Text("At least 8 characters")
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              child: Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 15,
-                              ),
-                              margin: EdgeInsets.only(left: 45.0),
-                              height: 20,
-                              width: 20,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: ispassword1number
-                                    ? Colors.green
-                                    : Colors.white,
-                                border: Border.all(
-                                    color: Color.fromARGB(255, 189, 189, 189)),
-                              ),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text("At least 1 number")
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            child: Icon(
+                              Icons.check,
+                              color: Colors.white,
+                              size: 15,
                             ),
-                            SizedBox(
-                              width: 10,
+                            margin: EdgeInsets.only(left: 45.0),
+                            height: 20,
+                            width: 20,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: ispassworduppercase
+                                  ? Colors.green
+                                  : Colors.white,
+                              border: Border.all(
+                                  color: Color.fromARGB(255, 189, 189, 189)),
                             ),
-                            Text("At least 1 number")
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              child: Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 15,
-                              ),
-                              margin: EdgeInsets.only(left: 45.0),
-                              height: 20,
-                              width: 20,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: ispassworduppercase
-                                    ? Colors.green
-                                    : Colors.white,
-                                border: Border.all(
-                                    color: Color.fromARGB(255, 189, 189, 189)),
-                              ),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text("Has Uppercase")
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            child: Icon(
+                              Icons.check,
+                              color: Colors.white,
+                              size: 15,
                             ),
-                            SizedBox(
-                              width: 10,
+                            margin: EdgeInsets.only(left: 45.0),
+                            height: 20,
+                            width: 20,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: ispasswordlowercase
+                                  ? Colors.green
+                                  : Colors.white,
+                              border: Border.all(
+                                  color: Color.fromARGB(255, 189, 189, 189)),
                             ),
-                            Text("Has Uppercase")
-                          ],
-                        ),
-                  SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              child: Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 15,
-                              ),
-                              margin: EdgeInsets.only(left: 45.0),
-                              height: 20,
-                              width: 20,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: ispasswordlowercase
-                                    ? Colors.green
-                                    : Colors.white,
-                                border: Border.all(
-                                    color: Color.fromARGB(255, 189, 189, 189)),
-                              ),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text("Has Lowercase")
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            child: Icon(
+                              Icons.check,
+                              color: Colors.white,
+                              size: 15,
                             ),
-                            SizedBox(
-                              width: 10,
+                            margin: EdgeInsets.only(left: 45.0),
+                            height: 20,
+                            width: 20,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: ispasswordspecialchar
+                                  ? Colors.green
+                                  : Colors.white,
+                              border: Border.all(
+                                  color: Color.fromARGB(255, 189, 189, 189)),
                             ),
-                            Text("Has Lowercase")
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              child: Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 15,
-                              ),
-                              margin: EdgeInsets.only(left: 45.0),
-                              height: 20,
-                              width: 20,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: ispasswordspecialchar
-                                    ? Colors.green
-                                    : Colors.white,
-                                border: Border.all(
-                                    color: Color.fromARGB(255, 189, 189, 189)),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text("Has Special Character"),
-                          ],
-                        ),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text("Has Special Character"),
+                        ],
+                      ),
                       //check terms
                       Container(
                         margin: EdgeInsets.only(top: 10.0, left: 30.0),
@@ -545,10 +567,10 @@ class _Signup_pg2_StdOwnerState extends State<Signup_pg2_StdOwner> {
                             IconButton(
                               onPressed: () {
                                 setState(() {
-                                  checkBox_checkTerms = !checkBox_checkTerms;
+                                  termsChecked = !termsChecked;
                                 });
                               },
-                              icon: checkBox_checkTerms
+                              icon: termsChecked
                                   ? Icon(Icons.check_box_rounded,
                                       color: mainColor)
                                   : Icon(Icons.check_box_outline_blank_rounded,
@@ -633,23 +655,23 @@ class _Signup_pg2_StdOwnerState extends State<Signup_pg2_StdOwner> {
                         height: 50.0,
                         child: Create_GradiantGreenButton(
                           content: isLoading
-                                  ? CircularProgressIndicator(
+                              ? CircularProgressIndicator(
+                                  color: Colors.white,
+                                )
+                              : Text(
+                                  'sign up',
+                                  style: TextStyle(
                                       color: Colors.white,
-                                    )
-                                  : Text(
-                            'sign up',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 24.0,
-                                fontFamily: 'eras-itc-bold'),
-                          ),
+                                      fontSize: 24.0,
+                                      fontFamily: 'eras-itc-bold'),
+                                ),
                           onButtonPressed: () async {
-                              if (_formKey.currentState!.validate()) {
-                                await register();
-                              } else {
-                                showSnackBar(context, "ERROR");
-                              }
-                            },
+                            if (_formKey.currentState!.validate()) {
+                              await register();
+                            } else {
+                              showSnackBar(context, "ERROR");
+                            }
+                          },
                         ),
                       ),
                     ],
