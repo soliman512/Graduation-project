@@ -47,7 +47,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   sendVerificationEmail() async {
     try {
       // sent email to the user
-      await FirebaseAuth.instance.currentUser!.sendEmailVerification();
+      //await FirebaseAuth.instance.currentUser!.sendEmailVerification();
       setState(() {
         canResendEmail = false;
       });

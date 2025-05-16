@@ -2,7 +2,9 @@ import 'package:bottom_picker/bottom_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
+import 'package:graduation_project_main/welcome_signup_login/signUpPages/addAccountImage_owner.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/signup_pg2_stdowner.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Signup_pg1_StdOwner extends StatefulWidget {
   @override
@@ -22,6 +24,15 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
       location = "$citySelected-$placeSelected-${neighborhoodEnterd.text}";
     }
   }
+
+    Future<void> storeData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('username', usernameController.text);
+    await prefs.setString('phoneNumber', phoneController.text);
+    await prefs.setString('dateOfBirth', dateOfBirth.toString());
+    await prefs.setString('location', location ?? '');
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -343,75 +354,58 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                     ),
 
                     //next
-                    SizedBox(
-                      height: 50.0,
-                      child: Create_GradiantGreenButton(
-                          content: Text(
-                            'Next',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 24.0,
-                                fontFamily: 'eras-itc-bold'),
-                          ),
-                          onButtonPressed: () {
-                            if (PhoneNumber(phoneController.text) &&
-                                usernameController.text.isNotEmpty &&
-                                dateOfBirth != null &&
-                                location != null) {
-                              // initValueOfLocation();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => Signup_pg2_StdOwner(
-                                    username: usernameController.text,
-                                    phoneNumber: phoneController.text, 
-                                    dateOfBirth: dateOfBirth.toString(),
-                                    location: location!,
-                                  ),
-                                ),
-                              );
-                            } else {
-                              showDialog(
-                                context: context,
-                                barrierColor:
-                                    const Color.fromARGB(113, 0, 0, 0),
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    elevation: 120,
-                                    backgroundColor: Colors.white,
-                                    title: Row(
-                                      children: [
-                                        Icon(Icons.error, color: Colors.red),
-                                        SizedBox(width: 8.0),
-                                        Text("Error"),
-                                      ],
-                                    ),
-                                    content: Text(
-                                      "Please fill in all required fields correctly.",
+                  SizedBox(
+                    height: 50.0,
+                    child: Create_GradiantGreenButton(
+                      content: Text(
+                        'Next',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'eras-itc-bold',
+                            fontSize: 24.0),
+                      ),
+                      onButtonPressed: () async {
+                        // Ensure all fields are filled
+                        if (usernameController.text.trim().isNotEmpty &&
+                            phoneController.text.trim().isNotEmpty &&
+                            location != null &&
+                            location!.trim().isNotEmpty &&
+                            dateOfBirth != null) {
+                          await storeData();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => addAccountImage_owner(),
+                            ),
+                          );
+                        } else {
+                          // Show an alert dialog to inform the user to fill all fields
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Incomplete Information'),
+                                content: Text(
+                                    'Please fill all the required fields.'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text(
+                                      'OK',
                                       style: TextStyle(
-                                        fontSize: 12.0,
-                                        color:
-                                            const Color.fromARGB(255, 0, 0, 0),
-                                      ),
+                                          fontSize: 15, color: Colors.green),
                                     ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text("OK",
-                                            style: TextStyle(
-                                              fontSize: 12.0,
-                                              color: mainColor,
-                                            )),
-                                      ),
-                                    ],
-                                  );
-                                },
+                                  ),
+                                ],
                               );
-                            }
-                          }),
+                            },
+                          );
+                        }
+                      },
                     ),
+                  ),
                     SizedBox(height: 10.0),
                     //don't have account
                     Row(
