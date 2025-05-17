@@ -1,18 +1,20 @@
 import 'dart:io';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
+import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// StadiumCard class to display stadiums
-class StadiumCard extends StatelessWidget {
+
+class StadiumCard extends StatefulWidget {
   final String title;
   final String location;
   final String price;
   final int rating;
   final List<File> selectedImages;
   final VoidCallback? onTap;
+
   StadiumCard({
     Key? key,
     this.onTap,
@@ -24,14 +26,75 @@ class StadiumCard extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    String trimText(String text, int maxLength) {
-      if (text.length <= maxLength) return text;
-      return text.substring(0, maxLength) + '...';
+  State<StadiumCard> createState() => _StadiumCardState();
+}
+
+class _StadiumCardState extends State<StadiumCard> {
+  bool isFavorite = false;
+  @override
+void initState() {
+  super.initState();
+  checkIfFavorite();
+}
+
+Future<void> checkIfFavorite() async {
+  final user = FirebaseAuth.instance.currentUser;
+
+  if (user == null) return;
+
+  final favDoc = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(user.uid)
+      .collection('favorites')
+      .doc(widget.title)
+      .get();
+
+  setState(() {
+    
+    isFavorite = favDoc.exists;
+  });
+}
+
+
+  Future<void> toggleFavorite() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) return;
+
+    final favRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('favorites')
+        .doc(widget.title); 
+
+    if (isFavorite) {
+      await favRef.delete();
+      showSnackBar(context, "${widget.title} removed from favorites");
+    } else {
+      await favRef.set({
+        'title': widget.title,
+        'location': widget.location,
+        'price': widget.price,
+        'rating': widget.rating,
+        'imagePath': widget.selectedImages[0].path, 
+      });
+      showSnackBar(context, "${widget.title} added to favorites");
     }
 
+    setState(() {
+      isFavorite = !isFavorite;
+    });
+  }
+
+  String trimText(String text, int maxLength) {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap ?? () {},
+      onTap: widget.onTap ?? () {},
       child: Container(
         width: double.infinity,
         margin: EdgeInsets.symmetric(horizontal: 2.0),
@@ -41,36 +104,48 @@ class StadiumCard extends StatelessWidget {
           elevation: 4,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
-            side: BorderSide(
-                color: const Color.fromARGB(255, 255, 255, 255), width: 2),
+            side: BorderSide(color: Colors.white, width: 2),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                width: double.infinity,
-                height: 130.0,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10)),
-                  child: Image.asset(
-                    selectedImages[0].path,
+              Stack(
+                
+                children: [
+                  Container(
                     width: double.infinity,
-                    fit: BoxFit.cover,
+                    height: 130.0,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10)),
+                      child: Image.asset(
+                        widget.selectedImages[0].path,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
-                ),
+                  // Favorite icon
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: GestureDetector(
+                      onTap: toggleFavorite,
+                      child: Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: isFavorite ? Colors.red : Colors.white,
+                        size: 28,
+                      ),
+                    ),
+                  )
+                ],
               ),
-              SizedBox(
-                height: 12.0,
-              ),
-              // name & price
+              SizedBox(height: 12.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  //name of stadium
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Container(
                         width: 20.0,
@@ -82,25 +157,21 @@ class StadiumCard extends StatelessWidget {
                       ),
                       SizedBox(width: 4),
                       Text(
-                        title.length > 14
-                            ? title.substring(0, 14) + '...'
-                            : title,
-                        overflow: TextOverflow.ellipsis,
+                        widget.title.length > 14
+                            ? widget.title.substring(0, 14) + '...'
+                            : widget.title,
                         style: TextStyle(
                           fontSize: 16,
                           fontFamily: "eras-itc-bold",
                           fontWeight: FontWeight.bold,
                         ),
-                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
-
-                  //price
                   Padding(
                     padding: const EdgeInsets.only(right: 22.0),
                     child: Text(
-                      "${price}.00 .LE",
+                      "${widget.price}.00 .LE",
                       style: TextStyle(
                         fontSize: 13,
                         color: mainColor,
@@ -115,21 +186,14 @@ class StadiumCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  //location
                   Padding(
                     padding: const EdgeInsets.only(left: 10.0),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.location_on,
-                          size: 13,
-                          color: Colors.grey,
-                        ),
+                        Icon(Icons.location_on, size: 13, color: Colors.grey),
                         SizedBox(width: 5),
                         Text(
-                          trimText(location, 20),
-                          overflow: TextOverflow.ellipsis,
+                          trimText(widget.location, 20),
                           style: TextStyle(
                             color: Color.fromARGB(255, 130, 128, 128),
                             fontSize: 13,
@@ -138,27 +202,22 @@ class StadiumCard extends StatelessWidget {
                       ],
                     ),
                   ),
-
-                  //rating
                   Padding(
                     padding: const EdgeInsets.only(right: 10.0),
                     child: Row(children: [
                       Text(
-                        "${rating}.0",
+                        "${widget.rating}.0",
                         style: TextStyle(fontSize: 12, color: Colors.black54),
                       ),
-                      for (int i = 0; i < rating; i++)
+                      for (int i = 0; i < widget.rating; i++)
                         Icon(Icons.star,
                             color: const Color.fromARGB(255, 255, 217, 0),
                             size: 15),
-                      SizedBox(width: 1),
                     ]),
                   ),
                 ],
               ),
-              SizedBox(
-                height: 12.0,
-              ),
+              SizedBox(height: 12.0),
             ],
           ),
         ),

@@ -1,0 +1,2 @@
+C:/Users/HP 745/Desktop/nen/Graduation-project/android/app/.cxx/RelWithDebInfo/6v5j5x5t/x86/CMakeFiles/edit_cache.dir
+C:/Users/HP 745/Desktop/nen/Graduation-project/android/app/.cxx/RelWithDebInfo/6v5j5x5t/x86/CMakeFiles/rebuild_cache.dir
