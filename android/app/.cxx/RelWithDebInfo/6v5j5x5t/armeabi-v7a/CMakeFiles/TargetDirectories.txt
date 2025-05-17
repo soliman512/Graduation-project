@@ -1,2 +1,0 @@
-C:/Users/HP 745/Desktop/nen/Graduation-project/android/app/.cxx/RelWithDebInfo/6v5j5x5t/armeabi-v7a/CMakeFiles/edit_cache.dir
-C:/Users/HP 745/Desktop/nen/Graduation-project/android/app/.cxx/RelWithDebInfo/6v5j5x5t/armeabi-v7a/CMakeFiles/rebuild_cache.dir
