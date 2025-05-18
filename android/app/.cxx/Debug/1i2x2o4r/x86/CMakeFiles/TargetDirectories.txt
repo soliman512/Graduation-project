@@ -1,2 +1,0 @@
-D:/finalapp_graduation/Graduation-project/android/app/.cxx/Debug/1i2x2o4r/x86/CMakeFiles/edit_cache.dir
-D:/finalapp_graduation/Graduation-project/android/app/.cxx/Debug/1i2x2o4r/x86/CMakeFiles/rebuild_cache.dir

@@ -58,6 +58,7 @@ class _HomeState extends State<Home> {
                 MaterialPageRoute(
                     builder: (context) => Stadium_info_playerPG(
                           stadiumName: stadiums[index]['name'],
+                          stadiumtitle: stadiums[index]['name'], 
                           stadiumPrice: stadiums[index]['price'].toString(),
                           stadiumLocation: stadiums[index]['location'],
                           isWaterAvailbale: stadiums[index]['hasWater'],

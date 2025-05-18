@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+
 
 Widget buildCard({
   required String title,
   required String location,
   required String imageUrl,
   required String price,
+  required VoidCallback onRemove,
 }) {
   return Center(
     child: Container(
@@ -140,7 +145,7 @@ Widget buildCard({
                                 // width: 100,
                                 height: 24,
                                 child: OutlinedButton(
-                                  onPressed: () {},
+                                  onPressed: onRemove,
                                   style: OutlinedButton.styleFrom(
                                     side:
                                         BorderSide(color: Colors.red, width: 2),
@@ -208,6 +213,21 @@ Widget buildCard({
     ),
   );
 }
+Widget _buildEmptyMessage(String message) {
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.only(top: 100),
+      child: Column(
+        children: [
+          Icon(Icons.favorite_border, size: 80, color: Colors.grey),
+          SizedBox(height: 16),
+          Text(message, style: TextStyle(color: Colors.grey, fontSize: 16)),
+        ],
+      ),
+    ),
+  );
+}
+
 
 // Widget _buildRemoveButton() {
 //   return Container(
@@ -270,6 +290,19 @@ class Favourites extends StatefulWidget {
 }
 
 class _FavouritesState extends State<Favourites> {
+
+  void _removeFromFavorites(String stadiumId) async {
+  final userId = FirebaseAuth.instance.currentUser!.uid;
+  await FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('favorites')
+      .doc(stadiumId)
+      .delete();
+
+  setState(() {});
+}
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -333,28 +366,53 @@ class _FavouritesState extends State<Favourites> {
           ],
         ),
 
-        // margin: EdgeInsets.only(left: 16),
-        // alignment: Alignment.center,
+        alignment: Alignment.center,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: Stack(
-        children: [
-          backgroundImage_balls,
-          SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(height: 60),
-                buildCard(
-                  title: "Wembley",
-                  location: "New Assiut_suzan",
-                  imageUrl: "assets/cards_home_player/imgs/test.jpg",
-                  price: "EGP 250.00",
-                ),
-                SizedBox(height: 16),
-              ],
-            ),
-          )
-        ],
+      body: Builder(
+        builder: (context) {
+          final user = FirebaseAuth.instance.currentUser;
+          if (user == null) {
+            return Center(child: Text('Please login'));
+          }
+          
+
+          return StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .collection('favorites')
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              }
+
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return _buildEmptyMessage('No favorites yet');
+              }
+
+              final favorites = snapshot.data!.docs;
+
+              return ListView.separated(
+                itemCount: favorites.length,
+                separatorBuilder: (context, index) => SizedBox(height: 16),
+                itemBuilder: (context, index) {
+                  final favorite = favorites[index];
+                  return buildCard(
+                    title: favorite['title'] ?? '',
+                    location: favorite['location'] ?? '',
+                    imageUrl: favorite['imagePath'] ?? 'assets/default.png',
+                    price: "${favorite['price'] ?? ''}.00 LE",
+                    onRemove: () {
+                      _removeFromFavorites(favorite.id);
+                    },
+                  );
+                },
+              );
+            },
+          );
+        },
       ),
     ));
   }

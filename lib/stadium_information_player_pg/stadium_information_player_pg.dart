@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
+import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class Stadium_info_playerPG extends StatefulWidget {
@@ -14,8 +16,10 @@ class Stadium_info_playerPG extends StatefulWidget {
   final String capacity;
   final String description;
   final String stadiumID;
- 
+  final String stadiumtitle;
+
   Stadium_info_playerPG({
+    required this.stadiumtitle,
     required this.stadiumName,
     required this.stadiumPrice,
     required this.stadiumLocation,
@@ -46,10 +50,27 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
   bool isLoading = true; // to manage loading
   String? errorMessage; // to manage error message
 
+  Future<void> checkIfFavorite() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) return;
+
+    final favDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('favorites')
+        .doc(widget.stadiumtitle)
+        .get();
+
+    setState(() {
+      isFavorite = favDoc.exists;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-
+    checkIfFavorite();
     // inizialize the page controller
     _animationController = AnimationController(
       vsync: this,
@@ -67,6 +88,37 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
 
     // fetch data from Firestore
     fetchStadiumData();
+  }
+
+  // check if the stadium is favorite or not
+  Future<void> toggleFavorite() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) return;
+
+    final favRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('favorites')
+        .doc(widget.stadiumtitle);
+
+    if (isFavorite) {
+      await favRef.delete();
+      showSnackBar(context, "${widget.stadiumtitle} removed from favorites");
+    } else {
+      await favRef.set({
+        'title': widget.stadiumtitle,
+        'location': widget.stadiumLocation,
+        'price': widget.stadiumPrice,
+        'rating': 5, // Default rating or you can add a rating field to the widget
+        'imagePath': 'assets/stadium_information_player_pg/imgs/stadium_1.jpg', // Use appropriate image path
+      });
+      showSnackBar(context, "${widget.stadiumtitle} added to favorites");
+    }
+
+    setState(() {
+      isFavorite = !isFavorite;
+    });
   }
 
   Future<void> fetchStadiumData() async {
@@ -178,6 +230,38 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                               ),
                           ],
                         ),
+                        // favorite icon
+                        Positioned(
+                          top: 10,
+                          right: 10,
+                          child: GestureDetector(
+                          onTap: () {
+                            toggleFavorite();
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                              color: Colors.black.withOpacity(0.15),
+                              blurRadius: 6,
+                              offset: Offset(0, 2),
+                              ),
+                            ],
+                            ),
+                            padding: const EdgeInsets.all(6),
+                            child: Icon(
+                            isFavorite
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                            color: isFavorite ? Colors.red : Colors.grey,
+                            size: 28,
+                            ),
+                          ),
+                          ),
+                        ),
+
                         Positioned(
                           bottom: 10,
                           child: Row(
@@ -186,7 +270,8 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                               4,
                               (index) => AnimatedContainer(
                                 duration: const Duration(milliseconds: 300),
-                                margin: const EdgeInsets.symmetric(horizontal: 6),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 6),
                                 width: _currentPage == index ? 12 : 8,
                                 height: 8,
                                 decoration: BoxDecoration(
@@ -240,7 +325,8 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                         Row(
                           children: [
                             for (int i = 0; i < 5; i++)
-                              const Icon(Icons.star, color: Colors.amber, size: 15),
+                              const Icon(Icons.star,
+                                  color: Colors.amber, size: 15),
                           ],
                         ),
                         const Text(
@@ -297,9 +383,9 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                             Transform.rotate(
                               angle: 0.785,
                               child: const Icon(
-                              Icons.confirmation_num_outlined,
-                              size: 18,
-                              color: Colors.white,
+                                Icons.confirmation_num_outlined,
+                                size: 18,
+                                color: Colors.white,
                               ),
                             ),
                           ],
@@ -313,7 +399,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                 ),
                 const SizedBox(height: 60.0),
 
-                // description 
+                // description
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -528,7 +614,8 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                     : errorMessage != null
                         ? Center(child: Text(errorMessage!))
                         : Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                            margin:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               border: Border.all(
@@ -587,8 +674,9 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                                           Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: Text(
-                                              (stadiumData?.data()
-                                                      as Map<String, dynamic>?)?['startTime'],
+                                              (stadiumData?.data() as Map<
+                                                  String,
+                                                  dynamic>?)?['startTime'],
                                               style: const TextStyle(
                                                 fontSize: 16,
                                                 color: Colors.black,
@@ -629,8 +717,9 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                                           Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: Text(
-                                              (stadiumData?.data()
-                                                      as Map<String, dynamic>?)?['endTime'],
+                                              (stadiumData?.data() as Map<
+                                                  String,
+                                                  dynamic>?)?['endTime'],
                                               style: const TextStyle(
                                                 fontSize: 16,
                                                 color: Colors.black,
@@ -671,7 +760,11 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                                           Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: Text(
-                                             ' • ' + (stadiumData?.data() as Map<String, dynamic>?)?['workingDays']
+                                              ' • ' +
+                                                  (stadiumData?.data() as Map<
+                                                              String,
+                                                              dynamic>?)?[
+                                                          'workingDays']
                                                       ?.join('\n • '),
                                               style: const TextStyle(
                                                 fontSize: 16,
@@ -709,7 +802,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                   ],
                 ),
                 const SizedBox(height: 40.0),
-                // messages 
+                // messages
                 for (int i = 0; i < 4; i++) ...[
                   Container(
                     width: double.infinity,
