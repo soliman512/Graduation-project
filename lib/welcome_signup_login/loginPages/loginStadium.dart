@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login_Stadiumonwer extends StatefulWidget {
   @override
@@ -12,63 +13,64 @@ class Login_Stadiumonwer extends StatefulWidget {
 
 class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
   bool visiblePassword = true;
- 
+
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool isLoading = false;
   signIn() async {
-  setState(() {
-    isLoading = true;
-  });
-
-  try {
-    final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: emailController.text,
-      password: passwordController.text,
-    );
-
-    final user = credential.user;
-
-    // التحقق من أن المستخدم موجود في مجموعة "owners"
-    final ownerDoc = await FirebaseFirestore.instance
-        .collection('owners')
-        .doc(user!.uid)
-        .get();
-
-    if (ownerDoc.exists) {
-      showSnackBar(context, "Done ... ");
-      Navigator.pushReplacementNamed(context, '/home_owner');
-    } else {
-      showSnackBar(context, "This account is not an Owner account!");
-      await FirebaseAuth.instance.signOut();
-    }
-
-  } on FirebaseAuthException catch (e) {
-    String errorMessage;
-
-    print("snackbar  ${e.code}");
-    switch (e.code) {
-      case 'invalid-credential':
-      case 'user-not-found':
-        errorMessage = "Email not found";
-        break;
-      case 'wrong-password':
-        errorMessage = "Wrong-Password";
-        break;
-      case 'invalid-email':
-        errorMessage = 'invalid-email';
-        break;
-      default:
-        errorMessage = "An unexpected error occurred.Try again.";
-    }
-    showSnackBar(context, errorMessage);
-  } finally {
     setState(() {
-      isLoading = false;
+      isLoading = true;
     });
-  }
-}
 
+    try {
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+
+      final user = credential.user;
+
+      // التحقق من أن المستخدم موجود في مجموعة "owners"
+      final ownerDoc = await FirebaseFirestore.instance
+          .collection('owners')
+          .doc(user!.uid)
+          .get();
+
+      if (ownerDoc.exists) {
+        showSnackBar(context, "Done ... ");
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true);
+        await prefs.setString('role', 'owners');
+        Navigator.pushReplacementNamed(context, '/home_owner');
+      } else {
+        showSnackBar(context, "This account is not an Owner account!");
+        await FirebaseAuth.instance.signOut();
+      }
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+
+      print("snackbar  ${e.code}");
+      switch (e.code) {
+        case 'invalid-credential':
+        case 'user-not-found':
+          errorMessage = "Email not found";
+          break;
+        case 'wrong-password':
+          errorMessage = "Wrong-Password";
+          break;
+        case 'invalid-email':
+          errorMessage = 'invalid-email';
+          break;
+        default:
+          errorMessage = "An unexpected error occurred.Try again.";
+      }
+      showSnackBar(context, errorMessage);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   void dispose() {
     emailController.dispose();
