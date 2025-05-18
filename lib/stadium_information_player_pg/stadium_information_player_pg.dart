@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
+import 'package:graduation_project_main/payment/payment.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -110,8 +111,10 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
         'title': widget.stadiumtitle,
         'location': widget.stadiumLocation,
         'price': widget.stadiumPrice,
-        'rating': 5, // Default rating or you can add a rating field to the widget
-        'imagePath': 'assets/stadium_information_player_pg/imgs/stadium_1.jpg', // Use appropriate image path
+        'rating':
+            5, // Default rating or you can add a rating field to the widget
+        'imagePath':
+            'assets/stadium_information_player_pg/imgs/stadium_1.jpg', // Use appropriate image path
       });
       showSnackBar(context, "${widget.stadiumtitle} added to favorites");
     }
@@ -235,30 +238,30 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                           top: 10,
                           right: 10,
                           child: GestureDetector(
-                          onTap: () {
-                            toggleFavorite();
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                              color: Colors.black.withOpacity(0.15),
-                              blurRadius: 6,
-                              offset: Offset(0, 2),
+                            onTap: () {
+                              toggleFavorite();
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.15),
+                                    blurRadius: 6,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
                               ),
-                            ],
+                              padding: const EdgeInsets.all(6),
+                              child: Icon(
+                                isFavorite
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: isFavorite ? Colors.red : Colors.grey,
+                                size: 28,
+                              ),
                             ),
-                            padding: const EdgeInsets.all(6),
-                            child: Icon(
-                            isFavorite
-                              ? Icons.favorite
-                              : Icons.favorite_border,
-                            color: isFavorite ? Colors.red : Colors.grey,
-                            size: 28,
-                            ),
-                          ),
                           ),
                         ),
 
@@ -392,7 +395,18 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                         ),
                       ),
                       onButtonPressed: () {
-                        // Navigator.pushNamed
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder:
+                                  (context) => /* TODO: Replace with your PaymentPage widget */
+                                      Payment(
+                                          stadiumID: widget.stadiumID,
+                                          stadiumName: widget.stadiumName,
+                                          stadiumPrice: widget.stadiumPrice,
+                                          stadiumLocation:
+                                              widget.stadiumLocation)),
+                        );
                       },
                     ),
                   ),
@@ -952,7 +966,18 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.pushNamed(context, '/payment');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder:
+                                    (context) => /* TODO: Replace with your PaymentPage widget */
+                                        Payment(
+                                            stadiumID: widget.stadiumID,
+                                            stadiumName: widget.stadiumName,
+                                            stadiumPrice: widget.stadiumPrice,
+                                            stadiumLocation:
+                                                widget.stadiumLocation)),
+                          );
                         },
                         child: Container(
                           height: 50.0,
