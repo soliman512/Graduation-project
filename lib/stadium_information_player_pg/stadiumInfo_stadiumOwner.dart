@@ -140,10 +140,16 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                           _currentPage = index;
                         });
                       },
-                      children: [
-                        Image.asset('assets/cards_home_player/imgs/test.jpg',
-                            fit: BoxFit.cover),
-                      ],
+                      children: widget.imagesUrl.isNotEmpty
+                          ? widget.imagesUrl.map((imgUrl) {
+                              return imgUrl.startsWith('http')
+                                  ? Image.network(imgUrl, fit: BoxFit.cover)
+                                  : Image.asset(imgUrl, fit: BoxFit.cover);
+                            }).toList()
+                          : [
+                              Image.asset('assets/cards_home_player/imgs/test.jpg',
+                                  fit: BoxFit.cover)
+                            ],
                     ),
                     Positioned(
                       bottom: 10,

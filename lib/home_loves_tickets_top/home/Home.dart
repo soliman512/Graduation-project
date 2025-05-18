@@ -77,9 +77,7 @@ class _HomeState extends State<Home> {
           location: stadium['location'],
           price: stadium['price'].toString(),
           rating: 5,
-          selectedImages: [
-            File('assets/cards_home_player/imgs/test.jpg'),
-          ],
+          selectedImages: List<String>.from(stadium['images'] ?? ['assets/cards_home_player/imgs/test.jpg']),
         );
       },
     );
