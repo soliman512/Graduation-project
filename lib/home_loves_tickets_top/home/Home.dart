@@ -1,14 +1,18 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/stadium_information_player_pg/stadium_information_player_pg.dart';
 import 'package:bottom_picker/bottom_picker.dart';
+import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
 import 'package:graduation_project_main/widgets/ticket_card.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Home screen widget that displays list of stadiums with search and filter functionality
 class Home extends StatefulWidget {
@@ -167,6 +171,77 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     addNotificationsToFirestore();
+    _showRatingPopupOnSecondOpen();
+  }
+
+  Future<void> _showRatingPopupOnSecondOpen() async {
+    final prefs = await SharedPreferences.getInstance();
+    int openCount = prefs.getInt('openCount') ?? 0;
+    openCount++;
+    await prefs.setInt('openCount', openCount);
+
+    if (openCount == 2) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showRatingPopup();
+      });
+    }
+  }
+
+  void _showRatingPopup() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        double rating = 0; // قيمة التقييم الافتراضية
+        return AlertDialog(
+          title: Text("Rate the App"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("Please rate our app!"),
+              SizedBox(height: 16),
+              RatingBar.builder(
+                minRating: 1,
+                itemSize: 30,
+                itemPadding: EdgeInsets.symmetric(horizontal: 4),
+                itemBuilder: (context, _) =>
+                    Icon(Icons.star, color: Colors.amber),
+                onRatingUpdate: (newRating) {
+                  rating = newRating;
+                },
+              ),
+            ],
+          ),
+          actions: [
+            // زر Cancel
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // إغلاق النافذة بدون حفظ التقييم
+              },
+              child: Text("Cancel"),
+            ),
+            // زر Submit
+            TextButton(
+              onPressed: () async {
+                if (rating == 0) {
+                  showSnackBar(context, "Please select rate.");
+                } else {
+                  // تخزين التقييم في Firestore
+                  await FirebaseFirestore.instance.collection('app_ratings').add({
+                    'rating': rating,
+                    'timestamp': FieldValue.serverTimestamp(),
+                    'userId': FirebaseAuth.instance.currentUser?.uid,
+                    'type': 'player',
+                  });
+                  Navigator.of(context).pop();
+                  showSnackBar(context, "Thank you for your rating!");
+                }
+              },
+              child: Text("Submit"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -708,7 +783,7 @@ class _HomeState extends State<Home> {
                                         ]),
                                     child: Image.asset(
                                         'assets/home_loves_tickets_top/imgs/price_Vector.png')),
-                          )),
+                         )),
 
                       // Rating filter
                       Expanded(

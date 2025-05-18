@@ -3,10 +3,13 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/stadium_information_player_pg/stadiumInfo_stadiumOwner.dart';
 import 'package:graduation_project_main/stdown_addNewStd/stdwon_addNewStadium.dart';
+import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Home_Owner extends StatefulWidget {
   const Home_Owner({Key? key}) : super(key: key);
@@ -23,6 +26,79 @@ class _HomeState extends State<Home_Owner> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _showRatingPopupOnSecondOpen();
+  }
+
+  Future<void> _showRatingPopupOnSecondOpen() async {
+    final prefs = await SharedPreferences.getInstance();
+    int openCount = prefs.getInt('openCount_owner') ?? 0;
+    openCount++;
+    await prefs.setInt('openCount_owner', openCount);
+
+    if (openCount == 2) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showRatingPopup();
+      });
+    }
+  }
+
+  void _showRatingPopup() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        double rating = 0;
+        return AlertDialog(
+          title: Text("Rate the App"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("Please rate our app!"),
+              SizedBox(height: 16),
+              RatingBar.builder(
+                minRating: 1,
+                itemSize: 30,
+                itemPadding: EdgeInsets.symmetric(horizontal: 4),
+                itemBuilder: (context, _) =>
+                    Icon(Icons.star, color: Colors.amber),
+                onRatingUpdate: (newRating) {
+                  rating = newRating;
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                if (rating == 0) {
+                  showSnackBar(context, "Please select rate.");
+                } else {
+                  await FirebaseFirestore.instance.collection('app_ratings').add({
+                    'rating': rating,
+                    'timestamp': FieldValue.serverTimestamp(),
+                    'userId': FirebaseAuth.instance.currentUser?.uid,
+                    'type': 'owner', 
+                  });
+                  Navigator.of(context).pop();
+                  showSnackBar(context, "Thank you for your rating!");
+                }
+              },
+              child: Text("Submit"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   /// Navigates to the stadium details page, passing all required stadium info and IDs.
