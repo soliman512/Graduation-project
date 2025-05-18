@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/addAccountImage_owner.dart';
-import 'package:graduation_project_main/welcome_signup_login/signUpPages/signup_pg2_stdowner.dart';
+// import 'package:graduation_project_main/welcome_signup_login/signUpPages/signup_pg2_stdowner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Signup_pg1_StdOwner extends StatefulWidget {
