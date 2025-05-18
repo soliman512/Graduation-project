@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
+import 'package:graduation_project_main/payment/payment.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -308,8 +309,18 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                         ),
                       ),
                       onButtonPressed: () {
-                        // Navigator.pushNamed
-                        Navigator.pushNamed(context, '/payment');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder:
+                                  (context) => /* TODO: Replace with your PaymentPage widget */
+                                      Payment(
+                                        stadiumID: widget.stadiumID,
+                                        stadiumName: widget.stadiumName,
+                                        stadiumPrice: widget.stadiumPrice,
+                                        stadiumLocation: widget.stadiumLocation
+                                      )),
+                        );
                       },
                     ),
                   ),
@@ -869,7 +880,18 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.pushNamed(context, '/payment');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder:
+                                    (context) => /* TODO: Replace with your PaymentPage widget */
+                                        Payment(
+                                        stadiumID: widget.stadiumID,
+                                        stadiumName: widget.stadiumName,
+                                        stadiumPrice: widget.stadiumPrice,
+                                        stadiumLocation: widget.stadiumLocation
+                                      )),
+                          );
                         },
                         child: Container(
                           height: 50.0,

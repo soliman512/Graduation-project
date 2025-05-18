@@ -166,7 +166,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    addNotificationsToFirestore();
+    // addNotificationsToFirestore();
   }
 
   @override
@@ -178,9 +178,10 @@ class _HomeState extends State<Home> {
         drawer: Create_Drawer(),
         appBar: Create_AppBar(
             notificationState: () => showDialog(
-                  barrierColor: const Color.fromARGB(237, 0, 0, 0),
+                  barrierColor: const Color.fromARGB(38, 0, 0, 0),
                   context: context,
                   builder: (BuildContext context) {
+                    addNotificationsToFirestore();
                     return Dialog(
                       backgroundColor: Colors.transparent,
                       alignment: Alignment.topCenter,

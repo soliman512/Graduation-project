@@ -43,7 +43,7 @@ import 'stdown_addNewStd/stdwon_addNewStadium.dart';
 
 // Other screens
 // import 'stadium_information_player_pg/stadium_information_player_pg.dart';
-import 'payment/payment.dart';
+// import 'payment/payment.dart';
 import 'no_internetConnection/no_internetConnection.dart';
 
 /// Main function that initializes the application
@@ -151,7 +151,7 @@ class MyApp extends StatelessWidget {
           // '/stdown_editStadium': (context) => EditStadium_stdown(),
 
           // Payment and utility routes
-          '/payment': (context) => Payment(),
+          // '/payment': (context) => Payment(),
           '/no_internetConnection': (context) => NoInternetConnection(),
 
           //shared
