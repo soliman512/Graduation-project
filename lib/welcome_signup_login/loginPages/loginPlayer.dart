@@ -6,6 +6,7 @@ import 'package:graduation_project_main/provider/google_signin.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login_player extends StatefulWidget {
   @override
@@ -34,6 +35,9 @@ class _Login_playerState extends State<Login_player> {
 
       if (playerDoc.exists) {
         showSnackBar(context, "Done ... ");
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true);
+        await prefs.setString('role', 'users');
         Navigator.pushReplacementNamed(context, '/home');
       } else {
         showSnackBar(context, "This account is not an Player account!");

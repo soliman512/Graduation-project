@@ -62,6 +62,7 @@ class _HomeState extends State<Home> {
                 MaterialPageRoute(
                     builder: (context) => Stadium_info_playerPG(
                           stadiumName: stadiums[index]['name'],
+                          stadiumtitle: stadiums[index]['name'],
                           stadiumPrice: stadiums[index]['price'].toString(),
                           stadiumLocation: stadiums[index]['location'],
                           isWaterAvailbale: stadiums[index]['hasWater'],
@@ -226,7 +227,9 @@ class _HomeState extends State<Home> {
                   showSnackBar(context, "Please select rate.");
                 } else {
                   // تخزين التقييم في Firestore
-                  await FirebaseFirestore.instance.collection('app_ratings').add({
+                  await FirebaseFirestore.instance
+                      .collection('app_ratings')
+                      .add({
                     'rating': rating,
                     'timestamp': FieldValue.serverTimestamp(),
                     'userId': FirebaseAuth.instance.currentUser?.uid,
@@ -783,7 +786,7 @@ class _HomeState extends State<Home> {
                                         ]),
                                     child: Image.asset(
                                         'assets/home_loves_tickets_top/imgs/price_Vector.png')),
-                         )),
+                          )),
 
                       // Rating filter
                       Expanded(

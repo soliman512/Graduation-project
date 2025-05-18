@@ -80,41 +80,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         // StreamBuilder to handle authentication state changes
-        home: StreamBuilder<firebase_auth.User?>(
-          stream: firebase_auth.FirebaseAuth.instance.authStateChanges(),
-          builder: (context, snapshot) {
-            // Show loading indicator while checking auth state
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                ),
-              );
-            }
-
-            // Show error message if something went wrong
-            if (snapshot.hasError) {
-              return const Scaffold(
-                body: Center(
-                  child: Text("Something went wrong"),
-                ),
-              );
-            }
-
-            // Handle authenticated user
-            if (snapshot.hasData) {
-              firebase_auth.User? user = snapshot.data;
-              // Redirect to email verification if needed
-              if (user != null && !user.emailVerified) {
-                return VerifyEmailPage();
-              }
-              return Home();
-            }
-
-            // Show welcome screen for unauthenticated users
-            return Welcome();
-          },
-        ),
+        home: Splash(),
 
         // Define all available routes in the application
         routes: {
