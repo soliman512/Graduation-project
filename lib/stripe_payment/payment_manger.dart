@@ -34,7 +34,7 @@ abstract class PaymentManger {
       'https://api.stripe.com/v1/payment_intents',
       options: Options(
         headers: {
-          'Authorization': 'Bearer ${ApiKeys.secretKey}',
+          // 'Authorization': 'Bearer ${ApiKeys.secretKey}',
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       ),

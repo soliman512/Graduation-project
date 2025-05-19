@@ -398,7 +398,6 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                         ),
                       ),
                       onButtonPressed: () {
-                        PaymentManger.makePayment(350, "EGP");
                         // Navigator.pushNamed
                       },
                     ),

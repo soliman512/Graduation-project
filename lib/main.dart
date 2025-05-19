@@ -54,7 +54,8 @@ import 'no_internetConnection/no_internetConnection.dart';
 Future<void> main() async {
   // Ensure Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
-  Stripe.publishableKey = ApiKeys.publishableKey;
+  // Initialize Stripe with publishable key
+  //Stripe.publishableKey = ApiKeys.publishableKey;
   // Initialize Supabase with project credentials
   Supabase.initialize(
       url: "https://htoxbuyjqsxyxnhrdepl.supabase.co",
