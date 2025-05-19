@@ -53,6 +53,8 @@ dependencies:
   bottom_picker: ^3.1.0
   visibility_detector: ^0.4.0+2
   flutter_rating_bar: ^4.0.1
+  flutter_stripe: ^11.5.0
+  dio: ^5.8.0+1
 
 dev_dependencies:
   flutter_test:

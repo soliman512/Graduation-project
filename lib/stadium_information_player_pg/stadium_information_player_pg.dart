@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
+import 'package:graduation_project_main/stripe_payment/payment_manger.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -49,6 +50,8 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
   DocumentSnapshot? stadiumData;
   bool isLoading = true; // to manage loading
   String? errorMessage; // to manage error message
+
+  List<String> images = [];
 
   Future<void> checkIfFavorite() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -110,8 +113,10 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
         'title': widget.stadiumtitle,
         'location': widget.stadiumLocation,
         'price': widget.stadiumPrice,
-        'rating': 5, // Default rating or you can add a rating field to the widget
-        'imagePath': 'assets/stadium_information_player_pg/imgs/stadium_1.jpg', // Use appropriate image path
+        'rating':
+            5, // Default rating or you can add a rating field to the widget
+        'imagePath':
+            'assets/stadium_information_player_pg/imgs/stadium_1.jpg', // Use appropriate image path
       });
       showSnackBar(context, "${widget.stadiumtitle} added to favorites");
     }
@@ -127,15 +132,18 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
           .collection('stadiums')
           .doc(widget.stadiumID)
           .get();
+      if (!mounted) return;
       setState(() {
         if (doc.exists) {
           stadiumData = doc;
+          images = List<String>.from((doc.data()?['images'] ?? []));
         } else {
           errorMessage = 'no stadium data';
         }
-        isLoading = false; // fetch completed
+        isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         errorMessage = 'error \n: $e';
         isLoading = false;
@@ -151,6 +159,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
   }
 
   void _onVisibilityChanged(VisibilityInfo visibilityInfo) {
+      if (!mounted) return;
     if (visibilityInfo.visibleFraction == 0 && _isContainerVisible) {
       setState(() {
         _isContainerVisible = false;
@@ -215,50 +224,47 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                               _currentPage = index;
                             });
                           },
-                          children: [
-                            for (int i = 0; i < 4; i++)
-                              Container(
-                                margin: const EdgeInsets.only(right: 4.0),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  image: const DecorationImage(
-                                    image: AssetImage(
-                                        'assets/cards_home_player/imgs/test.jpg'),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                          ],
+                          children: images.isNotEmpty
+                              ? images.map((imgUrl) {
+                                  return imgUrl.startsWith('http')
+                                      ? Image.network(imgUrl, fit: BoxFit.cover)
+                                      : Image.asset(imgUrl, fit: BoxFit.cover);
+                                }).toList()
+                              : [
+                                  Image.asset(
+                                      'assets/cards_home_player/imgs/test.jpg',
+                                      fit: BoxFit.cover)
+                                ],
                         ),
                         // favorite icon
                         Positioned(
                           top: 10,
                           right: 10,
                           child: GestureDetector(
-                          onTap: () {
-                            toggleFavorite();
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                              color: Colors.black.withOpacity(0.15),
-                              blurRadius: 6,
-                              offset: Offset(0, 2),
+                            onTap: () {
+                              toggleFavorite();
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.15),
+                                    blurRadius: 6,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
                               ),
-                            ],
+                              padding: const EdgeInsets.all(6),
+                              child: Icon(
+                                isFavorite
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: isFavorite ? Colors.red : Colors.grey,
+                                size: 28,
+                              ),
                             ),
-                            padding: const EdgeInsets.all(6),
-                            child: Icon(
-                            isFavorite
-                              ? Icons.favorite
-                              : Icons.favorite_border,
-                            color: isFavorite ? Colors.red : Colors.grey,
-                            size: 28,
-                            ),
-                          ),
                           ),
                         ),
 
@@ -267,7 +273,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: List.generate(
-                              4,
+                              images.isNotEmpty ? images.length : 1,
                               (index) => AnimatedContainer(
                                 duration: const Duration(milliseconds: 300),
                                 margin:
@@ -392,6 +398,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                         ),
                       ),
                       onButtonPressed: () {
+                        PaymentManger.makePayment(350, "EGP");
                         // Navigator.pushNamed
                       },
                     ),

@@ -2,7 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:graduation_project_main/shared/aboutApp.dart';
+import 'package:graduation_project_main/stripe_payment/stripe_keys.dart';
 // import 'package:graduation_project_main/stdown_addNewStd/stdown_editStadium.dart';
 import 'package:graduation_project_main/welcome_signup_login/recorve%20account/RecoverAcountSTU.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/addAccountImage_owner.dart';
@@ -52,11 +54,12 @@ import 'no_internetConnection/no_internetConnection.dart';
 Future<void> main() async {
   // Ensure Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
-
+  Stripe.publishableKey = ApiKeys.publishableKey;
   // Initialize Supabase with project credentials
   Supabase.initialize(
       url: "https://htoxbuyjqsxyxnhrdepl.supabase.co",
-      anonKey:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0b3hidXlqcXN4eXhuaHJkZXBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE3ODk5OTAsImV4cCI6MjA1NzM2NTk5MH0.LgR8CpDcpXkOOZ14K1YZs6cS6SViQMy9JKskjSLuoOg");
+      anonKey:
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0b3hidXlqcXN4eXhuaHJkZXBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE3ODk5OTAsImV4cCI6MjA1NzM2NTk5MH0.LgR8CpDcpXkOOZ14K1YZs6cS6SViQMy9JKskjSLuoOg");
 
   // Initialize Firebase with platform-specific options
   await Firebase.initializeApp(
@@ -113,7 +116,7 @@ class MyApp extends StatelessWidget {
 
           // Stadium information and management
           // '/stadium_information_player_pg': (context) =>
-              // Stadium_info_playerPG(),
+          // Stadium_info_playerPG(),
           '/stdWon_addNewStadium': (context) => AddNewStadium(),
           // '/stdown_editStadium': (context) => EditStadium_stdown(),
 

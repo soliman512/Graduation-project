@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
+import 'package:graduation_project_main/stripe_payment/payment_manger.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -598,13 +599,9 @@ class Create_GradiantGreenButton extends StatelessWidget {
         onPressed: onButtonPressed,
         child: content,
         style: ButtonStyle(
-          // shape: MaterialStateProperty.all(
-          //     RoundedRectangleBorder(
-          //         borderRadius: BorderRadius.circular(15))),
           backgroundColor: WidgetStateProperty.all(Colors.transparent),
           foregroundColor: WidgetStateProperty.all(Color(0xFFFFFFFF)),
           shadowColor: WidgetStateProperty.all(Colors.transparent),
-          // padding: MaterialStateProperty.all(EdgeInsets.all(5)),
         ),
       ),
     );
