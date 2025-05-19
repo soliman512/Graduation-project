@@ -12,7 +12,7 @@ class StadiumCard extends StatefulWidget {
   final String location;
   final String price;
   final int rating;
-  final List<File> selectedImages;
+  final List<String> selectedImages;
   final VoidCallback? onTap;
 
   StadiumCard({
@@ -76,7 +76,7 @@ Future<void> checkIfFavorite() async {
         'location': widget.location,
         'price': widget.price,
         'rating': widget.rating,
-        'imagePath': widget.selectedImages[0].path, 
+        'imagePath': widget.selectedImages[0], 
       });
       showSnackBar(context, "${widget.title} added to favorites");
     }
@@ -119,11 +119,9 @@ Future<void> checkIfFavorite() async {
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(10),
                           topRight: Radius.circular(10)),
-                      child: Image.asset(
-                        widget.selectedImages[0].path,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
+                      child: widget.selectedImages.isNotEmpty && widget.selectedImages[0].startsWith('http')
+  ? Image.network(widget.selectedImages[0], fit: BoxFit.cover)
+  : Image.asset(widget.selectedImages.isNotEmpty ? widget.selectedImages[0] : 'assets/cards_home_player/imgs/test.jpg', fit: BoxFit.cover),
                     ),
                   ),
                   // Favorite icon
