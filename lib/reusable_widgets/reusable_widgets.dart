@@ -6,7 +6,6 @@ import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class StadiumCard extends StatefulWidget {
   final String title;
   final String location;
@@ -32,29 +31,27 @@ class StadiumCard extends StatefulWidget {
 class _StadiumCardState extends State<StadiumCard> {
   bool isFavorite = false;
   @override
-void initState() {
-  super.initState();
-  checkIfFavorite();
-}
+  void initState() {
+    super.initState();
+    checkIfFavorite();
+  }
 
-Future<void> checkIfFavorite() async {
-  final user = FirebaseAuth.instance.currentUser;
+  Future<void> checkIfFavorite() async {
+    final user = FirebaseAuth.instance.currentUser;
 
-  if (user == null) return;
+    if (user == null) return;
 
-  final favDoc = await FirebaseFirestore.instance
-      .collection('users')
-      .doc(user.uid)
-      .collection('favorites')
-      .doc(widget.title)
-      .get();
+    final favDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('favorites')
+        .doc(widget.title)
+        .get();
 
-  setState(() {
-    
-    isFavorite = favDoc.exists;
-  });
-}
-
+    setState(() {
+      isFavorite = favDoc.exists;
+    });
+  }
 
   Future<void> toggleFavorite() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -65,7 +62,7 @@ Future<void> checkIfFavorite() async {
         .collection('users')
         .doc(user.uid)
         .collection('favorites')
-        .doc(widget.title); 
+        .doc(widget.title);
 
     if (isFavorite) {
       await favRef.delete();
@@ -76,7 +73,7 @@ Future<void> checkIfFavorite() async {
         'location': widget.location,
         'price': widget.price,
         'rating': widget.rating,
-        'imagePath': widget.selectedImages[0], 
+        'imagePath': widget.selectedImages[0],
       });
       showSnackBar(context, "${widget.title} added to favorites");
     }
@@ -110,7 +107,6 @@ Future<void> checkIfFavorite() async {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Stack(
-                
                 children: [
                   Container(
                     width: double.infinity,
@@ -119,9 +115,15 @@ Future<void> checkIfFavorite() async {
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(10),
                           topRight: Radius.circular(10)),
-                      child: widget.selectedImages.isNotEmpty && widget.selectedImages[0].startsWith('http')
-  ? Image.network(widget.selectedImages[0], fit: BoxFit.cover)
-  : Image.asset(widget.selectedImages.isNotEmpty ? widget.selectedImages[0] : 'assets/cards_home_player/imgs/test.jpg', fit: BoxFit.cover),
+                      child: widget.selectedImages.isNotEmpty &&
+                              widget.selectedImages[0].startsWith('http')
+                          ? Image.network(widget.selectedImages[0],
+                              fit: BoxFit.cover)
+                          : Image.asset(
+                              widget.selectedImages.isNotEmpty
+                                  ? widget.selectedImages[0]
+                                  : 'assets/cards_home_player/imgs/test.jpg',
+                              fit: BoxFit.cover),
                     ),
                   ),
                   // Favorite icon
@@ -278,17 +280,48 @@ class Create_Drawer extends StatefulWidget {
 
 class _Create_DrawerState extends State<Create_Drawer> {
   String? username;
-
+  String? profileImage;
   @override
   void initState() {
     super.initState();
-    _loadUsername();
+    _loadUserData();
   }
 
   Future<void> _loadUsername() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       username = prefs.getString('username') ?? 'Guest';
+    });
+  }
+
+  Future<void> _loadUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    // جرب تجيب من owners (صاحب ملعب)
+    var doc = await FirebaseFirestore.instance.collection('owners').doc(user.uid).get();
+    if (doc.exists) {
+      setState(() {
+        username = doc['username'] ?? 'Guest';
+        profileImage = doc['profileImage'];
+      });
+      return;
+    }
+
+    // لو مش صاحب ملعب، جرب من users (لاعب)
+    doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+    if (doc.exists) {
+      setState(() {
+        username = doc['username'] ?? 'Guest';
+        profileImage = doc['profileImage'];
+      });
+      return;
+    }
+
+    // لو مفيش بيانات
+    setState(() {
+      username = 'Guest';
+      profileImage = null;
     });
   }
 
@@ -311,7 +344,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
                 height: 50.0,
               ),
               //user image
-              if (userr != null && userr.photoURL != null)
+              if (profileImage != null && profileImage!.isNotEmpty)
                 Container(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
@@ -319,11 +352,11 @@ class _Create_DrawerState extends State<Create_Drawer> {
                   ),
                   child: CircleAvatar(
                     radius: 60.0,
-                    backgroundImage: NetworkImage(userr.photoURL!),
-                    backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                    backgroundImage: NetworkImage(profileImage!),
+                    backgroundColor: Colors.white,
                   ),
-                ),
-              if (userr == null || userr.photoURL == null)
+                )
+              else
                 Container(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
@@ -331,9 +364,8 @@ class _Create_DrawerState extends State<Create_Drawer> {
                   ),
                   child: CircleAvatar(
                     radius: 60.0,
-                    backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-                    child: Icon(Icons.person_outline_rounded,
-                        size: 80, color: mainColor),
+                    backgroundColor: Colors.white,
+                    child: Icon(Icons.person_outline_rounded, size: 80, color: mainColor),
                   ),
                 ),
               SizedBox(
@@ -465,9 +497,9 @@ class _Create_DrawerState extends State<Create_Drawer> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset(
-                          "assets/home_loves_tickets_top/imgs/Vector_drawerSettings.png",
-                          width: 30.0),
+                      // Image.asset(
+                      //     "assets/home_loves_tickets_top/imgs/Vector_drawerSettings.png",
+                      //     width: 30.0),
                       SizedBox(width: 40.0),
                       Text(
                         "Settings",
@@ -598,13 +630,9 @@ class Create_GradiantGreenButton extends StatelessWidget {
         onPressed: onButtonPressed,
         child: content,
         style: ButtonStyle(
-          // shape: MaterialStateProperty.all(
-          //     RoundedRectangleBorder(
-          //         borderRadius: BorderRadius.circular(15))),
           backgroundColor: WidgetStateProperty.all(Colors.transparent),
           foregroundColor: WidgetStateProperty.all(Color(0xFFFFFFFF)),
           shadowColor: WidgetStateProperty.all(Colors.transparent),
-          // padding: MaterialStateProperty.all(EdgeInsets.all(5)),
         ),
       ),
     );

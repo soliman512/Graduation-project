@@ -79,12 +79,12 @@ class _Signup_pg2_StdOwnerState extends State<Signup_pg2_StdOwner> {
             await supabase.storage.from('photo').upload(
                   'public/$uniqueFileName',
                   file,
-                  fileOptions:
-                      const FileOptions(cacheControl: '3600', upsert: false),
+                  fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
                 );
 
+        // التعديل هنا: استخدم نفس اسم الملف اللي رفعته
         final String url =
-            await supabase.storage.from('photo').getPublicUrl(fullPath);
+            supabase.storage.from('photo').getPublicUrl('public/$uniqueFileName');
 
         // تخزين بيانات المستخدم في Firestore
         await FirebaseFirestore.instance.collection('owners').doc(uid).set({
@@ -92,7 +92,7 @@ class _Signup_pg2_StdOwnerState extends State<Signup_pg2_StdOwner> {
           'phoneNumber': phoneNumber,
           'dateOfBirth': dateOfBirth,
           'location': location,
-          'profileImage': url, // رابط الصورة
+          'profileImage': url, // رابط الصورة من Supabase
         });
       }
 

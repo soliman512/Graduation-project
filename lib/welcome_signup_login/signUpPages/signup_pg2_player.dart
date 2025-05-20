@@ -86,8 +86,7 @@ class _Signup_pg2_playerState extends State<Signup_pg2_player> {
                   const FileOptions(cacheControl: '3600', upsert: false),
             );
 
-        final String url =
-            await supabase.storage.from('photo').getPublicUrl(fullPath);
+        final String url = supabase.storage.from('photo').getPublicUrl('public/$uniqueFileName');
 
         // تخزين بيانات المستخدم في Firestore
         await FirebaseFirestore.instance.collection('users').doc(uid).set({

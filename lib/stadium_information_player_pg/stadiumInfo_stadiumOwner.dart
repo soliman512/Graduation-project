@@ -639,114 +639,79 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
               ),
               SizedBox(height: 40.0),
               // Comment Box
-              for (int i = 0; i < 4; i++) ...[
-              Container(
-                width: double.infinity,
-                margin: EdgeInsets.symmetric(horizontal: 16.0),
-                padding: EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(
-                    color: const Color.fromARGB(38, 0, 185, 46),
-                    width: 2,
-                  ),
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color.fromARGB(14, 0, 0, 0),
-                      blurRadius: 2,
-                      // offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Profile Image and Name
-                    Column(
-                      children: [
-                        CircleAvatar(
-                          radius: 20,
-                          backgroundImage: AssetImage(
-                              "assets/stadium_information_player_pg/imgs/person.jpeg"),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          "Esther Howard",
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: const Color.fromARGB(255, 0, 0, 0),
-                              fontWeight: FontWeight.w500,
-                              fontFamily: 'eras-itc-demi'),
-                        ),
-                        Row(
-                          children: [
-                            for (int i = 0; i < 5; i++)
-                              Icon(
-                                Icons.star,
-                                color: Color(0xffFFCC00),
-                                size: 16,
-                              ),
-                            SizedBox(width: 4),
-                            Text(
-                              "5.5",
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.black54,
-                              ),
+              StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('stadiums')
+                    .doc(widget.stadiumID)
+                    .collection('reviews')
+                    .orderBy('timestamp', descending: true)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) return CircularProgressIndicator();
+                  final reviews = snapshot.data!.docs;
+                  if (reviews.isEmpty) {
+                    return Text('No reviews yet');
+                  }
+                  return Column(
+                    children: reviews.map((doc) {
+                      final data = doc.data() as Map<String, dynamic>;
+                      return Container(
+                        margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: mainColor.withOpacity(0.2), width: 2),
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 2,
                             ),
                           ],
-                        )
-                      ],
-                    ),
-                    SizedBox(width: 16),
-                    // Vertical Divider
-                    Container(
-                      height: 80,
-                      width: 1,
-                      color: Colors.black12,
-                    ),
-                    SizedBox(width: 16),
-                    // Comment Content
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                "BOOKING IN ",
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    color: mainColor,
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: 'eras-itc-demi'),
-                              ),
-                              Text(
-                                "2025/3/12",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            'This should give you the exact structure shown in the image. Let me know if you need further adjustments!',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.black87,
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundImage: data['userImage'] != null
+                                  ? NetworkImage(data['userImage'])
+                                  : AssetImage("assets/stadium_information_player_pg/imgs/person.jpeg") as ImageProvider,
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                  ),
-                ),
+                            SizedBox(width: 8),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  data['username'] ?? '',
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                ),
+                                Row(
+                                  children: [
+                                    for (int i = 0; i < (data['rating'] ?? 0).round(); i++)
+                                      Icon(Icons.star, color: Colors.amber, size: 16),
+                                    SizedBox(width: 4),
+                                    Text(
+                                      data['rating']?.toString() ?? '',
+                                      style: TextStyle(fontSize: 12, color: Colors.black54),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  data['comment'] ?? '',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  );
+                },
+              ),
               SizedBox(height: 28),
-              ],
             ],
           ),
         ),
