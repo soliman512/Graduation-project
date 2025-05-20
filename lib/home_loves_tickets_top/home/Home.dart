@@ -46,6 +46,8 @@ class _HomeState extends State<Home> {
   bool filterLeastRating = false;
   int ratingCount = 0;
 
+  String? testStadiumId;
+
   /// Builds list of stadium cards from Firestore documents
   Widget _buildStadiumList(List<DocumentSnapshot> stadiums) {
     return ListView.builder(
@@ -170,18 +172,26 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     addNotificationsToFirestore();
-    _showRatingPopupOnSecondOpen();
+    _getFirstStadiumIdAndShowPopup();
   }
 
-  Future<void> _showRatingPopupOnSecondOpen() async {
+  Future<void> _getFirstStadiumIdAndShowPopup() async {
+    // Get open count
     final prefs = await SharedPreferences.getInstance();
     int openCount = prefs.getInt('openCount') ?? 0;
     openCount++;
     await prefs.setInt('openCount', openCount);
 
-    if (openCount == 2) {
+    // Get first stadium id from Firestore
+    final stadiumsSnapshot = await FirebaseFirestore.instance.collection('stadiums').limit(1).get();
+    if (stadiumsSnapshot.docs.isNotEmpty) {
+      testStadiumId = stadiumsSnapshot.docs.first.id;
+    }
+
+    // Show popup on second open only
+    if (openCount == 2 && testStadiumId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showRatingPopup();
+        showStadiumReviewPopup(context, testStadiumId!);
       });
     }
   }
@@ -236,6 +246,71 @@ class _HomeState extends State<Home> {
                   Navigator.of(context).pop();
                   showSnackBar(context, "Thank you for your rating!");
                 }
+              },
+              child: Text("Submit"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showStadiumReviewPopup(BuildContext context, String stadiumId) {
+    double rating = 0;
+    TextEditingController commentController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Rate the Stadium"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("Please rate the stadium and write your comment"),
+              SizedBox(height: 16),
+              RatingBar.builder(
+                minRating: 1,
+                itemSize: 30,
+                itemBuilder: (context, _) => Icon(Icons.star, color: Colors.amber),
+                onRatingUpdate: (newRating) {
+                  rating = newRating;
+                },
+              ),
+              SizedBox(height: 16),
+              TextField(
+                controller: commentController,
+                decoration: InputDecoration(hintText: "Write your comment here"),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                if (rating == 0 || commentController.text.isEmpty) {
+                  showSnackBar(context, "Please select rating and write a comment");
+                  return;
+                }
+                final user = FirebaseAuth.instance.currentUser;
+                final userDoc = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
+                await FirebaseFirestore.instance
+                    .collection('stadiums')
+                    .doc(stadiumId)
+                    .collection('reviews')
+                    .add({
+                  'userId': user.uid,
+                  'username': userDoc['username'],
+                  'userImage': userDoc['profileImage'],
+                  'rating': rating,
+                  'comment': commentController.text,
+                  'timestamp': FieldValue.serverTimestamp(),
+                });
+                Navigator.of(context).pop();
+                showSnackBar(context, "Your review has been submitted!");
               },
               child: Text("Submit"),
             ),
@@ -784,7 +859,7 @@ class _HomeState extends State<Home> {
                                         ]),
                                     child: Image.asset(
                                         'assets/home_loves_tickets_top/imgs/price_Vector.png')),
-                          )),
+                         )),
 
                       // Rating filter
                       Expanded(
