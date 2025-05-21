@@ -627,7 +627,9 @@ class _HomeState extends State<Home> {
                         child: GestureDetector(
                           onTap: () {
                             BottomPicker(
-                              items: egyptGovernoratesWidgets,
+                              items: isArabic
+                                  ? getEgyptGovernoratesWidgets(context)
+                                  : egyptGovernoratesWidgets,
                               height: 600.0,
                               titlePadding:
                                   EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),

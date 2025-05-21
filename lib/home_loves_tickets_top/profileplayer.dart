@@ -159,7 +159,7 @@ class _ProfilePageState extends State<ProfilePlayer> {
               isArabic ? "الملف " : "Pro",
               style: TextStyle(
                 fontSize: 23,
-                fontFamily: 'eras-itc-bold',
+                fontFamily: isArabic ? 'Cairo' : 'eras-itc-bold',
                 color: const Color.fromARGB(255, 0, 122, 0),
               ),
             ),
@@ -167,7 +167,7 @@ class _ProfilePageState extends State<ProfilePlayer> {
               isArabic ? "الشخصي" : "file",
               style: TextStyle(
                 fontSize: 23,
-                fontFamily: 'eras-itc-bold',
+                fontFamily: isArabic ? 'Cairo' : 'eras-itc-bold',
                 color: const Color.fromARGB(255, 0, 0, 0),
               ),
             ),
@@ -198,7 +198,7 @@ class _ProfilePageState extends State<ProfilePlayer> {
               isArabic ? "تسجيل الخروج" : "Logout",
               style: TextStyle(
                 fontSize: 13,
-                fontFamily: 'eras-itc-bold',
+                fontFamily: isArabic ? 'Cairo' : 'eras-itc-bold',
                 color: const Color.fromARGB(255, 0, 0, 0),
               ),
             ),
@@ -229,7 +229,7 @@ class _ProfilePageState extends State<ProfilePlayer> {
               isArabic ? "الملف " : "Pro",
               style: TextStyle(
                 fontSize: 23,
-                fontFamily: 'eras-itc-bold',
+                fontFamily: isArabic ? 'Cairo' : 'eras-itc-bold',
                 color: const Color.fromARGB(255, 0, 122, 0),
               ),
             ),
@@ -237,7 +237,7 @@ class _ProfilePageState extends State<ProfilePlayer> {
               isArabic ? "الشخصي" : "file",
               style: TextStyle(
                 fontSize: 23,
-                fontFamily: 'eras-itc-bold',
+                fontFamily: isArabic ? 'Cairo' : 'eras-itc-bold',
                 color: const Color.fromARGB(255, 0, 0, 0),
               ),
             ),
@@ -268,7 +268,7 @@ class _ProfilePageState extends State<ProfilePlayer> {
               isArabic ? "تسجيل الخروج" : "Logout",
               style: TextStyle(
                 fontSize: 13,
-                fontFamily: 'eras-itc-bold',
+                fontFamily: isArabic ? 'Cairo' : 'eras-itc-bold',
                 color: const Color.fromARGB(255, 0, 0, 0),
               ),
             ),

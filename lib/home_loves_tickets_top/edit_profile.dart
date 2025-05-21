@@ -224,20 +224,19 @@ showSnackBar(context, isArabic ? "خطأ في تحديث الملف الشخصي
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-             Text(
-            isArabic ? "تعديل " : "Edit ",
-            style: TextStyle(
+            Text(
+              isArabic ? "تعديل " : "Edit ",
+              style: TextStyle(
+                fontSize: 23,
+                fontFamily: isArabic ? 'Cairo' : 'eras-itc-bold',
                 color: const Color.fromARGB(255, 0, 0, 0),
-             fontSize: 20,
-                fontFamily: 'eras-itc-bold',
-             
+              ),
             ),
-          ),
             Text(
               isArabic ? "الملف" : "pro",
               style: TextStyle(
                 fontSize: 23,
-                fontFamily: 'eras-itc-bold',
+                fontFamily: isArabic ? 'Cairo' : 'eras-itc-bold',
                 color: const Color.fromARGB(255, 0, 122, 0),
               ),
             ),
@@ -245,7 +244,7 @@ showSnackBar(context, isArabic ? "خطأ في تحديث الملف الشخصي
               isArabic ? "الشخصي" : "file",
               style: TextStyle(
                 fontSize: 23,
-                fontFamily: 'eras-itc-bold',
+                fontFamily: isArabic ? 'Cairo' : 'eras-itc-bold',
                 color: const Color.fromARGB(255, 0, 0, 0),
               ),
             ),
@@ -294,8 +293,8 @@ final bool isArabic = Provider.of<LanguageProvider>(context, listen: false).isAr
             isArabic ? "تعديل " : "Edit ",
             style: TextStyle(
                 color: const Color.fromARGB(255, 0, 0, 0),
-             fontSize: 20,
-                fontFamily: 'eras-itc-bold',
+             fontSize:23,
+                fontFamily: isArabic ? 'Cairo' : 'eras-itc-bold',
              
             ),
           ),
@@ -303,7 +302,7 @@ final bool isArabic = Provider.of<LanguageProvider>(context, listen: false).isAr
               isArabic ? "الملف" : "pro",
               style: TextStyle(
                 fontSize: 23,
-                fontFamily: 'eras-itc-bold',
+                fontFamily: isArabic ? 'Cairo' : 'eras-itc-bold',
                 color: const Color.fromARGB(255, 0, 122, 0),
               ),
             ),
@@ -311,11 +310,10 @@ final bool isArabic = Provider.of<LanguageProvider>(context, listen: false).isAr
               isArabic ? "الشخصي" : "file",
               style: TextStyle(
                 fontSize:  23,
-                fontFamily: 'eras-itc-bold',
+                fontFamily: isArabic ? 'Cairo' : 'eras-itc-bold',
                 color: const Color.fromARGB(255, 0, 0, 0),
               ),
             ),
-            
           ],
         ),
         toolbarHeight: 80.0,
