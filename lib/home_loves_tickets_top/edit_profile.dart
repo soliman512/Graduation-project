@@ -457,7 +457,9 @@ final bool isArabic = Provider.of<LanguageProvider>(context, listen: false).isAr
                 },
                 on_tap: () {
                   BottomPicker(
-                    items: egyptGovernoratesWidgets,
+                    items: isArabic
+                        ? getEgyptGovernoratesWidgets(context)
+                        : egyptGovernoratesWidgets,
                     height: 600.0,
                     titlePadding: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
                     buttonContent: Icon(Icons.navigate_next_rounded,
@@ -476,7 +478,9 @@ final bool isArabic = Provider.of<LanguageProvider>(context, listen: false).isAr
                         isArabic ? "اختر المحافظة التي تعيش فيها" : "Choose the governorate where you are located",
                         style: TextStyle(fontWeight: FontWeight.w400)),
                     onSubmit: (selectedIndex) {
-                      String governorate = egyptGovernorates[selectedIndex];
+                      String governorate = isArabic
+                          ? getEgyptGovernorates(context)[selectedIndex]
+                          : egyptGovernorates[selectedIndex];
                       String citySelected = governorate;
                       
                       // Navigator.pop(context);

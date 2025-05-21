@@ -352,37 +352,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
     }
   }
 
-  // Future<void> _loadUserData() async {
-  //   final user = FirebaseAuth.instance.currentUser;
-  //   if (user == null) return;
-
-  //   // جرب تجيب من owners (صاحب ملعب)
-  //   var doc = await FirebaseFirestore.instance.collection('owners').doc(user.uid).get();
-  //   if (doc.exists) {
-  //     setState(() {
-  //       username = doc['username'] ?? 'Guest';
-  //       profileImage = doc['profileImage'];
-  //     });
-  //     return;
-  //   }
-
-  //   // لو مش صاحب ملعب، جرب من users (لاعب)
-  //   doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-  //   if (doc.exists) {
-  //     setState(() {
-  //       username = doc['username'] ?? 'Guest';
-  //       profileImage = doc['profileImage'];
-  //     });
-  //     return;
-  //   }
-
-  //   // لو مفيش بيانات
-  //   setState(() {
-  //     username = 'Guest';
-  //     profileImage = null;
-  //   });
-  // }
-
+  
   @override
   Widget build(BuildContext context) {
     // User Google
@@ -567,7 +537,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
                   builder: (context, constraints) {
                     return Container(
                       margin: EdgeInsets.symmetric(
-                          horizontal: constraints.maxWidth * 0.1),
+                          horizontal: constraints.maxWidth *0.11),
                       height: constraints.maxHeight * 0.15,
                       decoration: BoxDecoration(
                         color: Colors.white,
