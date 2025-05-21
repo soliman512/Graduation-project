@@ -1,6 +1,7 @@
 import 'package:bottom_picker/bottom_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:graduation_project_main/payment/done.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:numberpicker/numberpicker.dart';
@@ -33,6 +34,13 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
   bool creditCard = false;
   bool fawry = false;
   bool cash = false;
+
+  bool isFormValid() {
+    return matchDate.isNotEmpty &&
+        matchTime.isNotEmpty &&
+        matchDuration.isNotEmpty &&
+        paymentWay.isNotEmpty;
+  }
 
   void showDurationPicker(BuildContext context) {
     int hours = 1;
@@ -404,110 +412,6 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                 ),
                 const SizedBox(height: 40.0),
 
-                // Container(
-                //   padding:
-                //       EdgeInsets.all(MediaQuery.of(context).size.width * 0.03),
-                //   decoration: BoxDecoration(
-                //     color: Colors.transparent,
-                //     borderRadius: BorderRadius.circular(10),
-                //     border: Border.all(
-                //       color: const Color.fromARGB(80, 0, 185, 46),
-                //       width: MediaQuery.of(context).size.width * 0.0017,
-                //     ),
-                //   ),
-                //   child: Row(
-                //     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                //     children: [
-                //       Column(
-                //         children: [
-                //           Text(
-                //             "Day",
-                //             style: TextStyle(
-                //               color: mainColor,
-                //               fontSize:
-                //                   MediaQuery.of(context).size.width * 0.04,
-                //               fontFamily: "eras-itc-demi",
-                //             ),
-                //           ),
-                //           SizedBox(
-                //             height: MediaQuery.of(context).size.width * 0.02,
-                //           ),
-                //           Text(
-                //             "Friday",
-                //             style: TextStyle(
-                //               color: const Color.fromARGB(255, 0, 0, 0),
-                //               fontSize:
-                //                   MediaQuery.of(context).size.width * 0.03,
-                //             ),
-                //           ),
-                //           Text(
-                //             "6/5/2025",
-                //             style: TextStyle(
-                //               color: const Color.fromARGB(255, 0, 0, 0),
-                //               fontSize:
-                //                   MediaQuery.of(context).size.width * 0.03,
-                //             ),
-                //           ),
-                //         ],
-                //       ),
-                //       Column(
-                //         children: [
-                //           Text(
-                //             "Time",
-                //             style: TextStyle(
-                //                 color: mainColor,
-                //                 fontSize:
-                //                     MediaQuery.of(context).size.width * 0.04,
-                //                 fontFamily: "eras-itc-demi"),
-                //           ),
-                //           SizedBox(
-                //             height: MediaQuery.of(context).size.width * 0.04,
-                //           ),
-                //           Text(
-                //             "2:30",
-                //             style: TextStyle(
-                //               color: const Color.fromARGB(255, 0, 0, 0),
-                //               fontSize:
-                //                   MediaQuery.of(context).size.width * 0.03,
-                //             ),
-                //           ),
-                //         ],
-                //       ),
-                //       Column(
-                //         children: [
-                //           Text(
-                //             "Duration",
-                //             style: TextStyle(
-                //                 color: mainColor,
-                //                 fontSize:
-                //                     MediaQuery.of(context).size.width * 0.04,
-                //                 fontFamily: "eras-itc-demi"),
-                //           ),
-                //           SizedBox(
-                //             height: MediaQuery.of(context).size.width * 0.02,
-                //           ),
-                //           Text(
-                //             "1:30",
-                //             style: TextStyle(
-                //               color: const Color.fromARGB(255, 0, 0, 0),
-                //               fontSize:
-                //                   MediaQuery.of(context).size.width * 0.03,
-                //             ),
-                //           ),
-                //           Text(
-                //             "hour",
-                //             style: TextStyle(
-                //                 color: const Color.fromARGB(255, 0, 0, 0),
-                //                 fontSize:
-                //                     MediaQuery.of(context).size.width * 0.03,
-                //                 fontFamily: "light"),
-                //           ),
-                //         ],
-                //       ),
-                //     ],
-                //   ),
-                // ),
-
                 // date, time, duration
                 // payment way: fawary, credit card, cashr
                 Create_RequiredInput(
@@ -819,7 +723,39 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                       ],
                     ),
                   ),
-                )
+                ),
+            SizedBox(height: 20),
+              Visibility(
+                visible: isFormValid(),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Done()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: mainColor,
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      'Continue',
+                      style: TextStyle(
+                        fontFamily: 'eras-itc-demi',
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            
+                 
+            SizedBox(height: 20),
               ],
             ),
           ),
