@@ -5,10 +5,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:graduation_project_main/constants/constants.dart';
+import 'package:graduation_project_main/provider/language_provider.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:bottom_picker/bottom_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class EditSelectedStadium extends StatefulWidget {
   final String stadiumName;
@@ -350,6 +352,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
 
   @override
   Widget build(BuildContext context) {
+    final isArabic = Provider.of<LanguageProvider>(context).isArabic;
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.white,
@@ -365,22 +368,22 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: const Text("Discard changes?"),
-                    content: const Text(
-                        "Are you sure you want to discard your changes?"),
+                    title: Text(isArabic ? "تجاهل التغييرات؟" : "Discard changes?"),
+                    content: Text(
+                        isArabic ? "هل أنت متأكد أنك تريد تجاهل التغييرات؟" : "Are you sure you want to discard your changes?"),
                     actions: [
                       TextButton(
                         onPressed: () {
                           Navigator.pushNamed(context, '/home_owner');
                         },
-                        child: const Text("Discard",
+                        child: Text(isArabic ? "تجاهل" : "Discard",
                             style: TextStyle(color: Colors.red)),
                       ),
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: const Text("Return"),
+                        child: Text(isArabic ? "رجوع" : "Return"),
                       ),
                     ],
                   );
@@ -406,7 +409,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                     stadiumNameController.text = value;
                   },
                   initValue: stadiumNameController.text,
-                  lableText: 'Stadium Name',
+                  lableText: isArabic ? 'اسم الملعب' : 'Stadium Name',
                   textInputType: TextInputType.text,
                   add_prefix: Image.asset(
                     'assets/stdowner_addNewStadium/imgs/sign.png',
@@ -420,7 +423,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'Stadium Data',
+                        isArabic ? 'بيانات الملعب' : 'Stadium Data',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -467,7 +470,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                         children: [
                           Icon(Icons.add, size: 40.0, color: mainColor),
                           Text(
-                          'Add Image',
+                            Provider.of<LanguageProvider>(context).isArabic ? 'إضافة صورة' : 'Add Image',
                           style: TextStyle(
                             color: mainColor,
                             fontSize: 16.0,
@@ -535,11 +538,11 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                       ),
                       pickerTextStyle:
                           TextStyle(fontSize: 20.0, color: Colors.black),
-                      pickerTitle: Text('Select Governorate',
+                      pickerTitle: Text(isArabic ? 'اختر المحافظة' : 'Select Governorate',
                           style: TextStyle(
                               fontWeight: FontWeight.w800, fontSize: 24.0)),
                       pickerDescription: Text(
-                          'Choose the governorate where the stadium is located',
+                          isArabic ? 'اختر المحافظة التي يوجد بها الملعب' : 'Choose the governorate where the stadium is located',
                           style: TextStyle(fontWeight: FontWeight.w400)),
                       onSubmit: (selectedIndex) {
                         String governorate = egyptGovernorates[selectedIndex];
@@ -574,12 +577,12 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                             ),
                             pickerTextStyle:
                                 TextStyle(fontSize: 20.0, color: Colors.black),
-                            pickerTitle: Text('Select Place',
+                            pickerTitle: Text(Provider.of<LanguageProvider>(context).isArabic ? 'حدد مكان' : 'Select Place',
                                 style: TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 24.0)),
                             pickerDescription: Text(
-                                'Choose the place where the stadium is located',
+                                Provider.of<LanguageProvider>(context).isArabic ? 'اختر مكان الملعب' : 'Choose the place where the stadium is located',
                                 style: TextStyle(fontWeight: FontWeight.w400)),
                             onSubmit: (selectedPlaceIndex) {
                               String place = egyptGovernoratesAndCenters[
@@ -609,7 +612,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Text('Enter Neighborhood',
+                                          Text(Provider.of<LanguageProvider>(context).isArabic ? 'أدخل الحي' : 'Enter Neighborhood',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 20)),
@@ -618,7 +621,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                                             controller: neighborhoodEnterd,
                                             decoration: InputDecoration(
                                               hintText:
-                                                  'Enter your neighborhood',
+                                                  Provider.of<LanguageProvider>(context).isArabic ? 'أدخل الحي الخاص بك' : 'Enter your neighborhood',
                                               border: OutlineInputBorder(),
                                             ),
                                           ),
@@ -631,7 +634,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                                               });
                                               Navigator.pop(context);
                                             },
-                                            child: Text('Save'),
+                                            child: Text(Provider.of<LanguageProvider>(context).isArabic ? 'حفظ' : 'Save'),
                                           ),
                                         ],
                                       ),
@@ -645,7 +648,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                       },
                     ).show(context);
                   },
-                  lableText: 'Stadium Location',
+                  lableText: Provider.of<LanguageProvider>(context).isArabic ? 'موقع الملعب' : 'Stadium Location',
                   initValue: location,
                   isReadOnly: true,
                   textInputType: TextInputType.text,
@@ -698,7 +701,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                     stadiumCapacityController.text = value;
                   },
                   initValue: stadiumCapacityController.text,
-                  lableText: 'Capacity',
+                  lableText: Provider.of<LanguageProvider>(context).isArabic ? 'السعة' : 'Capacity',
                   textInputType: TextInputType.number,
                   add_prefix: Icon(
                     Icons.group,
@@ -713,7 +716,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'Features',
+                        Provider.of<LanguageProvider>(context).isArabic ? 'المميزات' : 'Features',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -788,7 +791,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                           textBuilder: (value) => value
                               ? Center(
                                   child: Text(
-                                    'Water is Available',
+                                    Provider.of<LanguageProvider>(context).isArabic ? 'متاح ماء' : 'Water is Available',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontFamily: 'eras-itc-bold',
@@ -798,7 +801,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                                 )
                               : Center(
                                   child: Text(
-                                    'Water not Available',
+                                    Provider.of<LanguageProvider>(context).isArabic ? 'غير متاح ماء' : 'Water not Available',
                                     style: TextStyle(
                                       fontFamily: 'eras-itc-bold',
                                       fontWeight: FontWeight.w600,
@@ -873,7 +876,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                           textBuilder: (value) => value
                               ? Center(
                                   child: Text(
-                                    'Track Available',
+                                    Provider.of<LanguageProvider>(context).isArabic ? ' المسار متاح' : 'Track Available',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontFamily: 'eras-itc-bold',
@@ -883,7 +886,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                                 )
                               : Center(
                                   child: Text(
-                                    'Track not Available',
+                                    Provider.of<LanguageProvider>(context).isArabic ? ' المسار غير متاح' : 'Track not Available',
                                     style: TextStyle(
                                       fontFamily: 'eras-itc-bold',
                                       fontWeight: FontWeight.w600,
@@ -955,7 +958,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                           textBuilder: (value) => value
                               ? Center(
                                   child: Text(
-                                    'Industry Grass',
+                                    Provider.of<LanguageProvider>(context).isArabic ? 'عشب الصناعي' : 'Industry Grass',
                                     style: TextStyle(
                                       color: const Color.fromARGB(
                                         255,
@@ -970,7 +973,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                                 )
                               : Center(
                                   child: Text(
-                                    'Natural Grass',
+                                    Provider.of<LanguageProvider>(context).isArabic ? 'عشب طبيعي' : 'Natural Grass',
                                     style: TextStyle(
                                       color: const Color.fromARGB(
                                         255,
@@ -996,7 +999,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'Work Time',
+                        Provider.of<LanguageProvider>(context).isArabic ? 'وقت العمل' : 'Work Time',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -1030,7 +1033,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                             pickerTextStyle:
                                 TextStyle(fontSize: 20.0, color: Colors.black),
                             pickerTitle: Text(
-                                'When will you open the stadium each day?'),
+                                Provider.of<LanguageProvider>(context).isArabic ? 'متى ستفتح الملعب كل يوم؟' : 'When will you open the stadium each day?'),
                             initialTime: Time(hours: 7, minutes: 30),
                             onSubmit: (timeStartValue) {
                               final formattedTime =
@@ -1050,7 +1053,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                         readOnly: true,
                         textAlign: TextAlign.center,
                         decoration: InputDecoration(
-                          hintText: 'Start From',
+                          hintText: Provider.of<LanguageProvider>(context).isArabic ? 'يبدأ من' : 'Start From',
                           hintStyle: TextStyle(fontSize: 16.0),
                           fillColor: Colors.white60,
                           filled: true,
@@ -1092,7 +1095,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                             pickerTextStyle:
                                 TextStyle(fontSize: 20.0, color: Colors.black),
                             pickerTitle: Text(
-                                'When will you close the stadium each day?'),
+                                Provider.of<LanguageProvider>(context).isArabic ? 'متى سيتم إغلاق الملعب كل يوم؟' : 'When will you close the stadium each day?'),
                             initialTime: Time(hours: 7, minutes: 30),
                             onSubmit: (timeEndValue) {
                               final formattedTime =
@@ -1111,7 +1114,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                         readOnly: true,
                         textAlign: TextAlign.center,
                         decoration: InputDecoration(
-                          hintText: 'End On',
+                          hintText: Provider.of<LanguageProvider>(context).isArabic ? 'ينتهي في ': 'End On',
                           hintStyle: TextStyle(fontSize: 16.0),
                           fillColor: Colors.white60,
                           filled: true,
@@ -1142,7 +1145,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'Work Days',
+                        Provider.of<LanguageProvider>(context).isArabic ? ' أيام العمل' : 'Work Days',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -1232,7 +1235,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'Update Your Stadium',
+                        Provider.of<LanguageProvider>(context).isArabic ? 'تحديث الملعب' : 'Update Your Stadium',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -1249,7 +1252,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                   child: Create_GradiantGreenButton(
                     onButtonPressed: _handleUpdateButtonPressed,
                     content: Text(
-                      'Update',
+                      Provider.of<LanguageProvider>(context).isArabic ? 'تحديث' : 'Update',
                       style: TextStyle(
                           color: Colors.white,
                           fontFamily: 'eras-itc-demi',

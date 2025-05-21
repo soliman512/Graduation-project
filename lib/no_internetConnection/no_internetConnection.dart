@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
+import 'package:graduation_project_main/provider/language_provider.dart';
+import 'package:provider/provider.dart';
 
 
 class NoInternetConnection extends StatefulWidget {
@@ -12,6 +14,7 @@ class NoInternetConnection extends StatefulWidget {
 class _NoInternetConnectionState extends State<NoInternetConnection> {
   @override
   Widget build(BuildContext context) {
+    final isArabic = Provider.of<LanguageProvider>(context).isArabic;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -41,14 +44,14 @@ class _NoInternetConnectionState extends State<NoInternetConnection> {
             // SizedBox(height: 20.0),
             Column(
               children: [
-                Text('No Internet Connection',
+                Text(isArabic ? "لا يوجد اتصال بالإنترنت" : "No Internet Connection",
                     style: TextStyle(
                         color: Colors.black,
                         fontSize: 28.0,
                         fontFamily: 'eras-itc-bold')),
                 SizedBox(height: 20.0),
                 Text(
-                  'please check your internet connection \nand press reload to show your \nData and all the new',
+                  isArabic ? "يرجى التحقق من اتصالك بالإنترنت \n و الضغط على إعادة التحميل لعرض بياناتك \n و جميع البيانات الجديدة" : "please check your internet connection \nand press reload to show your \nData and all the new",
                   style: TextStyle(
                     color: Colors.black54,
                     fontSize: 18.0,
@@ -70,7 +73,7 @@ class _NoInternetConnectionState extends State<NoInternetConnection> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text('Reconnect',
+                      Text(isArabic ? "إعادة التحميل" : "Reconnect",
                           style: TextStyle(
                               color: Colors.white,
                               fontFamily: 'eras-itc-bold',

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:graduation_project_main/provider/language_provider.dart';
+import 'package:provider/provider.dart';
 
 showSnackBar(BuildContext context, String text) {
   return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -18,6 +20,6 @@ showSnackBar(BuildContext context, String text) {
       ),
     ),
     action: SnackBarAction(
-        label: "close", textColor: Color(0xff00B92E), onPressed: () {}),
+        label: Provider.of<LanguageProvider>(context, listen: false).currentLocale.languageCode == 'ar' ? 'إغلاق' : 'Close', textColor: Color(0xff00B92E), onPressed: () {}),
   ));
 }

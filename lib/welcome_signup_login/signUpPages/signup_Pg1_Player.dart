@@ -4,7 +4,9 @@ import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/addAccountImage_player.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:provider/provider.dart';
+import 'package:graduation_project_main/provider/language_provider.dart';
+ 
 // import 'package:image_picker/image_picker.dart';
 // import 'dart:io';
 // import 'dart:typed_data';
@@ -36,12 +38,15 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    bool isArabic = languageProvider.isArabic;
     return SafeArea(
       child: Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
             centerTitle: true,
-            title: Text("sign up",
+            title: Text(              isArabic ? "إنشاء حساب" : "Sign Up",
+
                 style: TextStyle(
                   color: Color(0xFF000000),
                   fontWeight: FontWeight.w400,
@@ -61,11 +66,25 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
             backgroundColor: Color(0x00),
             actions: [
               IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.language,
-                    color: Color(0xFF000000),
-                  )),
+                onPressed: () {
+                  final languageProvider =
+                      Provider.of<LanguageProvider>(context, listen: false);
+                  languageProvider.toggleLanguage();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        languageProvider.isArabic
+                            ? 'تم تغيير اللغة إلى العربية'
+                            : 'Language changed to English',
+                        style: TextStyle(fontFamily: 'eras-itc-bold'),
+                      ),
+                      duration: Duration(seconds: 2),
+                      backgroundColor: mainColor,
+                    ),
+                  );
+                },
+                icon: Icon(Icons.language, color: Color.fromARGB(255, 0, 0, 0)),
+              ),
             ],
           ),
           body: Stack(
@@ -84,7 +103,7 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                       align: TextAlign.center,
                       color: Colors.black),
                   //specific user
-                  Text("player",
+                  Text(isArabic ?"لاعب":"player",
                       style: TextStyle(
                           color: Color.fromARGB(111, 0, 0, 0),
                           fontWeight: FontWeight.w200,
@@ -103,7 +122,7 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                     isPassword: false,
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.next,
-                    hintText: "Username",
+                        hintText: isArabic ? "اسم المستخدم" : "Username",
                     addPrefixIcon: Icon(
                       Icons.account_circle_outlined,
                       color: mainColor,
@@ -119,7 +138,7 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                     isPassword: false,
                     keyboardType: TextInputType.phone,
                     textInputAction: TextInputAction.next,
-                    hintText: "Phone Number",
+                        hintText: isArabic ? "رقم الهاتف" : "Phone Number",
                     addPrefixIcon: Icon(
                       Icons.phone,
                       color: mainColor,
@@ -147,11 +166,14 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                         ),
                         pickerTextStyle:
                             TextStyle(fontSize: 20.0, color: Colors.black),
-                        pickerTitle: Text('Select Governorate',
+                        pickerTitle: Text(                            isArabic ? 'اختر المحافظة' : 'Select Governorate',
+
                             style: TextStyle(
                                 fontWeight: FontWeight.w800, fontSize: 24.0)),
                         pickerDescription: Text(
-                            'Choose the governorate where the stadium is located',
+                            isArabic
+                                  ? 'اختر المحافظة التي يقع فيها الملعب'
+                                  : 'Choose the governorate where the stadium is located',
                             style: TextStyle(fontWeight: FontWeight.w400)),
                         onSubmit: (selectedIndex) {
                           String governorate = egyptGovernorates[selectedIndex];
@@ -188,12 +210,15 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                               ),
                               pickerTextStyle: TextStyle(
                                   fontSize: 20.0, color: Colors.black),
-                              pickerTitle: Text('Select Place',
+                              pickerTitle: Text(                                  isArabic ? 'اختر المكان' : 'Select Place',
+
                                   style: TextStyle(
                                       fontWeight: FontWeight.w800,
                                       fontSize: 24.0)),
                               pickerDescription: Text(
-                                  'Choose the place where the stadium is located',
+                                  isArabic
+                                      ? 'اختر المكان الذي يقع فيه الملعب'
+                                      : 'Choose the place where the stadium is located',
                                   style:
                                       TextStyle(fontWeight: FontWeight.w400)),
                               onSubmit: (selectedPlaceIndex) {
@@ -224,7 +249,9 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                                         child: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            Text('Enter Neighborhood',
+                                            Text( isArabic
+                                                  ? 'ادخل اسم الحي'
+                                                  : 'Enter Neighborhood',
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 20)),
@@ -234,7 +261,7 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                                                 neighborhoodEnterd.text = value;
                                               },
                                               lableText:
-                                                  'Enter your neighborhood',
+                                                  isArabic ? 'ادخل اسم الحي' : 'Enter your neighborhood',
                                               initValue:
                                                   neighborhoodEnterd.text,
                                               textInputType: TextInputType.text,
@@ -286,7 +313,7 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.done,
                     isReadOnly: true,
-                    hintText: "your location",
+                        hintText: isArabic ? "موقعك" : "your location",
                     addPrefixIcon: Icon(
                       Icons.location_on_outlined,
                       color: mainColor,
@@ -319,7 +346,8 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                         ),
                         pickerTextStyle:
                             TextStyle(fontSize: 20.0, color: Colors.black),
-                        pickerTitle: Text('when you were born ?', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0)),
+                        pickerTitle: Text(                              isArabic ? 'متى وُلدت؟' : 'when you were born ?',
+ style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0)),
                         onSubmit: (newDateValue) {
                           setState(() {
                             dateOfBirth = newDateValue;
@@ -366,7 +394,7 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                     isPassword: false,
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.next,
-                    hintText: "Date of Birth",
+                        hintText: isArabic ? "تاريخ الميلاد" : "Date of birth",
                     addPrefixIcon: Icon(
                       Icons.date_range_rounded,
                       color: mainColor,
@@ -381,7 +409,7 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                     height: 50.0,
                     child: Create_GradiantGreenButton(
                       content: Text(
-                        'Next',
+                            isArabic ? 'التالي' : 'Next',
                         style: TextStyle(
                             color: Colors.white,
                             fontFamily: 'eras-itc-bold',
@@ -407,16 +435,18 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: Text('Incomplete Information'),
+                                    title: Text(isArabic ? 'معلومات غير مكتملة' : 'Incomplete Information'),
                                 content: Text(
-                                    'Please fill all the required fields.'),
+                                    isArabic
+                                      ? 'يرجى ملء جميع الحقول المطلوبة.'
+                                      : 'Please fill all the required fields.',),
                                 actions: [
                                   TextButton(
                                     onPressed: () {
                                       Navigator.of(context).pop();
                                     },
                                     child: Text(
-                                      'OK',
+                                        isArabic ? 'حسناً' : 'OK',
                                       style: TextStyle(
                                           fontSize: 15, color: Colors.green),
                                     ),
@@ -435,7 +465,8 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('have an account? ',
+                      Text(                          isArabic ? 'هل لديك حساب؟ ' : 'have an account? ',
+
                           style: TextStyle(
                               color: Colors.black,
                               fontSize: 16.0,
@@ -444,7 +475,7 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                           onPressed: () {
                             Navigator.pushNamed(context, '/login_player');
                           },
-                          child: Text('login now',
+                          child: Text( isArabic ? 'سجّل الدخول الآن' : 'login now',
                               style: TextStyle(
                                 color: mainColor,
                                 fontSize: 16.0,
