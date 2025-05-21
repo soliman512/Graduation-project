@@ -154,7 +154,9 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                     },
                     on_tap: () {
                       BottomPicker(
-                        items: egyptGovernoratesWidgets,
+                        items: isArabic
+                            ? getEgyptGovernoratesWidgets(context)
+                            : egyptGovernoratesWidgets,
                         height: 600.0,
                         titlePadding: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
                         buttonContent: Icon(Icons.navigate_next_rounded,
@@ -166,7 +168,8 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                         ),
                         pickerTextStyle:
                             TextStyle(fontSize: 20.0, color: Colors.black),
-                        pickerTitle: Text(                            isArabic ? 'اختر المحافظة' : 'Select Governorate',
+                        pickerTitle: Text(
+                            isArabic ? 'اختر المحافظة' : 'Select Governorate',
 
                             style: TextStyle(
                                 fontWeight: FontWeight.w800, fontSize: 24.0)),
@@ -176,7 +179,9 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                                   : 'Choose the governorate where the stadium is located',
                             style: TextStyle(fontWeight: FontWeight.w400)),
                         onSubmit: (selectedIndex) {
-                          String governorate = egyptGovernorates[selectedIndex];
+                          String governorate = isArabic
+                              ? getEgyptGovernorates(context)[selectedIndex]
+                              : egyptGovernorates[selectedIndex];
                           setState(() {
                             citySelected = governorate;
                           });

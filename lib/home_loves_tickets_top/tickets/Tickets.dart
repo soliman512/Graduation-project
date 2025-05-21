@@ -231,11 +231,11 @@ class Tickets extends StatelessWidget {
                         color: Color(0xff000000),
                         fontSize: 24.0),
                     children: [
-                      TextSpan(text: isArabic ? " حالة" : "Booking"),
+                      TextSpan(text: isArabic ? " حالة" : "Book"),
                       TextSpan(
-                          text: isArabic ? "الحجز" : "ing",
+                          text: isArabic ? "" : "ing",
                           style: TextStyle(color: Color(0xff00B92E))),
-                      TextSpan(text: isArabic ? "" : "Status"),
+                      TextSpan(text: isArabic ? "الحجز" : "Status"),
                     ]),
               ),
             ),

@@ -156,8 +156,11 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                     // set location
                     Create_Input(
                       on_tap: () {
+                        List<Widget> governoratesWidgets = isArabic
+                            ? getEgyptGovernoratesWidgets(context)
+                            : egyptGovernoratesWidgets;
                         BottomPicker(
-                          items: egyptGovernoratesWidgets,
+                          items: governoratesWidgets,
                           height: 600.0,
                           titlePadding:
                               EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
