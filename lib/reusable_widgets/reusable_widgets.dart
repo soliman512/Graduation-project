@@ -9,13 +9,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
 
-
 class StadiumCard extends StatefulWidget {
   final String title;
   final String location;
   final String price;
   final int rating;
-  final List<File> selectedImages;
+  final List<String> selectedImages;
   final VoidCallback? onTap;
 
   StadiumCard({
@@ -35,29 +34,27 @@ class StadiumCard extends StatefulWidget {
 class _StadiumCardState extends State<StadiumCard> {
   bool isFavorite = false;
   @override
-void initState() {
-  super.initState();
-  checkIfFavorite();
-}
+  void initState() {
+    super.initState();
+    checkIfFavorite();
+  }
 
-Future<void> checkIfFavorite() async {
-  final user = FirebaseAuth.instance.currentUser;
+  Future<void> checkIfFavorite() async {
+    final user = FirebaseAuth.instance.currentUser;
 
-  if (user == null) return;
+    if (user == null) return;
 
-  final favDoc = await FirebaseFirestore.instance
-      .collection('users')
-      .doc(user.uid)
-      .collection('favorites')
-      .doc(widget.title)
-      .get();
+    final favDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('favorites')
+        .doc(widget.title)
+        .get();
 
-  setState(() {
-    
-    isFavorite = favDoc.exists;
-  });
-}
-
+    setState(() {
+      isFavorite = favDoc.exists;
+    });
+  }
 
   Future<void> toggleFavorite() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -68,7 +65,7 @@ Future<void> checkIfFavorite() async {
         .collection('users')
         .doc(user.uid)
         .collection('favorites')
-        .doc(widget.title); 
+        .doc(widget.title);
 
     if (isFavorite) {
       await favRef.delete();
@@ -79,7 +76,7 @@ Future<void> checkIfFavorite() async {
         'location': widget.location,
         'price': widget.price,
         'rating': widget.rating,
-        'imagePath': widget.selectedImages[0].path, 
+        'imagePath': widget.selectedImages[0],
       });
       showSnackBar(context, Provider.of<LanguageProvider>(context, listen: false).isArabic ? "تم إضافة ${widget.title} إلى المفضلة" : "${widget.title} added to favorites");
     }
@@ -113,7 +110,6 @@ Future<void> checkIfFavorite() async {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Stack(
-                
                 children: [
                   Container(
                     width: double.infinity,
@@ -122,11 +118,15 @@ Future<void> checkIfFavorite() async {
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(10),
                           topRight: Radius.circular(10)),
-                      child: Image.asset(
-                        widget.selectedImages[0].path,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
+                      child: widget.selectedImages.isNotEmpty &&
+                              widget.selectedImages[0].startsWith('http')
+                          ? Image.network(widget.selectedImages[0],
+                              fit: BoxFit.cover)
+                          : Image.asset(
+                              widget.selectedImages.isNotEmpty
+                                  ? widget.selectedImages[0]
+                                  : 'assets/cards_home_player/imgs/test.jpg',
+                              fit: BoxFit.cover),
                     ),
                   ),
                   // Favorite icon
@@ -351,6 +351,37 @@ class _Create_DrawerState extends State<Create_Drawer> {
       });
     }
   }
+
+  // Future<void> _loadUserData() async {
+  //   final user = FirebaseAuth.instance.currentUser;
+  //   if (user == null) return;
+
+  //   // جرب تجيب من owners (صاحب ملعب)
+  //   var doc = await FirebaseFirestore.instance.collection('owners').doc(user.uid).get();
+  //   if (doc.exists) {
+  //     setState(() {
+  //       username = doc['username'] ?? 'Guest';
+  //       profileImage = doc['profileImage'];
+  //     });
+  //     return;
+  //   }
+
+  //   // لو مش صاحب ملعب، جرب من users (لاعب)
+  //   doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+  //   if (doc.exists) {
+  //     setState(() {
+  //       username = doc['username'] ?? 'Guest';
+  //       profileImage = doc['profileImage'];
+  //     });
+  //     return;
+  //   }
+
+  //   // لو مفيش بيانات
+  //   setState(() {
+  //     username = 'Guest';
+  //     profileImage = null;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -689,13 +720,9 @@ class Create_GradiantGreenButton extends StatelessWidget {
         onPressed: onButtonPressed,
         child: content,
         style: ButtonStyle(
-          // shape: MaterialStateProperty.all(
-          //     RoundedRectangleBorder(
-          //         borderRadius: BorderRadius.circular(15))),
           backgroundColor: WidgetStateProperty.all(Colors.transparent),
           foregroundColor: WidgetStateProperty.all(Color(0xFFFFFFFF)),
           shadowColor: WidgetStateProperty.all(Colors.transparent),
-          // padding: MaterialStateProperty.all(EdgeInsets.all(5)),
         ),
       ),
     );

@@ -1,7 +1,8 @@
 // Import Flutter core packages
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:graduation_project_main/payment/payment.dart';
+// import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:graduation_project_main/shared/aboutApp.dart';
 // import 'package:graduation_project_main/stdown_addNewStd/stdown_editStadium.dart';
 import 'package:graduation_project_main/welcome_signup_login/recorve%20account/RecoverAcountSTU.dart';
@@ -33,7 +34,6 @@ import 'welcome_signup_login/signUpPages/signup_Pg2_Player.dart';
 import 'welcome_signup_login/signUpPages/signup_Pg1_stdowner.dart';
 // import 'welcome_signup_login/signUpPages/signup_pg2_stdowner.dart';
 import 'welcome_signup_login/signUpPages/addAccountImage_player.dart';
-import 'welcome_signup_login/verify/verifyemail.dart';
 import 'welcome_signup_login/recorve account/RecorveAcount.dart';
 
 // Home screens
@@ -50,7 +50,6 @@ import 'stdown_addNewStd/stdwon_addNewStadium.dart';
 
 // Other screens
 // import 'stadium_information_player_pg/stadium_information_player_pg.dart';
-import 'payment/payment.dart';
 import 'no_internetConnection/no_internetConnection.dart';
 
 /// Main function that initializes the application
@@ -147,9 +146,9 @@ class MyApp extends StatelessWidget {
               // '/stdown_editStadium': (context) => EditStadium_stdown(),
 
               // Payment and utility routes
-              '/payment': (context) => Payment(),
+              '/payment': (context) => Payment(stadiumID: '', stadiumName: '', stadiumPrice: '', stadiumLocation: '',),
               '/no_internetConnection': (context) => NoInternetConnection(),
-
+         
               //shared
               '/aboutApp': (context) => AboutApp()
             }

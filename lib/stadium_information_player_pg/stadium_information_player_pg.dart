@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
+import 'package:graduation_project_main/payment/payment.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -51,6 +52,8 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
   DocumentSnapshot? stadiumData;
   bool isLoading = true; // to manage loading
   String? errorMessage; // to manage error message
+
+  List<String> images = [];
 
   Future<void> checkIfFavorite() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -112,8 +115,10 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
         'title': widget.stadiumtitle,
         'location': widget.stadiumLocation,
         'price': widget.stadiumPrice,
-        'rating': 5, // Default rating or you can add a rating field to the widget
-        'imagePath': 'assets/stadium_information_player_pg/imgs/stadium_1.jpg', // Use appropriate image path
+        'rating':
+            5, // Default rating or you can add a rating field to the widget
+        'imagePath':
+            'assets/stadium_information_player_pg/imgs/stadium_1.jpg', // Use appropriate image path
       });
       showSnackBar(context, isArabic ? "تم إضافة ${widget.stadiumtitle} إلى المفضلة" : "${widget.stadiumtitle} added to favorites");
     }
@@ -130,15 +135,18 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
           .collection('stadiums')
           .doc(widget.stadiumID)
           .get();
+      if (!mounted) return;
       setState(() {
         if (doc.exists) {
           stadiumData = doc;
+          images = List<String>.from((doc.data()?['images'] ?? []));
         } else {
           errorMessage = isArabic ? 'لا يوجد بيانات للاستادم' : 'no stadium data';
         }
-        isLoading = false; // fetch completed
+        isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         errorMessage = isArabic ? 'حدث خطأ \n: $e' : 'error \n: $e';
         isLoading = false;
@@ -154,6 +162,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
   }
 
   void _onVisibilityChanged(VisibilityInfo visibilityInfo) {
+      if (!mounted) return;
     if (visibilityInfo.visibleFraction == 0 && _isContainerVisible) {
       setState(() {
         _isContainerVisible = false;
@@ -219,50 +228,47 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                               _currentPage = index;
                             });
                           },
-                          children: [
-                            for (int i = 0; i < 4; i++)
-                              Container(
-                                margin: const EdgeInsets.only(right: 4.0),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  image: const DecorationImage(
-                                    image: AssetImage(
-                                        'assets/cards_home_player/imgs/test.jpg'),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                          ],
+                          children: images.isNotEmpty
+                              ? images.map((imgUrl) {
+                                  return imgUrl.startsWith('http')
+                                      ? Image.network(imgUrl, fit: BoxFit.cover)
+                                      : Image.asset(imgUrl, fit: BoxFit.cover);
+                                }).toList()
+                              : [
+                                  Image.asset(
+                                      'assets/cards_home_player/imgs/test.jpg',
+                                      fit: BoxFit.cover)
+                                ],
                         ),
                         // favorite icon
                         Positioned(
                           top: 10,
                           right: 10,
                           child: GestureDetector(
-                          onTap: () {
-                            toggleFavorite();
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                              color: Colors.black.withOpacity(0.15),
-                              blurRadius: 6,
-                              offset: Offset(0, 2),
+                            onTap: () {
+                              toggleFavorite();
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.15),
+                                    blurRadius: 6,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
                               ),
-                            ],
+                              padding: const EdgeInsets.all(6),
+                              child: Icon(
+                                isFavorite
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: isFavorite ? Colors.red : Colors.grey,
+                                size: 28,
+                              ),
                             ),
-                            padding: const EdgeInsets.all(6),
-                            child: Icon(
-                            isFavorite
-                              ? Icons.favorite
-                              : Icons.favorite_border,
-                            color: isFavorite ? Colors.red : Colors.grey,
-                            size: 28,
-                            ),
-                          ),
                           ),
                         ),
 
@@ -271,7 +277,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: List.generate(
-                              4,
+                              images.isNotEmpty ? images.length : 1,
                               (index) => AnimatedContainer(
                                 duration: const Duration(milliseconds: 300),
                                 margin:
@@ -396,7 +402,18 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                         ),
                       ),
                       onButtonPressed: () {
-                        // Navigator.pushNamed
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder:
+                                  (context) => /* TODO: Replace with your PaymentPage widget */
+                                      Payment(
+                                          stadiumID: widget.stadiumID,
+                                          stadiumName: widget.stadiumName,
+                                          stadiumPrice: widget.stadiumPrice,
+                                          stadiumLocation:
+                                              widget.stadiumLocation)),
+                        );
                       },
                     ),
                   ),
@@ -511,8 +528,8 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                                 Icon(Icons.grass, size: 29, color: mainColor),
                                 const SizedBox(height: 6),
                                 Text(
-                                  widget.isGrassNormal ?   isArabic ? 'طبيعي' : 'industry'
-                                          : isArabic ? 'صناعي' : 'normal',
+                                  widget.isGrassNormal ?   isArabic ? 'طبيعي' : 'natural'
+                                          : isArabic ? 'صناعي' : 'artificial',
                                   style: const TextStyle(
                                     fontSize: 14,
                                     color: Colors.white,
@@ -575,8 +592,8 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                           const SizedBox(height: 9),
                           Text(
                             widget.isGrassNormal
-                                 ? isArabic ? 'عشب طبيعي' : 'grass is normal'
-                              : isArabic ? 'عشب صناعي' : 'grass is industry',
+                                 ? isArabic ? 'عشب طبيعي' : 'natural grass'
+                              : isArabic ? 'عشب صناعي' : 'artificial grass',
                             style: const TextStyle(color: Colors.white),
                           ),
                         ],
@@ -810,91 +827,79 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                 ),
                 const SizedBox(height: 40.0),
                 // messages
-                for (int i = 0; i < 4; i++) ...[
-                  Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                    padding: const EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(
-                        color: Color.fromARGB(38, 0, 185, 46),
-                        width: 2,
-                      ),
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        const BoxShadow(
-                          color: Color.fromARGB(14, 0, 0, 0),
-                          blurRadius: 2,
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Column(
-                          children: [
-                            const CircleAvatar(
-                              radius: 20,
-                              backgroundImage: AssetImage(
-                                  "assets/stadium_information_player_pg/imgs/person.jpeg"),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              isArabic ? 'إستير هور ' : 'Esther Howard',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: const Color.fromARGB(255, 0, 0, 0),
-                                fontWeight: FontWeight.w500,
-                                fontFamily: 'eras-itc-demi',
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                for (int i = 0; i < 5; i++)
-                                  const Icon(
-                                    Icons.star,
-                                    color: Color(0xffFFCC00),
-                                    size: 16,
-                                  ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  "5.5",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(width: 16),
-                        Container(
-                          height: 80,
-                          width: 1,
-                          color: Colors.black12,
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                isArabic ? 'هذا يجب أن يعطيك هيكلًا محددًا تمامًا كما يظهر في الصورة. اخبرني إذا كنت بحاجة إلى تعديلات إضافية!' : 'This should give you the exact structure shown in the image. Let me know if you need further adjustments!',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black87,
-                                ),
+                StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('stadiums')
+                      .doc(widget.stadiumID)
+                      .collection('reviews')
+                      .orderBy('timestamp', descending: true)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    final isArabic = Provider.of<LanguageProvider>(context, listen: false).isArabic;  
+                    if (!snapshot.hasData) return CircularProgressIndicator();
+                    final reviews = snapshot.data!.docs;
+                    if (reviews.isEmpty) {
+                      return Text(isArabic ? 'لا يوجد مراجعات' : 'No reviews yet');
+                    }
+                    return Column(
+                      children: reviews.map((doc) {
+                        final data = doc.data() as Map<String, dynamic>;
+                        return Container(
+                          margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: mainColor.withOpacity(0.2), width: 2),
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 2,
                               ),
                             ],
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 28),
-                ],
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CircleAvatar(
+                                radius: 20,
+                                backgroundImage: data['userImage'] != null
+                                    ? NetworkImage(data['userImage'])
+                                    : AssetImage("assets/stadium_information_player_pg/imgs/person.jpeg") as ImageProvider,
+                              ),
+                              SizedBox(width: 8),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    data['username'] ?? '',
+                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                  ),
+                                  Row(
+                                    children: [
+                                      for (int i = 0; i < (data['rating'] ?? 0).round(); i++)
+                                        Icon(Icons.star, color: Colors.amber, size: 16),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        data['rating']?.toString() ?? '',
+                                        style: TextStyle(fontSize: 12, color: Colors.black54),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    data['comment'] ?? '',
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  },
+                ),
                 const SizedBox(height: 100.0),
               ],
             ),
@@ -959,7 +964,18 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.pushNamed(context, '/payment');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder:
+                                    (context) => /* TODO: Replace with your PaymentPage widget */
+                                        Payment(
+                                            stadiumID: widget.stadiumID,
+                                            stadiumName: widget.stadiumName,
+                                            stadiumPrice: widget.stadiumPrice,
+                                            stadiumLocation:
+                                                widget.stadiumLocation)),
+                          );
                         },
                         child: Container(
                           height: 50.0,

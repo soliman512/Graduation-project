@@ -1,17 +1,20 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/stadium_information_player_pg/stadium_information_player_pg.dart';
 import 'package:bottom_picker/bottom_picker.dart';
+import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
 import 'package:graduation_project_main/widgets/ticket_card.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:graduation_project_main/provider/language_provider.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Home screen widget that displays list of stadiums with search and filter functionality
 class Home extends StatefulWidget {
@@ -45,6 +48,8 @@ class _HomeState extends State<Home> {
   bool filterLeastRating = false;
   int ratingCount = 0;
 
+  String? testStadiumId;
+
   /// Builds list of stadium cards from Firestore documents
   Widget _buildStadiumList(List<DocumentSnapshot> stadiums) {
     return ListView.builder(
@@ -62,7 +67,7 @@ class _HomeState extends State<Home> {
                     builder: (context) => Stadium_info_playerPG(
                       
                           stadiumName: stadiums[index]['name'],
-                          stadiumtitle: stadiums[index]['name'], 
+                          stadiumtitle: stadiums[index]['name'],
                           stadiumPrice: stadiums[index]['price'].toString(),
                           stadiumLocation: stadiums[index]['location'],
                           isWaterAvailbale: stadiums[index]['hasWater'],
@@ -77,9 +82,7 @@ class _HomeState extends State<Home> {
           location: stadium['location'],
           price: stadium['price'].toString(),
           rating: 5,
-          selectedImages: [
-            File('assets/cards_home_player/imgs/test.jpg'),
-          ],
+          selectedImages: List<String>.from(stadium['images'] ?? ['assets/cards_home_player/imgs/test.jpg']),
         );
       },
     );
@@ -181,6 +184,152 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     addNotificationsToFirestore();
+    _getFirstStadiumIdAndShowPopup();
+  }
+
+  Future<void> _getFirstStadiumIdAndShowPopup() async {
+    // Get open count
+    final prefs = await SharedPreferences.getInstance();
+    int openCount = prefs.getInt('openCount') ?? 0;
+    openCount++;
+    await prefs.setInt('openCount', openCount);
+
+    // Get first stadium id from Firestore
+    final stadiumsSnapshot = await FirebaseFirestore.instance.collection('stadiums').limit(1).get();
+    if (stadiumsSnapshot.docs.isNotEmpty) {
+      testStadiumId = stadiumsSnapshot.docs.first.id;
+    }
+
+    // Show popup on second open only
+    if (openCount == 2 && testStadiumId != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showStadiumReviewPopup(context, testStadiumId!);
+      });
+    }
+  }
+
+  void _showRatingPopup() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        double rating = 0; // قيمة التقييم الافتراضية
+        return AlertDialog(
+          title: Text("Rate the App"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("Please rate our app!"),
+              SizedBox(height: 16),
+              RatingBar.builder(
+                minRating: 1,
+                itemSize: 30,
+                itemPadding: EdgeInsets.symmetric(horizontal: 4),
+                itemBuilder: (context, _) =>
+                    Icon(Icons.star, color: Colors.amber),
+                onRatingUpdate: (newRating) {
+                  rating = newRating;
+                },
+              ),
+            ],
+          ),
+          actions: [
+            // زر Cancel
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // إغلاق النافذة بدون حفظ التقييم
+              },
+              child: Text("Cancel"),
+            ),
+            // زر Submit
+            TextButton(
+              onPressed: () async {
+                if (rating == 0) {
+                  showSnackBar(context, "Please select rate.");
+                } else {
+                  // تخزين التقييم في Firestore
+                  await FirebaseFirestore.instance
+                      .collection('app_ratings')
+                      .add({
+                    'rating': rating,
+                    'timestamp': FieldValue.serverTimestamp(),
+                    'userId': FirebaseAuth.instance.currentUser?.uid,
+                    'type': 'player',
+                  });
+                  Navigator.of(context).pop();
+                  showSnackBar(context, "Thank you for your rating!");
+                }
+              },
+              child: Text("Submit"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showStadiumReviewPopup(BuildContext context, String stadiumId) {
+    double rating = 0;
+    TextEditingController commentController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Rate the Stadium"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("Please rate the stadium and write your comment"),
+              SizedBox(height: 16),
+              RatingBar.builder(
+                minRating: 1,
+                itemSize: 30,
+                itemBuilder: (context, _) => Icon(Icons.star, color: Colors.amber),
+                onRatingUpdate: (newRating) {
+                  rating = newRating;
+                },
+              ),
+              SizedBox(height: 16),
+              TextField(
+                controller: commentController,
+                decoration: InputDecoration(hintText: "Write your comment here"),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                if (rating == 0 || commentController.text.isEmpty) {
+                  showSnackBar(context, "Please select rating and write a comment");
+                  return;
+                }
+                final user = FirebaseAuth.instance.currentUser;
+                final userDoc = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
+                await FirebaseFirestore.instance
+                    .collection('stadiums')
+                    .doc(stadiumId)
+                    .collection('reviews')
+                    .add({
+                  'userId': user.uid,
+                  'username': userDoc['username'],
+                  'userImage': userDoc['profileImage'],
+                  'rating': rating,
+                  'comment': commentController.text,
+                  'timestamp': FieldValue.serverTimestamp(),
+                });
+                Navigator.of(context).pop();
+                showSnackBar(context, "Your review has been submitted!");
+              },
+              child: Text("Submit"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -725,7 +874,7 @@ class _HomeState extends State<Home> {
                                         ]),
                                     child: Image.asset(
                                         'assets/home_loves_tickets_top/imgs/price_Vector.png')),
-                          )),
+                         )),
 
                       // Rating filter
                       Expanded(

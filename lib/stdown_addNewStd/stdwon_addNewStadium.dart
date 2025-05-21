@@ -12,6 +12,7 @@ import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:bottom_picker/bottom_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AddNewStadium extends StatefulWidget {
   const AddNewStadium({Key? key}) : super(key: key);
@@ -143,11 +144,14 @@ class _AddNewStadiumState extends State<AddNewStadium> {
   }
 
 // Handle Post Button Press
-  void _handlePostButtonPressed() {
+  void _handlePostButtonPressed() async {
     if (_isFormIncomplete()) {
       _showIncompleteDataDialog();
     } else {
-      addStadiumToFirestore(
+      // ارفع الصور الأول
+      selectedImagesUrl = await uploadImagesToSupabase(selectedImages);
+
+      await addStadiumToFirestore(
         name: stadiumNameController.text,
         location: location,
         hasWater: isWaterAvailable,
@@ -254,6 +258,23 @@ class _AddNewStadiumState extends State<AddNewStadium> {
       },
     );
   }
+
+  Future<List<String>> uploadImagesToSupabase(List<File> images) async {
+  final SupabaseClient supabase = Supabase.instance.client;
+  List<String> urls = [];
+
+  for (var image in images) {
+    final String fileName = 'stadiums/${DateTime.now().millisecondsSinceEpoch}_${image.path.split('/').last}';
+    final String fullPath = await supabase.storage.from('photo').upload(
+      fileName,
+      image,
+      fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+    );
+    final String url = supabase.storage.from('photo').getPublicUrl(fileName);
+    urls.add(url);
+  }
+  return urls;
+}
 
   @override
   Widget build(BuildContext context) {

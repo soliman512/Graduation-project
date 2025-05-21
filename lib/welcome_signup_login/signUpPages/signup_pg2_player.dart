@@ -90,14 +90,16 @@ class _Signup_pg2_playerState extends State<Signup_pg2_player> {
 
             final String uniqueFileName = '$uid.png';
 
-            final String fullPath = await supabase.storage.from('photo').upload(
+            // Upload the file to Supabase storage
+            await supabase.storage.from('photo').upload(
                   'public/$uniqueFileName',
                   file,
                   fileOptions:
                       const FileOptions(cacheControl: '3600', upsert: false),
                 );
 
-            profileImageUrl = await supabase.storage.from('photo').getPublicUrl(fullPath);
+            // Get the public URL for the uploaded file
+            profileImageUrl = supabase.storage.from('photo').getPublicUrl('public/$uniqueFileName');
             print('Uploaded image to Supabase: $profileImageUrl');
           } catch (e) {
             print('Error uploading image: $e');

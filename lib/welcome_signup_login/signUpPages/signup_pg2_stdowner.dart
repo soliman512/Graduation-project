@@ -88,8 +88,7 @@ class _Signup_pg2_StdOwnerState extends State<Signup_pg2_StdOwner> {
             final String fullPath = await supabase.storage.from('photo').upload(
                   'public/$uniqueFileName',
                   file,
-                  fileOptions:
-                      const FileOptions(cacheControl: '3600', upsert: false),
+                  fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
                 );
 
             profileImageUrl = await supabase.storage.from('photo').getPublicUrl(fullPath);
