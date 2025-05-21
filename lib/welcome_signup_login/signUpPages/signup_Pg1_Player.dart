@@ -45,13 +45,15 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
           backgroundColor: Colors.white,
           appBar: AppBar(
             centerTitle: true,
-            title: Text(              isArabic ? "إنشاء حساب" : "Sign Up",
-
-                style: TextStyle(
-                  color: Color(0xFF000000),
-                  fontWeight: FontWeight.w400,
-                  fontSize: 20.0,
-                )),
+            title: Text(
+              isArabic ? "إنشاء حساب" : "Sign Up",
+              style: TextStyle(
+                color: Color(0xFF000000),
+                fontFamily: isArabic ? 'Cairo' : 'eras-itc-bold',
+                fontWeight: FontWeight.w400,
+                fontSize: 20.0,
+              ),
+            ),
             leading: IconButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/Welcome');
@@ -108,7 +110,7 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                           color: Color.fromARGB(111, 0, 0, 0),
                           fontWeight: FontWeight.w200,
                           fontSize: 20.0,
-                          fontFamily: 'eras-itc-light')),
+                          fontFamily: languageProvider.isArabic ? "Cairo" : "eras-itc-light")),
                   //just for space
                   SizedBox(
                     height: 60.0,

@@ -555,7 +555,8 @@ class _Create_DrawerState extends State<Create_Drawer> {
                         children: [
                           Image.asset(
                               "assets/home_loves_tickets_top/imgs/Vector_drawerSettings.png",
-                              width: constraints.maxWidth * 0.1),
+                              width: constraints.maxWidth * 0.1,
+                              height: constraints.maxHeight * 0.1),
                           SizedBox(
                               width:
                                   constraints.maxWidth * 0.05),

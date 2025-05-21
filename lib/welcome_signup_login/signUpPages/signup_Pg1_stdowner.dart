@@ -50,7 +50,7 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
               isArabic ? "إنشاء حساب" : "Sign Up",
               style: TextStyle(
               color: Color(0xFF000000),
-              // fontFamily: "eras-itc-bold",
+              fontFamily: isArabic ? 'Cairo' : 'eras-itc-bold',
               fontWeight: FontWeight.w400,
               fontSize: 20.0,
               ),
@@ -114,7 +114,7 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                             color: Color.fromARGB(111, 0, 0, 0),
                             fontWeight: FontWeight.w200,
                             fontSize: 20.0,
-                            fontFamily: 'eras-itc-light')),
+                            fontFamily: languageProvider.isArabic ? "Cairo" : "eras-itc-light")),
                     //just for space
                     SizedBox(
                       height: 60.0,

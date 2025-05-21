@@ -226,16 +226,16 @@ class Tickets extends StatelessWidget {
                 textAlign: TextAlign.center,
                 text: TextSpan(
                     style: TextStyle(
-                        fontFamily: "eras-itc-bold",
+                        fontFamily: isArabic ? "Cairo" : "eras-itc-bold",
                         fontWeight: FontWeight.w900,
                         color: Color(0xff000000),
                         fontSize: 24.0),
                     children: [
-                      TextSpan(text: isArabic ? " حالة" : "Book"),
+                      TextSpan(text: isArabic ? "  حالة" : "Book"),
                       TextSpan(
-                          text: isArabic ? "" : "ing",
+                          text: isArabic ? "الحجز" : "ing",
                           style: TextStyle(color: Color(0xff00B92E))),
-                      TextSpan(text: isArabic ? "الحجز" : "Status"),
+                      TextSpan(text: isArabic ? "" : "Status"),
                     ]),
               ),
             ),

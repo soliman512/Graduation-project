@@ -94,6 +94,7 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
     return SafeArea(
       child: Scaffold(
           backgroundColor: Colors.white,
@@ -101,10 +102,10 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
           //app bar
           appBar: AppBar(
             centerTitle: true,
-            title: Text("login",
+            title: Text( languageProvider.isArabic ? "تسجيل الدخول" : "login",
                 style: TextStyle(
                   color: Color(0xFF000000),
-                  // fontFamily: "eras-itc-bold",
+                  fontFamily: languageProvider.isArabic ? "Cairo" : "eras-itc-bold",
                   fontWeight: FontWeight.w400,
                   fontSize: 20.0,
                 )),
@@ -165,7 +166,7 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                         color: Color.fromARGB(111, 0, 0, 0),
                         fontWeight: FontWeight.w200,
                         fontSize: 20.0,
-                        fontFamily: 'eras-itc-light',
+                        fontFamily: languageProvider.isArabic ? "Cairo" : "eras-itc-light",
                         ),
                       );
                       },

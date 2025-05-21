@@ -160,6 +160,7 @@ class _WelcomeState extends State<Welcome> {
                             ? 'ابدأ كـ'
                             : 'start as',
                           style: TextStyle(
+                            fontFamily: Provider.of<LanguageProvider>(context).isArabic ? 'Cairo' : 'eras-itc-bold',
                             color: Colors.white,
                             fontSize: 20.0,
                           ))),
@@ -178,7 +179,7 @@ class _WelcomeState extends State<Welcome> {
                             style: TextStyle(
                               color: Color(0xFFFFFFFF),
                               fontSize: 22.0,
-                              fontFamily: 'eras-itc-bold',
+                              fontFamily: Provider.of<LanguageProvider>(context).isArabic ? 'Cairo' : 'eras-itc-bold',
                             ),
                           ),
                           Image.asset(
@@ -206,7 +207,7 @@ class _WelcomeState extends State<Welcome> {
                             style: TextStyle(
                               color: Color(0xFFFFFFFF),
                               fontSize: 22.0,
-                              fontFamily: 'eras-itc-bold',
+                              fontFamily: Provider.of<LanguageProvider>(context).isArabic ? 'Cairo' : 'eras-itc-bold',
                             ),
                           ),
                           Image.asset(
@@ -266,7 +267,7 @@ class _WelcomeState extends State<Welcome> {
                                     style: TextStyle(
                                       color: Color(0xff00B92E),
                                       fontSize: 24.0,
-                                      fontFamily: 'eras-itc-bold',
+                                      fontFamily: Provider.of<LanguageProvider>(context).isArabic ? 'Cairo' : 'eras-itc-bold',
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
@@ -324,7 +325,7 @@ class _WelcomeState extends State<Welcome> {
                                     style: TextStyle(
                                       color: Color(0xFFFFFFFF),
                                       fontSize: 24.0,
-                                      fontFamily: 'eras-itc-bold',
+                                      fontFamily: Provider.of<LanguageProvider>(context).isArabic ? 'Cairo' : 'eras-itc-bold',
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
@@ -414,7 +415,7 @@ class _WelcomeState extends State<Welcome> {
                                     style: TextStyle(
                                       color: Color(0xFF000000),
                                       fontSize: 16.0,
-                                      fontFamily: 'eras-itc-demi',
+                                      fontFamily: Provider.of<LanguageProvider>(context).isArabic ? 'Cairo' : 'eras-itc-bold',
                                     ),
                                     textAlign: TextAlign.center,
                                   ),

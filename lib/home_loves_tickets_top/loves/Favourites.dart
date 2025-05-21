@@ -347,7 +347,7 @@ class _FavouritesState extends State<Favourites> {
           textAlign: TextAlign.center,
           text: TextSpan(
               style: TextStyle(
-                  fontFamily: "eras-itc-bold",
+                  fontFamily: isArabic ? "Cairo" : "eras-itc-bold",
                   fontWeight: FontWeight.w900,
                   color: Color(0xff000000),
                   fontSize: 24.0),

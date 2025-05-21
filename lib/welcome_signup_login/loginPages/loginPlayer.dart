@@ -101,7 +101,7 @@ class _Login_playerState extends State<Login_player> {
                 languageProvider.isArabic ? "تسجيل الدخول" : "login",
                 style: TextStyle(
                 color: Color(0xFF000000),
-                // fontFamily: "eras-itc-bold",
+                fontFamily: languageProvider.isArabic ? "Cairo" : "eras-itc-bold",
                 fontWeight: FontWeight.w400,
                 fontSize: 20.0,
                 ),
@@ -163,7 +163,7 @@ class _Login_playerState extends State<Login_player> {
                         languageProvider.isArabic ? "لاعب" : "player",
                         style: TextStyle(
                         color: Color(0xB6000000),
-                        fontFamily: "eras-itc-light",
+                        fontFamily: languageProvider.isArabic ? "Cairo" : "eras-itc-light",
                         fontWeight: FontWeight.w200,
                         fontSize: 20.0,
                         ),
