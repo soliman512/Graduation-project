@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:graduation_project_main/provider/language_provider.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/constants/constants.dart';
+import 'package:provider/provider.dart';
 
 Widget _buildCustom(String text, Color textcolor) {
   return Container(
@@ -28,7 +30,9 @@ Widget buildCard({
   required String imageUrl,
   required String price,
   required bool status,
+  required BuildContext context,
 }) {
+  final isArabic = Provider.of<LanguageProvider>(context).isArabic;
   return Center(
     child: GestureDetector(
       onTap: () {},
@@ -58,15 +62,15 @@ Widget buildCard({
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    "Before 3 days",
+                    isArabic ? "قبل 3 أيام" : "Before 3 days",
                     style: TextStyle(fontSize: 8, color: Colors.white),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      if (status) _buildCustom("Progress", Colors.green),
+                      if (status) _buildCustom(isArabic ?"جاري" : "Progress", Colors.green),
                       if (!status)
-                        _buildCustom("end", Color.fromARGB(255, 235, 2, 2)),
+                        _buildCustom(isArabic ?"انتهت" : "end", Color.fromARGB(255, 235, 2, 2)),
                     ],
                   ),
                   Row(
@@ -211,6 +215,7 @@ Widget buildCard({
 class Tickets extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+      final isArabic = Provider.of<LanguageProvider>(context).isArabic;
     return SafeArea(
         child: Scaffold(
             backgroundColor: Color(0xFFFFFFFF),
@@ -226,11 +231,11 @@ class Tickets extends StatelessWidget {
                         color: Color(0xff000000),
                         fontSize: 24.0),
                     children: [
-                      TextSpan(text: "Book"),
+                      TextSpan(text: isArabic ? " حالة" : "Booking"),
                       TextSpan(
-                          text: "ing",
+                          text: isArabic ? "الحجز" : "ing",
                           style: TextStyle(color: Color(0xff00B92E))),
-                      TextSpan(text: " Status"),
+                      TextSpan(text: isArabic ? "" : "Status"),
                     ]),
               ),
             ),
@@ -295,6 +300,7 @@ class Tickets extends StatelessWidget {
                         imageUrl: "assets/cards_home_player/imgs/test.jpg",
                         price: "150.00 .LE",
                         status: false,
+                        context: context,
                         ),
                       SizedBox(height: 20),
                       buildCard(
@@ -306,6 +312,7 @@ class Tickets extends StatelessWidget {
                         imageUrl: "assets/cards_home_player/imgs/test.jpg",
                         price: "120.00 .LE",
                         status: true,
+                        context: context,
                       ),
                     ],
                   ),

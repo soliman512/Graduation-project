@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/constants/constants.dart';
+import 'package:graduation_project_main/provider/language_provider.dart';
+import 'package:provider/provider.dart';
+
 
 class Payment extends StatelessWidget {
   // const Payment({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final isArabic = Provider.of<LanguageProvider>(context).isArabic;
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -26,22 +30,22 @@ class Payment extends StatelessWidget {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text("Discard Payment"),
+                    title: Text(isArabic ? "إلغاء الدفع" : "Discard Payment"),
                     content:
-                        Text("Are you sure you want to discard the payment?"),
+                        Text(isArabic ? "هل أنت متأكد من إلغاء الدفع؟" : "Are you sure you want to discard the payment?"),
                     actions: [
                       TextButton(
                         onPressed: () {
                           Navigator.pop(context); // Close the dialog
                         },
-                        child: Text("Return"),
+                        child: Text(isArabic ? "عودة" : "Return"),
                       ),
                       TextButton(
                         onPressed: () {
                           Navigator.pop(context); // Close the dialog
                           Navigator.pop(context); // Navigate back
                         },
-                        child: Text("Discard",
+                        child: Text(isArabic ? "إلغاء" : "Discard",
                             style: TextStyle(color: Colors.red)),
                       ),
                     ],

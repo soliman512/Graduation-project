@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:graduation_project_main/provider/language_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
@@ -10,6 +11,7 @@ import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:bottom_picker/bottom_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class AddNewStadium extends StatefulWidget {
   const AddNewStadium({Key? key}) : super(key: key);
@@ -202,7 +204,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
       await FirebaseFirestore.instance.collection("stadiums").add(stadiumData);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Stadium added successfully'),
+          content: Text(Provider.of<LanguageProvider>(context).isArabic ? 'تم إضافة الملعب بنجاح' : 'Stadium added successfully'),
           backgroundColor: Colors.green,
           duration: Duration(seconds: 2),
         ),
@@ -210,7 +212,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: $e'),
+          content: Text(Provider.of<LanguageProvider>(context).isArabic ? ':حدث خطأ $e' : 'Error: $e'),
           backgroundColor: Colors.red,
           duration: Duration(seconds: 2),
         ),
@@ -237,8 +239,8 @@ class _AddNewStadiumState extends State<AddNewStadium> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Incomplete Data'),
-          content: Text('Please fill all the required fields.'),
+          title: Text(Provider.of<LanguageProvider>(context).isArabic ? 'بيانات غير كاملة' : 'Incomplete Data'),
+          content: Text(Provider.of<LanguageProvider>(context).isArabic ? 'الرجاء ملء جميع الحقول المطلوبة.' : 'Please fill all the required fields.'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -269,8 +271,8 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: const Text("Discard data?"),
-                    content: const Text("Are you sure you want to discard?"),
+                    title: Text(Provider.of<LanguageProvider>(context).isArabic ? 'إلغاء البيانات؟' : 'Discard data?'),
+                    content: Text(Provider.of<LanguageProvider>(context).isArabic ? 'هل أنت متأكد أنك تريد إلغاء البيانات؟' : 'Are you sure you want to discard?'),
                     actions: [
                       TextButton(
                         onPressed: () {
@@ -318,7 +320,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                     stadiumNameController.text = value;
                   },
                   initValue: stadiumNameController.text,
-                  lableText: 'Stadium Name',
+                  lableText: Provider.of<LanguageProvider>(context).isArabic ? 'اسم الملعب' : 'Stadium Name',
                   textInputType: TextInputType.text,
                   add_prefix: Image.asset(
                     'assets/stdowner_addNewStadium/imgs/sign.png',
@@ -332,7 +334,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'stadium data',
+                        Provider.of<LanguageProvider>(context).isArabic ? 'بيانات الملعب' : 'Stadium data',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -374,7 +376,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                                 ),
                                 child: Center(
                                   child: Text(
-                                    'Add Image',
+                                    Provider.of<LanguageProvider>(context).isArabic ? 'إضافة صورة' : 'Add Image',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 18.0,
@@ -388,7 +390,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                               ),
                             ),
                             Text(
-                              '5MB maximum file size accepted \nin the following formats:  .jpg   .jpeg,   .png ',
+                              Provider.of<LanguageProvider>(context).isArabic ? '5MB حجم الملف الأقصى المقبول \nفي التوقيعات التالية:  .jpg   .jpeg,   .png ' : '5MB maximum file size accepted \nin the following formats:  .jpg   .jpeg,   .png ',
                               textAlign: TextAlign.center,
                               style: TextStyle(fontSize: 12.0),
                             ),
@@ -443,11 +445,11 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                       ),
                       pickerTextStyle:
                           TextStyle(fontSize: 20.0, color: Colors.black),
-                      pickerTitle: Text('Select Governorate',
+                      pickerTitle: Text(Provider.of<LanguageProvider>(context).isArabic ? 'اختر المحافظة' : 'Select Governorate',
                           style: TextStyle(
                               fontWeight: FontWeight.w800, fontSize: 24.0)),
                       pickerDescription: Text(
-                          'Choose the governorate where the stadium is located',
+                          Provider.of<LanguageProvider>(context).isArabic ? 'اختر المحافظة حيث يوجد الملعب' : 'Choose the governorate where the stadium is located',
                           style: TextStyle(fontWeight: FontWeight.w400)),
                       onSubmit: (selectedIndex) {
                         String governorate = egyptGovernorates[selectedIndex];
@@ -484,12 +486,12 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                             ),
                             pickerTextStyle:
                                 TextStyle(fontSize: 20.0, color: Colors.black),
-                            pickerTitle: Text('Select Place',
+                            pickerTitle: Text(Provider.of<LanguageProvider>(context).isArabic ? 'اختر المكان' : 'Select Place',
                                 style: TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 24.0)),
                             pickerDescription: Text(
-                                'Choose the place where the stadium is located',
+                                Provider.of<LanguageProvider>(context).isArabic ? 'اختر المكان حيث يوجد الملعب' : 'Choose the place where the stadium is located',
                                 style: TextStyle(fontWeight: FontWeight.w400)),
                             onSubmit: (selectedPlaceIndex) {
                               String place = egyptGovernoratesAndCenters[
@@ -519,7 +521,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Text('Enter Neighborhood',
+                                          Text(Provider.of<LanguageProvider>(context).isArabic ? 'أدخل الحي' : 'Enter Neighborhood',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 20)),
@@ -528,7 +530,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                                             controller: neighborhoodEnterd,
                                             decoration: InputDecoration(
                                               hintText:
-                                                  'Enter your neighborhood',
+                                                  Provider.of<LanguageProvider>(context).isArabic ? 'أدخل الحي' : 'Enter your neighborhood',
                                               border: OutlineInputBorder(),
                                             ),
                                           ),
@@ -541,7 +543,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                                               });
                                               Navigator.pop(context);
                                             },
-                                            child: Text('Save'),
+                                            child: Text(Provider.of<LanguageProvider>(context).isArabic ? 'حفظ' : 'Save'),
                                           ),
                                         ],
                                       ),
@@ -555,7 +557,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                       },
                     ).show(context);
                   },
-                  lableText: 'Stadium location',
+                  lableText: Provider.of<LanguageProvider>(context).isArabic ? 'موقع الملعب': 'Stadium location',
                   initValue: location,
                   isReadOnly: true,
                   textInputType: TextInputType.text,
@@ -570,7 +572,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                     stadiumPriceController.text = value;
                   },
                   initValue: stadiumPriceController.text,
-                  lableText: 'Set Price',
+                  lableText: Provider.of<LanguageProvider>(context).isArabic ? 'السعر': 'Set Price',
                   textInputType: TextInputType.number,
                   add_prefix: Image.asset(
                     'assets/stdowner_addNewStadium/imgs/price.png',
@@ -596,7 +598,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                     stadiumDescriptionController.text = value;
                   },
                   initValue: stadiumDescriptionController.text,
-                  lableText: 'Description',
+                  lableText: Provider.of<LanguageProvider>(context).isArabic ? 'الوصف' : 'Description',
                   textInputType: TextInputType.text,
                   add_prefix: Image.asset(
                     'assets/stdowner_addNewStadium/imgs/desc.png',
@@ -610,7 +612,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                     stadiumCapacityController.text = value;
                   },
                   initValue: stadiumCapacityController.text,
-                  lableText: 'Capacity',
+                  lableText: Provider.of<LanguageProvider>(context).isArabic ? 'الكميه' : 'Capacity',
                   textInputType: TextInputType.number,
                   add_prefix: Icon(
                     Icons.group,
@@ -625,7 +627,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'features',
+                        Provider.of<LanguageProvider>(context).isArabic ? 'المميزات' : 'features',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -701,7 +703,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                           textBuilder: (value) => value
                               ? Center(
                                   child: Text(
-                                    'Water is Available',
+                                    Provider.of<LanguageProvider>(context).isArabic ? ' متوفر ماء' : 'Water is Available',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontFamily: 'eras-itc-bold',
@@ -711,7 +713,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                                 )
                               : Center(
                                   child: Text(
-                                    'Water not available',
+                                    Provider.of<LanguageProvider>(context).isArabic ? 'غير متوفر ماء' : 'Water not available',
                                     style: TextStyle(
                                       fontFamily: 'eras-itc-bold',
                                       fontWeight: FontWeight.w600,
@@ -787,7 +789,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                           textBuilder: (value) => value
                               ? Center(
                                   child: Text(
-                                    'Available Track',
+                                    Provider.of<LanguageProvider>(context).isArabic ? 'متوفر مسار': 'Available Track',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontFamily: 'eras-itc-bold',
@@ -797,7 +799,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                                 )
                               : Center(
                                   child: Text(
-                                    'Unavailable Track',
+                                    Provider.of<LanguageProvider>(context).isArabic ? 'غير متوفر مسار': 'Unavailable Track',
                                     style: TextStyle(
                                       fontFamily: 'eras-itc-bold',
                                       fontWeight: FontWeight.w600,
@@ -870,7 +872,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                           textBuilder: (value) => value
                               ? Center(
                                   child: Text(
-                                    'Industry Grass',
+                                    Provider.of<LanguageProvider>(context).isArabic ? 'عشب صناعي': 'Industry Grass',
                                     style: TextStyle(
                                       color: const Color.fromARGB(
                                         255,
@@ -885,7 +887,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                                 )
                               : Center(
                                   child: Text(
-                                    'Normal Grass',
+                                    Provider.of<LanguageProvider>(context).isArabic ? 'عشب طبيعي': 'Normal Grass',
                                     style: TextStyle(
                                       color: const Color.fromARGB(
                                         255,
@@ -911,7 +913,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'time work',
+                        Provider.of<LanguageProvider>(context).isArabic ? 'وقت العمل': 'time work',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -966,7 +968,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                             pickerTextStyle:
                                 TextStyle(fontSize: 20.0, color: Colors.black),
                             pickerTitle: Text(
-                                'when you will open stadium in each day ?'),
+                                Provider.of<LanguageProvider>(context).isArabic ? 'متى تريد فتح الملعب في اليوم؟': 'when you will open stadium in each day ?'),
                             initialTime: Time(hours: 7, minutes: 30),
                             onSubmit: (timeStartValue) {
                               final formattedTime =
@@ -986,7 +988,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                         readOnly: true,
                         textAlign: TextAlign.center,
                         decoration: InputDecoration(
-                          hintText: 'start from',
+                          hintText: Provider.of<LanguageProvider>(context).isArabic ? 'بداية من': 'start from',
                           hintStyle: TextStyle(fontSize: 16.0),
                           fillColor: Colors.white60,
                           filled: true,
@@ -1049,7 +1051,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                             pickerTextStyle:
                                 TextStyle(fontSize: 20.0, color: Colors.black),
                             pickerTitle: Text(
-                                'when you will open stadium in each day ?'),
+                               Provider.of<LanguageProvider>(context).isArabic ?'متى تريد فتح الملعب في اليوم؟': 'when you will open stadium in each day ?'),
                             initialTime: Time(hours: 7, minutes: 30),
                             onSubmit: (timeEndValue) {
                               final formattedTime =
@@ -1068,7 +1070,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                         readOnly: true,
                         textAlign: TextAlign.center,
                         decoration: InputDecoration(
-                          hintText: 'End on',
+                          hintText: Provider.of<LanguageProvider>(context).isArabic ? 'ينتهي في': 'End on',
                           hintStyle: TextStyle(fontSize: 16.0),
                           fillColor: Colors.white60,
                           filled: true,
@@ -1099,7 +1101,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'work days',
+                        Provider.of<LanguageProvider>(context).isArabic ? ' أيام العمل': 'work days',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -1201,7 +1203,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'Post your stadium',
+                        Provider.of<LanguageProvider>(context).isArabic ? 'انشر ملعبك': 'Post your stadium',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -1219,7 +1221,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                   child: Create_GradiantGreenButton(
                     onButtonPressed: _handlePostButtonPressed,
                     content: Text(
-                      'post',
+                      Provider.of<LanguageProvider>(context).isArabic ? 'انشر': 'Post',
                       style: TextStyle(
                           color: Colors.white,
                           fontFamily: 'eras-itc-bold',

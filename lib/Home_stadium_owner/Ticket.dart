@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:graduation_project_main/provider/language_provider.dart';
+import 'package:provider/provider.dart';
 
 class Tickets_Owner extends StatefulWidget {
   @override
@@ -16,6 +18,7 @@ class _TicketsState extends State<Tickets_Owner> {
     required String svgurl,
     required String price,
   }) {
+    final isArabic = Provider.of<LanguageProvider>(context).isArabic;
     return GestureDetector(
       onTap: () {},
       child: Card(
@@ -54,13 +57,13 @@ class _TicketsState extends State<Tickets_Owner> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            "Before 3 days",
+                            isArabic ? "قبل 3 أيام" : "Before 3 days",
                             style: TextStyle(fontSize: 8, color: Colors.white),
                           ),
                           Row(
                             children: [
-                              _buildCustom("End", Colors.red),
-                              _buildCustom("Progress", Colors.green),
+                              _buildCustom(isArabic ? "انتهت" : "End", Colors.red),
+                              _buildCustom(isArabic ? "جاري" : "Progress", Colors.green),
                             ],
                           ),
                           Row(
@@ -240,6 +243,7 @@ class _TicketsState extends State<Tickets_Owner> {
 
   @override
   Widget build(BuildContext context) {
+    final isArabic = Provider.of<LanguageProvider>(context).isArabic;
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -278,10 +282,10 @@ class _TicketsState extends State<Tickets_Owner> {
                     color: Color(0xff000000),
                     fontSize: 24.0),
                 children: [
-                  TextSpan(text: "Book"),
+                  TextSpan(text: isArabic ? "حجز" : "Book"),
                   TextSpan(
-                      text: "ing", style: TextStyle(color: Color(0xff00B92E))),
-                  TextSpan(text: " Status"),
+                      text: isArabic ? "حالة" :"ing" , style: TextStyle(color: Color(0xff00B92E))),
+                  TextSpan(text: isArabic ? " ": " Status"),
                 ]),
           ),
           centerTitle: true,

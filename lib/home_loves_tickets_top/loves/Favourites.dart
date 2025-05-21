@@ -3,24 +3,32 @@ import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:graduation_project_main/provider/language_provider.dart';
+import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
 
 
 
 Widget buildCard({
+  required BuildContext context,
   required String title,
   required String location,
   required String imageUrl,
   required String price,
   required VoidCallback onRemove,
+  Color borderColor = const Color(0xff00B92E), // Default to green if not provided
 }) {
+      final bool isArabic = Provider.of<LanguageProvider>(context).isArabic;
+
   return Center(
+    
     child: Container(
       width: 360.0,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15),
         border: Border.all(
-          color: mainColor,
+          color: borderColor,
           width: 2,
         ),
         boxShadow: [
@@ -155,7 +163,7 @@ Widget buildCard({
                                     backgroundColor: Colors.white,
                                   ),
                                   child: Text(
-                                    "Remove",
+                                    isArabic ? "إزالة" : "Remove",
                                     style: TextStyle(
                                       color: Colors.red,
                                       fontSize: 8,
@@ -190,7 +198,7 @@ Widget buildCard({
                                   ),
                                   onPressed: () {},
                                   child: Text(
-                                    "Book",
+                                    isArabic ? "حجز" : "Book",
                                     style: TextStyle(
                                       fontSize: 8,
                                       fontFamily: 'eras-itc-bold',
@@ -292,19 +300,43 @@ class Favourites extends StatefulWidget {
 class _FavouritesState extends State<Favourites> {
 
   void _removeFromFavorites(String stadiumId) async {
-  final userId = FirebaseAuth.instance.currentUser!.uid;
-  await FirebaseFirestore.instance
-      .collection('users')
-      .doc(userId)
-      .collection('favorites')
-      .doc(stadiumId)
-      .delete();
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    
+    // Get stadium name before deleting
+    final stadiumDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('favorites')
+        .doc(stadiumId)
+        .get();
+    
+    String stadiumName = stadiumId;
+    if (stadiumDoc.exists && stadiumDoc.data()!.containsKey('title')) {
+      stadiumName = stadiumDoc.data()!['title'] as String;
+    }
+    
+    // Delete from favorites
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('favorites')
+        .doc(stadiumId)
+        .delete();
 
-  setState(() {});
-}
+    // Show snackbar
+    showSnackBar(
+      context, 
+      Provider.of<LanguageProvider>(context, listen: false).isArabic
+        ? "\u062a\u0645 \u0625\u0632\u0627\u0644\u0629 $stadiumName \u0645\u0646 \u0627\u0644\u0645\u0641\u0636\u0644\u0629"
+        : "$stadiumName removed from favorites"
+    );
+
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
+    final bool isArabic = Provider.of<LanguageProvider>(context).isArabic;
     return SafeArea(
         child: Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
@@ -320,9 +352,9 @@ class _FavouritesState extends State<Favourites> {
                   color: Color(0xff000000),
                   fontSize: 24.0),
               children: [
-                TextSpan(text: "Fa"),
-                TextSpan(text: "v", style: TextStyle(color: Color(0xff00B92E))),
-                TextSpan(text: "ourites"),
+                TextSpan(text: isArabic ? "الم" : "Fa"),
+                TextSpan(text: isArabic ? "فض" : "v", style: TextStyle(color: Color(0xff00B92E))),
+                TextSpan(text: isArabic ? "لات" : "ourites"),
               ]),
         ),
       ),
@@ -373,7 +405,7 @@ class _FavouritesState extends State<Favourites> {
         builder: (context) {
           final user = FirebaseAuth.instance.currentUser;
           if (user == null) {
-            return Center(child: Text('Please login'));
+            return Center(child: Text(isArabic ? "الرجاء تسجيل الدخول" : "Please login"));
           }
           
 
@@ -382,14 +414,14 @@ class _FavouritesState extends State<Favourites> {
                 .collection('users')
                 .doc(user.uid)
                 .collection('favorites')
-                .snapshots(),
+                .snapshots(), 
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
               }
 
               if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return _buildEmptyMessage('No favorites yet');
+                return _buildEmptyMessage(isArabic ? "لا يوجد مفضلة" : 'No favorites yet');
               }
 
               final favorites = snapshot.data!.docs;
@@ -400,10 +432,12 @@ class _FavouritesState extends State<Favourites> {
                 itemBuilder: (context, index) {
                   final favorite = favorites[index];
                   return buildCard(
+                    context: context,
                     title: favorite['title'] ?? '',
                     location: favorite['location'] ?? '',
                     imageUrl: favorite['imagePath'] ?? 'assets/default.png',
                     price: "${favorite['price'] ?? ''}.00 LE",
+                    borderColor: mainColor, // Pass the mainColor from context
                     onRemove: () {
                       _removeFromFavorites(favorite.id);
                     },

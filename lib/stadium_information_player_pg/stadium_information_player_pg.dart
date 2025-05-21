@@ -5,6 +5,8 @@ import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:provider/provider.dart';
+import 'package:graduation_project_main/provider/language_provider.dart';
 
 class Stadium_info_playerPG extends StatefulWidget {
   final String stadiumName;
@@ -93,7 +95,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
   // check if the stadium is favorite or not
   Future<void> toggleFavorite() async {
     final user = FirebaseAuth.instance.currentUser;
-
+    final isArabic = Provider.of<LanguageProvider>(context, listen: false).isArabic;
     if (user == null) return;
 
     final favRef = FirebaseFirestore.instance
@@ -104,7 +106,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
 
     if (isFavorite) {
       await favRef.delete();
-      showSnackBar(context, "${widget.stadiumtitle} removed from favorites");
+      showSnackBar(context, isArabic ? "تم إزالة ${widget.stadiumtitle} من المفضلة" : "${widget.stadiumtitle} removed from favorites");
     } else {
       await favRef.set({
         'title': widget.stadiumtitle,
@@ -113,7 +115,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
         'rating': 5, // Default rating or you can add a rating field to the widget
         'imagePath': 'assets/stadium_information_player_pg/imgs/stadium_1.jpg', // Use appropriate image path
       });
-      showSnackBar(context, "${widget.stadiumtitle} added to favorites");
+      showSnackBar(context, isArabic ? "تم إضافة ${widget.stadiumtitle} إلى المفضلة" : "${widget.stadiumtitle} added to favorites");
     }
 
     setState(() {
@@ -122,6 +124,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
   }
 
   Future<void> fetchStadiumData() async {
+    final isArabic = Provider.of<LanguageProvider>(context, listen: false).isArabic;
     try {
       final doc = await FirebaseFirestore.instance
           .collection('stadiums')
@@ -131,13 +134,13 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
         if (doc.exists) {
           stadiumData = doc;
         } else {
-          errorMessage = 'no stadium data';
+          errorMessage = isArabic ? 'لا يوجد بيانات للاستادم' : 'no stadium data';
         }
         isLoading = false; // fetch completed
       });
     } catch (e) {
       setState(() {
-        errorMessage = 'error \n: $e';
+        errorMessage = isArabic ? 'حدث خطأ \n: $e' : 'error \n: $e';
         isLoading = false;
       });
     }
@@ -166,6 +169,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
 
   @override
   Widget build(BuildContext context) {
+    final isArabic = Provider.of<LanguageProvider>(context, listen: false).isArabic;
     return Scaffold(
       extendBodyBehindAppBar: false,
       backgroundColor: Colors.white,
@@ -371,8 +375,8 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text(
-                              'book now',
+                            Text(
+                              isArabic ? 'الحجز الآن' : 'book now',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontFamily: "eras-itc-bold",
@@ -407,7 +411,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'description',
+                        isArabic ? 'الوصف' : 'description',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -476,8 +480,8 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                                 const SizedBox(height: 6),
                                 Text(
                                   widget.isWaterAvailbale
-                                      ? 'Available'
-                                      : 'Unavailable',
+                                      ? isArabic ? 'متاح' : 'Available'
+                                      : isArabic ? 'غير متاح' : 'Unavailable',
                                   style: const TextStyle(
                                     fontSize: 14,
                                     color: Colors.white,
@@ -492,8 +496,8 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                                 const SizedBox(height: 6),
                                 Text(
                                   widget.isTrackAvailable
-                                      ? 'Available'
-                                      : 'Unavailable',
+                                      ? isArabic ? 'متاح' : 'Available'
+                                      : isArabic ? 'غير متاح' : 'Unavailable',
                                   style: const TextStyle(
                                     fontSize: 14,
                                     color: Colors.white,
@@ -507,7 +511,8 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                                 Icon(Icons.grass, size: 29, color: mainColor),
                                 const SizedBox(height: 6),
                                 Text(
-                                  widget.isGrassNormal ? 'normal' : 'industry',
+                                  widget.isGrassNormal ?   isArabic ? 'طبيعي' : 'industry'
+                                          : isArabic ? 'صناعي' : 'normal',
                                   style: const TextStyle(
                                     fontSize: 14,
                                     color: Colors.white,
@@ -547,13 +552,13 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                         children: [
                           Text(
                             widget.isWaterAvailbale
-                                ? 'water is available'
-                                : 'no water',
+                                 ? isArabic ? '  متاح ماء' : 'water is avalablie'
+                              : isArabic ? ' غير متاح ماء' : 'no water ',
                             style: const TextStyle(color: Colors.white),
                           ),
                           const SizedBox(height: 9),
                           Text(
-                            '${widget.capacity} players',
+                            '${widget.capacity} ${isArabic ? 'لاعب' : 'players' }',
                             style: const TextStyle(color: Colors.white),
                           ),
                         ],
@@ -563,15 +568,15 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                         children: [
                           Text(
                             widget.isTrackAvailable
-                                ? 'running track'
-                                : 'no running track',
+                                 ? isArabic ? ' مسار الجري متاح' : 'running track'
+                              : isArabic ? ' مسار الجري غير متاح' : 'no running track',
                             style: const TextStyle(color: Colors.white),
                           ),
                           const SizedBox(height: 9),
                           Text(
                             widget.isGrassNormal
-                                ? 'grass is normal'
-                                : 'grass is industry',
+                                 ? isArabic ? 'عشب طبيعي' : 'grass is normal'
+                              : isArabic ? 'عشب صناعي' : 'grass is industry',
                             style: const TextStyle(color: Colors.white),
                           ),
                         ],
@@ -596,7 +601,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'work time and days',
+                        isArabic ? 'وقت العمل والأيام' : 'work time and days',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -644,7 +649,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                                     ),
                                   ),
                                   child: Text(
-                                    'Work Time',
+                                    isArabic ? 'وقت العمل' : 'Work Time',
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -660,10 +665,10 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                                     children: [
                                       TableRow(
                                         children: [
-                                          const Padding(
-                                            padding: EdgeInsets.all(8.0),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
                                             child: Text(
-                                              'From',
+                                              Provider.of<LanguageProvider>(context).isArabic ? 'من' : 'From',
                                               style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.bold,
@@ -703,10 +708,10 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                                       ),
                                       TableRow(
                                         children: [
-                                          const Padding(
-                                            padding: EdgeInsets.all(8.0),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
                                             child: Text(
-                                              'To',
+                                              Provider.of<LanguageProvider>(context).isArabic ? 'الى' : 'To',
                                               style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.bold,
@@ -746,10 +751,12 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                                       ),
                                       TableRow(
                                         children: [
-                                          const Padding(
-                                            padding: EdgeInsets.all(8.0),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
                                             child: Text(
-                                              'Days',
+                                               Provider.of<LanguageProvider>(context).isArabic 
+                                  ? 'الأيام' : 'Days',
+                                              
                                               style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.bold,
@@ -790,7 +797,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'reviews',
+                        isArabic ? 'المراجعات' : 'reviews',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -834,7 +841,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              "Esther Howard",
+                              isArabic ? 'إستير هور ' : 'Esther Howard',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: const Color.fromARGB(255, 0, 0, 0),
@@ -874,7 +881,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'This should give you the exact structure shown in the image. Let me know if you need further adjustments!',
+                                isArabic ? 'هذا يجب أن يعطيك هيكلًا محددًا تمامًا كما يظهر في الصورة. اخبرني إذا كنت بحاجة إلى تعديلات إضافية!' : 'This should give you the exact structure shown in the image. Let me know if you need further adjustments!',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.black87,

@@ -4,9 +4,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
+import 'package:graduation_project_main/provider/language_provider.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/stadium_information_player_pg/stadiumInfo_stadiumOwner.dart';
 import 'package:graduation_project_main/stdown_addNewStd/stdwon_addNewStadium.dart';
+import 'package:provider/provider.dart';
+
 
 class Home_Owner extends StatefulWidget {
   const Home_Owner({Key? key}) : super(key: key);
@@ -78,6 +81,7 @@ class _HomeState extends State<Home_Owner> {
   }
 
   PreferredSizeWidget _buildAppBar() {
+    final isArabic = Provider.of<LanguageProvider>(context).isArabic;
     return AppBar(
       toolbarHeight: 80.0,
       scrolledUnderElevation: 0,
@@ -129,6 +133,7 @@ class _HomeState extends State<Home_Owner> {
 
   /// Builds the search bar widget for filtering stadiums by name.
   Widget _buildSearchBar() {
+    final isArabic = Provider.of<LanguageProvider>(context).isArabic;
     return Row(
       children: [
         Expanded(
@@ -170,7 +175,7 @@ class _HomeState extends State<Home_Owner> {
               ),
               decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: "What the stadiums you looking for ? ...",
+                hintText: isArabic ? "ما الذي تبحث عنه؟ ..." : "What the stadiums you looking for ? ...",
                 hintStyle: const TextStyle(
                   color: Color(0x73000000),
                   fontSize: 12.0,
@@ -218,8 +223,10 @@ class _HomeState extends State<Home_Owner> {
     }
     // Only show stadiums owned by the current user
     final userStadiums = _filterUserStadiums(filtered);
+    final isArabic = Provider.of<LanguageProvider>(context).isArabic;
     if (userStadiums.isEmpty) {
-      return Center(child: Text('No Stadiums are fount'));
+      
+      return  Center(child: Text(isArabic ? 'لا يوجد ملاعب' : 'No Stadiums are fount'));
     }
     return _buildStadiumListView(userStadiums);
   }
@@ -254,6 +261,7 @@ class _HomeState extends State<Home_Owner> {
 
   /// Builds the floating action button for adding a new stadium and deleting all stadiums.
   Widget _buildFloatingActionButton() {
+    final isArabic = Provider.of<LanguageProvider>(context).isArabic;
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.end,
       direction: Axis.vertical,
@@ -264,13 +272,13 @@ class _HomeState extends State<Home_Owner> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text('Delete All Stadiums'),
+                  title: Text(isArabic ? 'حذف جميع الملاعب' : 'Delete All Stadiums'),
                   content: Text(
-                      'Are you sure you want to delete all stadiums? This action cannot be undone.'),
+                      isArabic ? 'هل أنت متأكد من حذف جميع الملاعب؟ هذه الخطوة لا يمكن التراجع عنها.' : 'Are you sure you want to delete all stadiums? This action cannot be undone.'),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: Text('Cancel'),
+                      child: Text(isArabic ? 'إلغاء' : 'Cancel'),
                     ),
                     TextButton(
                       onPressed: () async {
@@ -285,7 +293,7 @@ class _HomeState extends State<Home_Owner> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content:
-                                  Text('All stadiums deleted successfully'),
+                                  Text(isArabic ? 'تم حذف جميع الملاعب' : 'All stadiums deleted successfully'),
                               backgroundColor: Colors.green,
                             ),
                           );
@@ -293,7 +301,7 @@ class _HomeState extends State<Home_Owner> {
                           Navigator.of(context).pop();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Error deleting stadiums: $e'),
+                              content: Text(isArabic ? 'Error deleting stadiums: $e' : 'Error deleting stadiums: $e'),
                               backgroundColor: Colors.red,
                             ),
                           );
@@ -334,8 +342,8 @@ class _HomeState extends State<Home_Owner> {
                   "assets/home_loves_tickets_top/imgs/ic_twotone-stadium.png",
                   width: 44.00,
                 ),
-                const Text(
-                  "New Stadium",
+                Text(
+                  isArabic ? "إضافة ملعب جديد" : "New Stadium",
                   style: TextStyle(
                     color: Color(0xffffffff),
                     fontSize: 18,
@@ -356,7 +364,7 @@ class _HomeState extends State<Home_Owner> {
       child: Scaffold(
         backgroundColor: Colors.white,
         extendBodyBehindAppBar: false,
-        drawer: Create_Drawer(),
+        drawer: Create_Drawer(refreshData: true),
         appBar: _buildAppBar(),
         floatingActionButton: _buildFloatingActionButton(),
         body: Stack(
