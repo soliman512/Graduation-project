@@ -1,5 +1,6 @@
 import 'package:bottom_picker/bottom_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:graduation_project_main/payment/done.dart';
@@ -19,7 +20,6 @@ class Payment extends StatefulWidget {
 
   Payment({
     required this.stadiumID,
-
   });
 }
 
@@ -39,27 +39,26 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
   bool isFormValid() {
     return matchDate.isNotEmpty &&
         matchTime.isNotEmpty &&
-        matchDuration.isNotEmpty &&
-        paymentWay.isNotEmpty;
+        matchDuration.isNotEmpty;
   }
 
-Map<String, dynamic>? stadiumData; // متغير يخزن بيانات الاستاد
+  Map<String, dynamic>? stadiumData; // متغير يخزن بيانات الاستاد
 
-Future<void> getStudentData() async {
-  DocumentSnapshot doc = await FirebaseFirestore.instance
-      .collection('stadiums')
-      .doc(widget.stadiumID)
-      .get();
-  setState(() {
-    stadiumData = doc.data() as Map<String, dynamic>;
-  });
-}
+  Future<void> getStudentData() async {
+    DocumentSnapshot doc = await FirebaseFirestore.instance
+        .collection('stadiums')
+        .doc(widget.stadiumID)
+        .get();
+    setState(() {
+      stadiumData = doc.data() as Map<String, dynamic>;
+    });
+  }
 
-@override
-void initState() {
-  super.initState();
-  getStudentData();
-}
+  @override
+  void initState() {
+    super.initState();
+    getStudentData();
+  }
 
   void showDurationPicker(BuildContext context) {
     int hours = 1;
@@ -173,11 +172,11 @@ void initState() {
 
   @override
   Widget build(BuildContext context) {
-  if (stadiumData == null) {
-    return Scaffold(
-      body: Center(child: CircularProgressIndicator()),
-    );
-  }
+    if (stadiumData == null) {
+      return Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     final isArabic = Provider.of<LanguageProvider>(context).isArabic;
     return SafeArea(
       child: Scaffold(
@@ -198,8 +197,9 @@ void initState() {
                 builder: (BuildContext context) {
                   return AlertDialog(
                     title: Text(isArabic ? "إلغاء الدفع" : "Discard Payment"),
-                    content:
-                        Text(isArabic ? "هل أنت متأكد من إلغاء الدفع؟" : "Are you sure you want to discard the payment?"),
+                    content: Text(isArabic
+                        ? "هل أنت متأكد من إلغاء الدفع؟"
+                        : "Are you sure you want to discard the payment?"),
                     actions: [
                       TextButton(
                         onPressed: () {
@@ -226,7 +226,8 @@ void initState() {
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
-              // crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
                   padding: EdgeInsets.all(20.0),
@@ -281,15 +282,34 @@ void initState() {
                                       color: mainColor, size: 16),
                                   SizedBox(width: 4),
                                   Text(
-                                    matchTime.isNotEmpty &&
-                                            matchDuration.isNotEmpty
-                                        ? "$matchTime - ${matchDuration.replaceAll(' - ', '')}"
-                                        : "time & duration",
+                                    matchTime.isNotEmpty
+                                        ? matchTime
+                                        : "Select time",
                                     style: TextStyle(
                                       fontFamily: 'eras-itc-demi',
                                       fontSize: 14,
-                                      color: (matchTime.isNotEmpty &&
-                                              matchDuration.isNotEmpty)
+                                      color: matchTime.isNotEmpty
+                                          ? Colors.black
+                                          : Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 8),
+                              // duration
+                              Row(
+                                children: [
+                                  Icon(Icons.timelapse,
+                                      color: mainColor, size: 16),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    matchDuration.isNotEmpty
+                                        ? matchDuration
+                                        : "Select duration",
+                                    style: TextStyle(
+                                      fontFamily: 'eras-itc-demi',
+                                      fontSize: 14,
+                                      color: matchDuration.isNotEmpty
                                           ? Colors.black
                                           : Colors.grey,
                                     ),
@@ -339,7 +359,7 @@ void initState() {
                       decoration: const BoxDecoration(
                         image: DecorationImage(
                           image: AssetImage(
-                              'assets/payment/imgs/icons8-stadium-100_1_(1).png'),
+                              'assets/images/payment/stadium-icon.png'),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -350,20 +370,19 @@ void initState() {
                     Text(
                       stadiumData!['name'],
                       style: TextStyle(
-                        color: mainColor,
-                        fontSize: MediaQuery.of(context).size.width * 0.06,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: "eras-itc-demi"),
+                          color: mainColor,
+                          fontSize: MediaQuery.of(context).size.width * 0.06,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "eras-itc-demi"),
                     ),
                     Spacer(),
                     Text(
                       stadiumData!['price'].toString() + '.00 LE',
                       style: TextStyle(
-                        color: mainColor,
-                        fontSize: MediaQuery.of(context).size.width * 0.05,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: "eras-itc-demi"
-                      ),
+                          color: mainColor,
+                          fontSize: MediaQuery.of(context).size.width * 0.05,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "eras-itc-demi"),
                     ),
                   ],
                 ),
@@ -570,236 +589,253 @@ void initState() {
                   ],
                 ),
                 const SizedBox(height: 40.0),
-                AnimatedContainer(
-                  duration: Duration(milliseconds: 300),
-                  padding: EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: mainColor.withOpacity(0.2),
-                      width: 1,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.08),
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: AnimatedSize(
-                    duration: Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Flexible(
-                          flex: creditCard ? 3 : 1,
-                          child: GestureDetector(
-                            onTap: () async {
-                              setState(() {
-                                creditCard = true;
-                                fawry = false;
-                                cash = false;
-                                paymentWay = "Credit Card";
-                              });
-                              // استدعاء دالة الدفع
-                              try {
-                                await PaymentManger.makePayment(80, "EGP");
-                                // يمكنك هنا إظهار رسالة نجاح أو الانتقال لصفحة أخرى
-                              } catch (e) {
-                                // يمكنك هنا إظهار رسالة خطأ
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Payment failed: $e')),
-                                );
-                              }
-                            },
-                            child: AnimatedContainer(
-                              duration: Duration(milliseconds: 300),
-                              curve: Curves.ease,
-                              decoration: BoxDecoration(
-                                gradient:
-                                    creditCard ? greenGradientColor : null,
-                                color: creditCard ? null : Colors.transparent,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.credit_card,
-                                      color: creditCard
-                                          ? Colors.white
-                                          : mainColor),
-                                  SizedBox(width: 8),
-                                  AnimatedSwitcher(
-                                    duration: Duration(milliseconds: 300),
-                                    transitionBuilder: (child, animation) =>
-                                        FadeTransition(
-                                            opacity: animation, child: child),
-                                    child: creditCard
-                                        ? Text(
-                                            "Credit Card",
-                                            key: ValueKey('creditCard'),
-                                            style: TextStyle(
-                                              fontFamily: 'eras-itc-demi',
-                                              fontSize: 14,
-                                              color: Colors.white,
-                                            ),
-                                          )
-                                        : SizedBox(width: 0, height: 0),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                // AnimatedContainer(
+                //   duration: Duration(milliseconds: 300),
+                //   padding: EdgeInsets.all(16.0),
+                //   decoration: BoxDecoration(
+                //     color: Colors.white,
+                //     borderRadius: BorderRadius.circular(10),
+                //     border: Border.all(
+                //       color: mainColor.withOpacity(0.2),
+                //       width: 1,
+                //     ),
+                //     boxShadow: [
+                //       BoxShadow(
+                //         color: Colors.grey.withOpacity(0.08),
+                //         blurRadius: 4,
+                //         offset: Offset(0, 2),
+                //       ),
+                //     ],
+                //   ),
+                //   child: AnimatedSize(
+                //     duration: Duration(milliseconds: 300),
+                //     curve: Curves.easeInOut,
+                //     child: Row(
+                //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                //       children: [
+                //         Flexible(
+                //           flex: creditCard ? 3 : 1,
+                //           child: GestureDetector(
+                //             onTap: () async {},
+                //             child: AnimatedContainer(
+                //               duration: Duration(milliseconds: 300),
+                //               curve: Curves.ease,
+                //               decoration: BoxDecoration(
+                //                 gradient:
+                //                     creditCard ? greenGradientColor : null,
+                //                 color: creditCard ? null : Colors.transparent,
+                //                 borderRadius: BorderRadius.circular(8),
+                //               ),
+                //               padding: EdgeInsets.symmetric(
+                //                   vertical: 10, horizontal: 0),
+                //               child: Row(
+                //                 mainAxisAlignment: MainAxisAlignment.center,
+                //                 children: [
+                //                   Icon(Icons.credit_card,
+                //                       color: creditCard
+                //                           ? Colors.white
+                //                           : mainColor),
+                //                   SizedBox(width: 8),
+                //                   AnimatedSwitcher(
+                //                     duration: Duration(milliseconds: 300),
+                //                     transitionBuilder: (child, animation) =>
+                //                         FadeTransition(
+                //                             opacity: animation, child: child),
+                //                     child: creditCard
+                //                         ? Text(
+                //                             "Credit Card",
+                //                             key: ValueKey('creditCard'),
+                //                             style: TextStyle(
+                //                               fontFamily: 'eras-itc-demi',
+                //                               fontSize: 14,
+                //                               color: Colors.white,
+                //                             ),
+                //                           )
+                //                         : SizedBox(width: 0, height: 0),
+                //                   ),
+                //                 ],
+                //               ),
+                //             ),
+                //           ),
+                //         ),
+                //         SizedBox(width: 8),
+                //         Flexible(
+                //           flex: fawry ? 3 : 1,
+                //           child: GestureDetector(
+                //             onTap: () {
+                //               setState(() {
+                //                 creditCard = false;
+                //                 fawry = true;
+                //                 cash = false;
+                //                 paymentWay = "Fawry";
+                //               });
+                //             },
+                //             child: AnimatedContainer(
+                //               duration: Duration(milliseconds: 300),
+                //               curve: Curves.ease,
+                //               decoration: BoxDecoration(
+                //                 gradient: fawry ? greenGradientColor : null,
+                //                 color: fawry ? null : Colors.transparent,
+                //                 borderRadius: BorderRadius.circular(8),
+                //               ),
+                //               padding: EdgeInsets.symmetric(
+                //                   vertical: 10, horizontal: 0),
+                //               child: Row(
+                //                 mainAxisAlignment: MainAxisAlignment.center,
+                //                 children: [
+                //                   Icon(Icons.account_balance_wallet,
+                //                       color: fawry ? Colors.white : mainColor),
+                //                   SizedBox(width: 8),
+                //                   AnimatedSwitcher(
+                //                     duration: Duration(milliseconds: 300),
+                //                     transitionBuilder: (child, animation) =>
+                //                         FadeTransition(
+                //                             opacity: animation, child: child),
+                //                     child: fawry
+                //                         ? Text(
+                //                             "Fawry",
+                //                             key: ValueKey('fawry'),
+                //                             style: TextStyle(
+                //                               fontFamily: 'eras-itc-demi',
+                //                               fontSize: 14,
+                //                               color: Colors.white,
+                //                             ),
+                //                           )
+                //                         : SizedBox(width: 0, height: 0),
+                //                   ),
+                //                 ],
+                //               ),
+                //             ),
+                //           ),
+                //         ),
+                //         SizedBox(width: 8),
+                //         Flexible(
+                //           flex: cash ? 3 : 1,
+                //           child: GestureDetector(
+                //             onTap: () {
+                //               setState(() {
+                //                 creditCard = false;
+                //                 fawry = false;
+                //                 cash = true;
+                //                 paymentWay = "Cash";
+                //               });
+                //             },
+                //             child: AnimatedContainer(
+                //               duration: Duration(milliseconds: 300),
+                //               curve: Curves.ease,
+                //               decoration: BoxDecoration(
+                //                 gradient: cash ? greenGradientColor : null,
+                //                 color: cash ? null : Colors.transparent,
+                //                 borderRadius: BorderRadius.circular(8),
+                //               ),
+                //               padding: EdgeInsets.symmetric(
+                //                   vertical: 10, horizontal: 0),
+                //               child: Row(
+                //                 mainAxisAlignment: MainAxisAlignment.center,
+                //                 children: [
+                //                   Icon(Icons.money,
+                //                       color: cash ? Colors.white : mainColor),
+                //                   SizedBox(width: 8),
+                //                   AnimatedSwitcher(
+                //                     duration: Duration(milliseconds: 300),
+                //                     transitionBuilder: (child, animation) =>
+                //                         FadeTransition(
+                //                             opacity: animation, child: child),
+                //                     child: cash
+                //                         ? Text(
+                //                             "Cash",
+                //                             key: ValueKey('cash'),
+                //                             style: TextStyle(
+                //                               fontFamily: 'eras-itc-demi',
+                //                               fontSize: 14,
+                //                               color: Colors.white,
+                //                             ),
+                //                           )
+                //                         : SizedBox(width: 0, height: 0),
+                //                   ),
+                //                 ],
+                //               ),
+                //             ),
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
+                // SizedBox(height: 20),
+                // Visibility(
+                //   visible: isFormValid(),
+                //   child: Padding(
+                //     padding: const EdgeInsets.symmetric(horizontal: 20),
+                //     child: ElevatedButton(
+                //       onPressed: () {
+                //         Navigator.push(
+                //           context,
+                //           MaterialPageRoute(builder: (context) => Done()),
+                //         );
+                //       },
+                //       style: ElevatedButton.styleFrom(
+                //         backgroundColor: mainColor,
+                //         padding: EdgeInsets.symmetric(vertical: 15),
+                //         shape: RoundedRectangleBorder(
+                //           borderRadius: BorderRadius.circular(8),
+                //         ),
+                //       ),
+                //       child: Text(
+                //         'Continue',
+                //         style: TextStyle(
+                //           fontFamily: 'eras-itc-demi',
+                //           fontSize: 16,
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
+
+                // SizedBox(height: 20),
+                Create_GradiantGreenButton(
+                    content: Text("verify booking"),
+                    onButtonPressed: () async {
+                      if (!isFormValid()) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Please fill all fields')),
+                        );
+                        return;
+                      }
+                      await FirebaseFirestore.instance
+                          .collection("bookings")
+                          .doc()
+                          .set({
+                        "stadiumID": widget.stadiumID,
+                        "playerID": FirebaseAuth.instance.currentUser?.uid,
+                        "matchDate": matchDate,
+                        "matchTime": matchTime,
+                        "matchDuration": matchDuration,
+                        "matchCost": matchCost,
+                      });
+                      setState(() {
+                        creditCard = true;
+                        fawry = false;
+                        cash = false;
+                        paymentWay = "Credit Card";
+                      });
+                      // استدعاء دالة الدفع
+                      try {
+                        await PaymentManger.makePayment(
+                            matchCost as int, "EGP");
+                        // يمكنك هنا إظهار رسالة نجاح أو الانتقال لصفحة أخرى
+                      } catch (e) {
+                        // يمكنك هنا إظهار رسالة خطأ
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Payment failed: $e')),
+                        );
+                      }
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => Done(),
                         ),
-                        SizedBox(width: 8),
-                        Flexible(
-                          flex: fawry ? 3 : 1,
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                creditCard = false;
-                                fawry = true;
-                                cash = false;
-                                paymentWay = "Fawry";
-                              });
-                            },
-                            child: AnimatedContainer(
-                              duration: Duration(milliseconds: 300),
-                              curve: Curves.ease,
-                              decoration: BoxDecoration(
-                                gradient: fawry ? greenGradientColor : null,
-                                color: fawry ? null : Colors.transparent,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.account_balance_wallet,
-                                      color: fawry ? Colors.white : mainColor),
-                                  SizedBox(width: 8),
-                                  AnimatedSwitcher(
-                                    duration: Duration(milliseconds: 300),
-                                    transitionBuilder: (child, animation) =>
-                                        FadeTransition(
-                                            opacity: animation, child: child),
-                                    child: fawry
-                                        ? Text(
-                                            "Fawry",
-                                            key: ValueKey('fawry'),
-                                            style: TextStyle(
-                                              fontFamily: 'eras-itc-demi',
-                                              fontSize: 14,
-                                              color: Colors.white,
-                                            ),
-                                          )
-                                        : SizedBox(width: 0, height: 0),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Flexible(
-                          flex: cash ? 3 : 1,
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                creditCard = false;
-                                fawry = false;
-                                cash = true;
-                                paymentWay = "Cash";
-                              });
-                            },
-                            child: AnimatedContainer(
-                              duration: Duration(milliseconds: 300),
-                              curve: Curves.ease,
-                              decoration: BoxDecoration(
-                                gradient: cash ? greenGradientColor : null,
-                                color: cash ? null : Colors.transparent,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.money,
-                                      color: cash ? Colors.white : mainColor),
-                                  SizedBox(width: 8),
-                                  AnimatedSwitcher(
-                                    duration: Duration(milliseconds: 300),
-                                    transitionBuilder: (child, animation) =>
-                                        FadeTransition(
-                                            opacity: animation, child: child),
-                                    child: cash
-                                        ? Text(
-                                            "Cash",
-                                            key: ValueKey('cash'),
-                                            style: TextStyle(
-                                              fontFamily: 'eras-itc-demi',
-                                              fontSize: 14,
-                                              color: Colors.white,
-                                            ),
-                                          )
-                                        : SizedBox(width: 0, height: 0),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-            SizedBox(height: 20),
-              Visibility(
-                visible: isFormValid(),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Done()),
                       );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: mainColor,
-                      padding: EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: Text(
-                      'Continue',
-                      style: TextStyle(
-                        fontFamily: 'eras-itc-demi',
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            
-                 
-            SizedBox(height: 20),
-            Create_GradiantGreenButton(content: Text("verify booking"), onButtonPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => Done(),
-                ),
-              );
-              
-            })
+                    })
               ],
             ),
           ),

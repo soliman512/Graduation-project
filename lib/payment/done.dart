@@ -26,7 +26,8 @@ class _DoneState extends State<Done> {
   List checkImagesWithCircle = [
     // big green circle
     {
-      'image': Image.asset('assets/img/Ellipse 9.png'),
+      'image':
+          Image.asset('assets/payment_successful_check/imgs/Ellipse 9.png'),
       'top': 0.0,
       'right': 0.0,
       'left': 0.0,
@@ -39,7 +40,8 @@ class _DoneState extends State<Done> {
 
     // big white circle
     {
-      'image': Image.asset('assets/img/Ellipse 28.png'),
+      'image':
+          Image.asset('assets/payment_successful_check/imgs/Ellipse 28.png'),
       'top': 0.0,
       'right': 0.0,
       'left': 0.0,
@@ -52,7 +54,8 @@ class _DoneState extends State<Done> {
 
     // right MID white circle
     {
-      'image': Image.asset('assets/img/Ellipse 12.png'),
+      'image':
+          Image.asset('assets/payment_successful_check/imgs/Ellipse 12.png'),
       'top': 6.06,
       'right': 0.0,
       'left': 167.56,
@@ -65,7 +68,8 @@ class _DoneState extends State<Done> {
 
     // green circle (under white)
     {
-      'image': Image.asset('assets/img/Ellipse 13.png'),
+      'image':
+          Image.asset('assets/payment_successful_check/imgs/Ellipse 13.png'),
       'top': 37.37,
       'right': 0.0,
       'left': 200.87,
@@ -78,7 +82,8 @@ class _DoneState extends State<Done> {
 
     // right, small white circle (up MID white)
     {
-      'image': Image.asset('assets/img/Ellipse 14.png'),
+      'image':
+          Image.asset('assets/payment_successful_check/imgs/Ellipse 14.png'),
       'top': 6.06,
       'right': 0.0,
       'left': 150.54,
@@ -91,7 +96,8 @@ class _DoneState extends State<Done> {
 
     // dark green circle
     {
-      'image': Image.asset('assets/img/Ellipse 15.png'),
+      'image':
+          Image.asset('assets/payment_successful_check/imgs/Ellipse 15.png'),
       'top': 170.61,
       'right': 0.0,
       'left': 166.55,
@@ -104,7 +110,8 @@ class _DoneState extends State<Done> {
 
     // left down small green
     {
-      'image': Image.asset('assets/img/Ellipse 16.png'),
+      'image':
+          Image.asset('assets/payment_successful_check/imgs/Ellipse 16.png'),
       'top': 189.9,
       'right': 0.0,
       'left': 46.43,
@@ -117,7 +124,8 @@ class _DoneState extends State<Done> {
 
     // very small green, down left
     {
-      'image': Image.asset('assets/img/Ellipse 17.png'),
+      'image':
+          Image.asset('assets/payment_successful_check/imgs/Ellipse 17.png'),
       'top': 43.43,
       'right': 0.0,
       'left': 0.0,
@@ -130,7 +138,8 @@ class _DoneState extends State<Done> {
 
     // black circle, left
     {
-      'image': Image.asset('assets/img/Ellipse 18.png'),
+      'image':
+          Image.asset('assets/payment_successful_check/imgs/Ellipse 18.png'),
       'top': 137.37,
       'right': 0.0,
       'left': 19.18,
@@ -143,7 +152,8 @@ class _DoneState extends State<Done> {
 
     // up black, white circle
     {
-      'image': Image.asset('assets/img/Ellipse 19.png'),
+      'image':
+          Image.asset('assets/payment_successful_check/imgs/Ellipse 19.png'),
       'top': 107.07,
       'right': 0.0,
       'left': 27.25,
@@ -156,7 +166,8 @@ class _DoneState extends State<Done> {
 
     // very small circle, down left under black
     {
-      'image': Image.asset('assets/img/Ellipse 20.png'),
+      'image':
+          Image.asset('assets/payment_successful_check/imgs/Ellipse 20.png'),
       'top': 157.58,
       'right': 0.0,
       'left': 56.35,
@@ -169,7 +180,8 @@ class _DoneState extends State<Done> {
 
     // top white circle, top big white, right
     {
-      'image': Image.asset('assets/img/Ellipse 21.png'),
+      'image':
+          Image.asset('assets/payment_successful_check/imgs/Ellipse 21.png'),
       'top': 63.64,
       'right': 0.0,
       'left': 162.51,
@@ -182,7 +194,8 @@ class _DoneState extends State<Done> {
 
     // check
     {
-      'image': Image.asset('assets/img/icons8-check-mark-100 (1) 1.png'),
+      'image': Image.asset(
+          'assets/payment_successful_check/imgs/icons8-check-mark-100 (1) 1.png'),
       'top': 0.0,
       'right': 0.0,
       'left': 0.0,
@@ -253,7 +266,7 @@ class _DoneState extends State<Done> {
         fit: StackFit.expand,
         children: [
           Image.asset(
-            "assets/img/welcome 2.jpg",
+            "assets/welcome_signup_login/imgs/Welcome.jpg",
             fit: BoxFit.cover,
           ),
           Container(
