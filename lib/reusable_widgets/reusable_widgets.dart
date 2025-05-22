@@ -3,8 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
+import 'package:graduation_project_main/provider/language_provider.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+
 
 class StadiumCard extends StatefulWidget {
   final String title;
@@ -66,7 +69,7 @@ class _StadiumCardState extends State<StadiumCard> {
 
     if (isFavorite) {
       await favRef.delete();
-      showSnackBar(context, "${widget.title} removed from favorites");
+      showSnackBar(context, Provider.of<LanguageProvider>(context, listen: false).isArabic ? "تم إزالة ${widget.title} من المفضلة" : "${widget.title} removed from favorites");
     } else {
       await favRef.set({
         'title': widget.title,
@@ -75,7 +78,7 @@ class _StadiumCardState extends State<StadiumCard> {
         'rating': widget.rating,
         'imagePath': widget.selectedImages[0],
       });
-      showSnackBar(context, "${widget.title} added to favorites");
+      showSnackBar(context, Provider.of<LanguageProvider>(context, listen: false).isArabic ? "تم إضافة ${widget.title} إلى المفضلة" : "${widget.title} added to favorites");
     }
 
     setState(() {
@@ -272,7 +275,9 @@ class DrawerItem extends StatelessWidget {
 
 //statful widget for the drawer
 class Create_Drawer extends StatefulWidget {
-  const Create_Drawer({Key? key}) : super(key: key);
+  final bool refreshData;
+  
+  const Create_Drawer({Key? key, this.refreshData = false}) : super(key: key);
 
   @override
   State<Create_Drawer> createState() => _Create_DrawerState();
@@ -280,54 +285,78 @@ class Create_Drawer extends StatefulWidget {
 
 class _Create_DrawerState extends State<Create_Drawer> {
   String? username;
-  String? profileImage;
+  String? profileImageUrl;
   @override
   void initState() {
     super.initState();
     _loadUserData();
   }
-
-  Future<void> _loadUsername() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      username = prefs.getString('username') ?? 'Guest';
-    });
+  
+  @override
+  void didUpdateWidget(Create_Drawer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Refresh data if the refreshData flag is true
+    if (widget.refreshData) {
+      _loadUserData();
+    }
   }
 
   Future<void> _loadUserData() async {
+    final isArabic = Provider.of<LanguageProvider>(context, listen: false).isArabic;
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-
-    // جرب تجيب من owners (صاحب ملعب)
-    var doc = await FirebaseFirestore.instance.collection('owners').doc(user.uid).get();
-    if (doc.exists) {
+    if (user != null) {
+      try {
+        // Get user data from Firestore
+        final docSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+        
+        if (docSnapshot.exists) {
+          final userData = docSnapshot.data();
+          
+          // Get user data
+          String? newUsername = userData?['username'];
+          String? newProfileImageUrl = userData?['profileImage'];
+          
+          // Only update state if there are actual changes to avoid unnecessary rebuilds
+          if (newUsername != username || newProfileImageUrl != profileImageUrl) {
+            setState(() {
+              // Make sure we always display the username from Firestore if available
+              username = newUsername;
+              if (username == null || username!.isEmpty) {
+                username = user.displayName ?? user.email?.split('@')[0] ?? 'User';
+              }
+              profileImageUrl = newProfileImageUrl;
+              print('Updated profile image URL: $profileImageUrl');
+            });
+          }
+        } else {
+          // If document doesn't exist but user is logged in
+          setState(() {
+            username = user.displayName ?? user.email?.split('@')[0] ?? 'User';
+          });
+        }
+      } catch (e) {
+        print('Error loading user data: $e');
+        // Fallback to Firebase user data if Firestore fails
+        setState(() {
+          username = user.displayName ?? user.email?.split('@')[0] ?? 'User';
+        });
+      }
+    } else {
+      // User is not logged in
       setState(() {
-        username = doc['username'] ?? 'Guest';
-        profileImage = doc['profileImage'];
+        username = 'Guest';
       });
-      return;
     }
-
-    // لو مش صاحب ملعب، جرب من users (لاعب)
-    doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-    if (doc.exists) {
-      setState(() {
-        username = doc['username'] ?? 'Guest';
-        profileImage = doc['profileImage'];
-      });
-      return;
-    }
-
-    // لو مفيش بيانات
-    setState(() {
-      username = 'Guest';
-      profileImage = null;
-    });
   }
 
+  
   @override
   Widget build(BuildContext context) {
     // User Google
+    final isArabic = Provider.of<LanguageProvider>(context).isArabic;
     final userr = FirebaseAuth.instance.currentUser;
     return Stack(
       children: [
@@ -344,30 +373,52 @@ class _Create_DrawerState extends State<Create_Drawer> {
                 height: 50.0,
               ),
               //user image
-              if (profileImage != null && profileImage!.isNotEmpty)
-                Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: mainColor, width: 3.0),
-                  ),
-                  child: CircleAvatar(
-                    radius: 60.0,
-                    backgroundImage: NetworkImage(profileImage!),
-                    backgroundColor: Colors.white,
-                  ),
-                )
-              else
-                Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: mainColor, width: 3.0),
-                  ),
-                  child: CircleAvatar(
-                    radius: 60.0,
-                    backgroundColor: Colors.white,
-                    child: Icon(Icons.person_outline_rounded, size: 80, color: mainColor),
-                  ),
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: mainColor, width: 3.0),
                 ),
+                child: profileImageUrl != null && profileImageUrl!.isNotEmpty
+                  ? CircleAvatar(
+                      radius: 60.0,
+                      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                      child: ClipOval(
+                        child: Image.network(
+                          profileImageUrl!,
+                          width: 120.0,
+                          height: 120.0,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            print('Error loading profile image: $error');
+                            return Icon(Icons.person, size: 60, color: mainColor);
+                          },
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes != null
+                                    ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                    : null,
+                                color: mainColor,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    )
+                  : userr != null && userr.photoURL != null
+                    ? CircleAvatar(
+                        radius: 60.0,
+                        backgroundImage: NetworkImage(userr.photoURL!),
+                        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                      )
+                    : CircleAvatar(
+                        radius: 60.0,
+                        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                        child: Icon(Icons.person_outline_rounded,
+                            size: 80, color: mainColor),
+                      ),
+              ),
               SizedBox(
                 height: 20.0,
               ),
@@ -434,7 +485,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
                   SizedBox(width: 40.0),
                   Expanded(
                     child: DrawerItem(
-                        title: "Home",
+                        title: isArabic ? "الرئيسية" : "Home",
                         icon: Image.asset(
                             "assets/home_loves_tickets_top/imgs/Vector_drawerHome.png",
                             width: 30.0),
@@ -443,11 +494,13 @@ class _Create_DrawerState extends State<Create_Drawer> {
                   SizedBox(width: 32.0),
                   Expanded(
                     child: DrawerItem(
-                        title: "Profile",
+                        title: isArabic ? "الملف الشخصي" : "Profile",
                         icon: Image.asset(
                             "assets/home_loves_tickets_top/imgs/Vector_drawerProfile.png",
                             width: 30.0),
-                        onTap: () {}),
+                        onTap: () {
+                          Navigator.pushNamed(context, '/profilepage');
+                        }),
                   ),
                   SizedBox(width: 40.0),
                 ],
@@ -458,7 +511,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
                   SizedBox(width: 40.0),
                   Expanded(
                     child: DrawerItem(
-                        title: "Logout",
+                        title: isArabic ? "تسجيل الخروج" : "Logout",
                         icon: Image.asset(
                             "assets/home_loves_tickets_top/imgs/vector_drawerLog_out.png",
                             width: 30.0),
@@ -469,7 +522,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
                   SizedBox(width: 32.0),
                   Expanded(
                     child: DrawerItem(
-                        title: "About us",
+                        title: isArabic ? "عن التطبيق" : "About us",
                         icon: Icon(Icons.info, size: 30.0, color: mainColor),
                         onTap: () {
                           Navigator.pushNamed(context, '/aboutApp');
@@ -480,36 +533,44 @@ class _Create_DrawerState extends State<Create_Drawer> {
               ),
               SizedBox(height: 32.0),
               Expanded(
-                child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 40.0),
-                  height: 120.0,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: mainColor.withOpacity(0.5),
-                        spreadRadius: 2,
-                        blurRadius: 5,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Container(
+                      margin: EdgeInsets.symmetric(
+                          horizontal: constraints.maxWidth *0.11),
+                      height: constraints.maxHeight * 0.15,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: mainColor.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Image.asset(
-                      //     "assets/home_loves_tickets_top/imgs/Vector_drawerSettings.png",
-                      //     width: 30.0),
-                      SizedBox(width: 40.0),
-                      Text(
-                        "Settings",
-                        style: TextStyle(
-                            fontSize: 16.0,
-                            fontFamily: "eras-itc-demi",
-                            color: const Color.fromARGB(255, 0, 0, 0)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                              "assets/home_loves_tickets_top/imgs/Vector_drawerSettings.png",
+                              width: constraints.maxWidth * 0.1,
+                              height: constraints.maxHeight * 0.1),
+                          SizedBox(
+                              width:
+                                  constraints.maxWidth * 0.05),
+                          Text(
+                            isArabic ? "الإعدادات" : "Settings",
+                            style: TextStyle(
+                                fontSize: constraints.maxWidth * 0.025,
+                                fontFamily: "eras-itc-demi",
+                                color: const Color.fromARGB(255, 0, 0, 0)),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ),
               SizedBox(width: 40.0),

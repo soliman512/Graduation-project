@@ -5,6 +5,8 @@ import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/addAccountImage_owner.dart';
 // import 'package:graduation_project_main/welcome_signup_login/signUpPages/signup_pg2_stdowner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:graduation_project_main/provider/language_provider.dart';
 
 class Signup_pg1_StdOwner extends StatefulWidget {
   @override
@@ -25,7 +27,7 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
     }
   }
 
-    Future<void> storeData() async {
+  Future<void> storeData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('username', usernameController.text);
     await prefs.setString('phoneNumber', phoneController.text);
@@ -33,9 +35,10 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
     await prefs.setString('location', location ?? '');
   }
 
-
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    bool isArabic = languageProvider.isArabic;
     return SafeArea(
       child: Scaffold(
           backgroundColor: Colors.white,
@@ -43,13 +46,15 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
           //app bar language
           appBar: AppBar(
             centerTitle: true,
-            title: Text("sign up",
-                style: TextStyle(
-                  color: Color(0xFF000000),
-                  // fontFamily: "eras-itc-bold",
-                  fontWeight: FontWeight.w400,
-                  fontSize: 20.0,
-                )),
+            title: Text(
+              isArabic ? "إنشاء حساب" : "Sign Up",
+              style: TextStyle(
+              color: Color(0xFF000000),
+              fontFamily: isArabic ? 'Cairo' : 'eras-itc-bold',
+              fontWeight: FontWeight.w400,
+              fontSize: 20.0,
+              ),
+            ),
             leading: IconButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/Welcome');
@@ -66,11 +71,25 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
             backgroundColor: Color(0x00),
             actions: [
               IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.language,
-                    color: Color(0xFF000000),
-                  )),
+                onPressed: () {
+                  final languageProvider =
+                      Provider.of<LanguageProvider>(context, listen: false);
+                  languageProvider.toggleLanguage();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        languageProvider.isArabic
+                            ? 'تم تغيير اللغة إلى العربية'
+                            : 'Language changed to English',
+                        style: TextStyle(fontFamily: 'eras-itc-bold'),
+                      ),
+                      duration: Duration(seconds: 2),
+                      backgroundColor: mainColor,
+                    ),
+                  );
+                },
+                icon: Icon(Icons.language, color: Color.fromARGB(255, 0, 0, 0)),
+              ),
             ],
           ),
           body: Stack(
@@ -90,12 +109,12 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                         align: TextAlign.center,
                         color: Colors.black),
                     //specific user
-                    Text("stadium owner",
+                    Text(isArabic ? "مالك الملعب" : "stadium owner",
                         style: TextStyle(
                             color: Color.fromARGB(111, 0, 0, 0),
                             fontWeight: FontWeight.w200,
                             fontSize: 20.0,
-                            fontFamily: 'eras-itc-light')),
+                            fontFamily: languageProvider.isArabic ? "Cairo" : "eras-itc-light")),
                     //just for space
                     SizedBox(
                       height: 60.0,
@@ -111,7 +130,7 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                         isPassword: false,
                         keyboardType: TextInputType.text,
                         textInputAction: TextInputAction.none,
-                        hintText: "Username",
+                        hintText: isArabic ? "اسم المستخدم" : "Username",
                         addPrefixIcon: Icon(
                           Icons.account_circle_outlined,
                           color: mainColor,
@@ -128,7 +147,7 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                         isPassword: false,
                         keyboardType: TextInputType.number,
                         textInputAction: TextInputAction.next,
-                        hintText: "Phone Number",
+                        hintText: isArabic ? "رقم الهاتف" : "Phone Number",
                         addPrefixIcon: Icon(Icons.phone, color: mainColor)),
                     SizedBox(
                       height: 30.0,
@@ -137,8 +156,11 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                     // set location
                     Create_Input(
                       on_tap: () {
+                        List<Widget> governoratesWidgets = isArabic
+                            ? getEgyptGovernoratesWidgets(context)
+                            : egyptGovernoratesWidgets;
                         BottomPicker(
-                          items: egyptGovernoratesWidgets,
+                          items: governoratesWidgets,
                           height: 600.0,
                           titlePadding:
                               EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
@@ -151,11 +173,17 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                           ),
                           pickerTextStyle:
                               TextStyle(fontSize: 20.0, color: Colors.black),
-                          pickerTitle: Text('Select Governorate',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w800, fontSize: 24.0)),
+                          pickerTitle: Text(
+                            isArabic ? 'اختر المحافظة' : 'Select Governorate',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 24.0,
+                            ),
+                          ),
                           pickerDescription: Text(
-                              'Choose the governorate where the stadium is located',
+                                isArabic
+                                  ? 'اختر المحافظة التي يقع فيها الملعب'
+                                  : 'Choose the governorate where the stadium is located',
                               style: TextStyle(fontWeight: FontWeight.w400)),
                           onSubmit: (selectedIndex) {
                             String governorate =
@@ -193,12 +221,17 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                                 ),
                                 pickerTextStyle: TextStyle(
                                     fontSize: 20.0, color: Colors.black),
-                                pickerTitle: Text('Select Place',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w800,
-                                        fontSize: 24.0)),
+                                pickerTitle: Text(
+                                  isArabic ? 'اختر المكان' : 'Select Place',
+                                  style: TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 24.0,
+                                  ),
+                                ),
                                 pickerDescription: Text(
-                                    'Choose the place where the stadium is located',
+                                    isArabic
+                                      ? 'اختر المكان الذي يقع فيه الملعب'
+                                      : 'Choose the place where the stadium is located',
                                     style:
                                         TextStyle(fontWeight: FontWeight.w400)),
                                 onSubmit: (selectedPlaceIndex) {
@@ -230,11 +263,15 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                                           child: Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              Text('Enter Neighborhood',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 20)),
+                                                Text(
+                                                isArabic
+                                                  ? 'ادخل اسم الحي'
+                                                  : 'Enter Neighborhood',
+                                                style: TextStyle(
+                                                  fontWeight:
+                                                    FontWeight.bold,
+                                                  fontSize: 20),
+                                                ),
                                               SizedBox(height: 15),
                                               Create_RequiredInput(
                                                 onChange: (value) {
@@ -242,7 +279,7 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                                                       value;
                                                 },
                                                 lableText:
-                                                    'Enter your neighborhood',
+                                                  isArabic ? 'ادخل اسم الحي' : 'Enter your neighborhood',
                                                 initValue:
                                                     neighborhoodEnterd.text,
                                                 textInputType:
@@ -297,7 +334,7 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                       keyboardType: TextInputType.text,
                       textInputAction: TextInputAction.done,
                       isReadOnly: true,
-                      hintText: "your location",
+                        hintText: isArabic ? "موقعك" : "your location",
                       addPrefixIcon: Icon(
                         Icons.location_on_outlined,
                         color: mainColor,
@@ -331,10 +368,13 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                             ),
                             pickerTextStyle:
                                 TextStyle(fontSize: 20.0, color: Colors.black),
-                            pickerTitle: Text('when you were born ?',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 24.0)),
+                            pickerTitle: Text(
+                              isArabic ? 'متى وُلدت؟' : 'when you were born ?',
+                              style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24.0,
+                              ),
+                            ),
                             onSubmit: (newDateValue) {
                               setState(() {
                                 dateOfBirth = newDateValue;
@@ -346,7 +386,7 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                         isPassword: false,
                         keyboardType: TextInputType.text,
                         textInputAction: TextInputAction.done,
-                        hintText: "Date of birth",
+                        hintText: isArabic ? "تاريخ الميلاد" : "Date of birth",
                         addPrefixIcon:
                             Icon(Icons.calendar_today, color: mainColor)),
                     SizedBox(
@@ -354,73 +394,79 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                     ),
 
                     //next
-                  SizedBox(
-                    height: 50.0,
-                    child: Create_GradiantGreenButton(
-                      content: Text(
-                        'Next',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: 'eras-itc-bold',
-                            fontSize: 24.0),
-                      ),
-                      onButtonPressed: () async {
-                        // Ensure all fields are filled
-                        if (usernameController.text.trim().isNotEmpty &&
-                            phoneController.text.trim().isNotEmpty &&
-                            location != null &&
-                            location!.trim().isNotEmpty &&
-                            dateOfBirth != null) {
-                          await storeData();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => addAccountImage_owner(),
-                            ),
-                          );
-                        } else {
-                          // Show an alert dialog to inform the user to fill all fields
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('Incomplete Information'),
-                                content: Text(
-                                    'Please fill all the required fields.'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text(
-                                      'OK',
-                                      style: TextStyle(
-                                          fontSize: 15, color: Colors.green),
+                    SizedBox(
+                      height: 50.0,
+                      child: Create_GradiantGreenButton(
+                        content: Text(
+                            isArabic ? 'التالي' : 'Next',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'eras-itc-bold',
+                              fontSize: 24.0),
+                        ),
+                        onButtonPressed: () async {
+                          // Ensure all fields are filled
+                          if (usernameController.text.trim().isNotEmpty &&
+                              phoneController.text.trim().isNotEmpty &&
+                              location != null &&
+                              location!.trim().isNotEmpty &&
+                              dateOfBirth != null) {
+                            await storeData();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => addAccountImage_owner(),
+                              ),
+                            );
+                          } else {
+                            // Show an alert dialog to inform the user to fill all fields
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                    title: Text(isArabic ? 'معلومات غير مكتملة' : 'Incomplete Information'),
+                                    content: Text(
+                                    isArabic
+                                      ? 'يرجى ملء جميع الحقول المطلوبة.'
+                                      : 'Please fill all the required fields.',
                                     ),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        }
-                      },
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text(
+                                        isArabic ? 'حسناً' : 'OK',
+                                        style: TextStyle(
+                                            fontSize: 15, color: Colors.green),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        },
+                      ),
                     ),
-                  ),
                     SizedBox(height: 10.0),
                     //don't have account
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('have an account? ',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.w300)),
+                        Text(
+                          isArabic ? 'هل لديك حساب؟ ' : 'have an account? ',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w300),
+                        ),
                         TextButton(
                             onPressed: () {
                               Navigator.pushNamed(context, '/login_stadium');
                             },
-                            child: Text('login now',
+                            child: Text(                              isArabic ? 'سجّل الدخول الآن' : 'login now',
+
                                 style: TextStyle(
                                   color: mainColor,
                                   fontSize: 16.0,

@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:graduation_project_main/provider/language_provider.dart';
 
 class Login_Stadiumonwer extends StatefulWidget {
   @override
@@ -37,40 +39,52 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
           .get();
 
       if (ownerDoc.exists) {
-        showSnackBar(context, "Done ... ");
+        showSnackBar(
+        context,
+        Provider.of<LanguageProvider>(context, listen: false).isArabic
+            ? "تم تسجيل الدخول بنجاح"
+            : "Done ... ");
         final prefs = await SharedPreferences.getInstance();
         await prefs.setBool('isLoggedIn', true);
         await prefs.setString('role', 'owners');
         Navigator.pushReplacementNamed(context, '/home_owner');
       } else {
-        showSnackBar(context, "This account is not an Owner account!");
+        showSnackBar(
+        context,
+        Provider.of<LanguageProvider>(context, listen: false).isArabic
+            ? "هذا الحساب ليس حساب مالك ملعب!"
+            : "This account is not an Owner account!");
         await FirebaseAuth.instance.signOut();
       }
-    } on FirebaseAuthException catch (e) {
+        } on FirebaseAuthException catch (e) {
       String errorMessage;
+      final isArabic =
+          Provider.of<LanguageProvider>(context, listen: false).isArabic;
 
       print("snackbar  ${e.code}");
       switch (e.code) {
         case 'invalid-credential':
         case 'user-not-found':
-          errorMessage = "Email not found";
+          errorMessage = isArabic ? "البريد الإلكتروني غير موجود" : "Email not found";
           break;
         case 'wrong-password':
-          errorMessage = "Wrong-Password";
+          errorMessage = isArabic ? "كلمة المرور غير صحيحة" : "Wrong-Password";
           break;
         case 'invalid-email':
-          errorMessage = 'invalid-email';
+          errorMessage = isArabic ? "البريد الإلكتروني غير صالح" : 'invalid-email';
           break;
         default:
-          errorMessage = "An unexpected error occurred.Try again.";
+          errorMessage = isArabic
+          ? "حدث خطأ غير متوقع. حاول مرة أخرى."
+          : "An unexpected error occurred.Try again.";
       }
       showSnackBar(context, errorMessage);
-    } finally {
+        } finally {
       setState(() {
         isLoading = false;
       });
-    }
-  }
+        }
+      }
 
   void dispose() {
     emailController.dispose();
@@ -80,6 +94,7 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
     return SafeArea(
       child: Scaffold(
           backgroundColor: Colors.white,
@@ -87,10 +102,10 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
           //app bar
           appBar: AppBar(
             centerTitle: true,
-            title: Text("login",
+            title: Text( languageProvider.isArabic ? "تسجيل الدخول" : "login",
                 style: TextStyle(
                   color: Color(0xFF000000),
-                  // fontFamily: "eras-itc-bold",
+                  fontFamily: languageProvider.isArabic ? "Cairo" : "eras-itc-bold",
                   fontWeight: FontWeight.w400,
                   fontSize: 20.0,
                 )),
@@ -107,13 +122,27 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
             elevation: 0,
             backgroundColor: Colors.transparent,
             actions: [
-              IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.language,
-                    color: Color(0xFF000000),
-                  )),
-            ],
+            IconButton(
+              onPressed: () {
+                // Toggle between English and Arabic
+                final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+                languageProvider.toggleLanguage();
+                
+                // Show a snackbar to indicate the language change
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      languageProvider.isArabic ?  'Language changed to English': 'تم تغيير اللغة إلى العربية',
+                      style: TextStyle(fontFamily: 'eras-itc-bold'),
+                    ),
+                    duration: Duration(seconds: 2),
+                    backgroundColor: mainColor,
+                  ),
+                );
+              },
+              icon: Icon(Icons.language, color: Color.fromARGB(255, 0, 0, 0)),
+            ),
+          ],
           ),
           body: Stack(
             children: [
@@ -129,12 +158,19 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                         align: TextAlign.center,
                         color: Colors.black),
                     //specific user
-                    Text("stadium owner",
+                    Consumer<LanguageProvider>(
+                      builder: (context, languageProvider, child) {
+                      return Text(
+                        languageProvider.isArabic ? "مالك الملعب" : "stadium owner",
                         style: TextStyle(
-                            color: Color.fromARGB(111, 0, 0, 0),
-                            fontWeight: FontWeight.w200,
-                            fontSize: 20.0,
-                            fontFamily: 'eras-itc-light')),
+                        color: Color.fromARGB(111, 0, 0, 0),
+                        fontWeight: FontWeight.w200,
+                        fontSize: 20.0,
+                        fontFamily: languageProvider.isArabic ? "Cairo" : "eras-itc-light",
+                        ),
+                      );
+                      },
+                    ),
                     //just for space
                     SizedBox(
                       height: 60.0,
@@ -166,7 +202,7 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                             color: mainColor,
                           ),
                           contentPadding: EdgeInsets.symmetric(vertical: 5),
-                          hintText: "Email Address",
+                            hintText: Provider.of<LanguageProvider>(context).isArabic ? "البريد الإلكتروني" : "Email Address",
                           hintStyle: TextStyle(
                             color: Color(0x4F000000),
                             fontSize: 20.0,
@@ -225,7 +261,7 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                             color: mainColor,
                           ),
                           contentPadding: EdgeInsets.symmetric(vertical: 5),
-                          hintText: "Password",
+                            hintText: Provider.of<LanguageProvider>(context).isArabic ? "كلمة المرور" : "Password",
                           hintStyle: TextStyle(
                             color: Color(0x4F000000),
                             fontSize: 20.0,
@@ -256,7 +292,9 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                                 WidgetStateProperty.all(Colors.transparent),
                             foregroundColor:
                                 WidgetStateProperty.all(Color(0xffffffff))),
-                        child: Text("Forgot your password ?",
+                        child: Text(Provider.of<LanguageProvider>(context).isArabic
+                            ? "هل نسيت كلمة المرور؟"
+                            : "Forgot your password ?",
                             style: TextStyle(
                                 color: Color(0xff004FFB),
                                 fontFamily: "eras-itc-demi",
@@ -275,7 +313,7 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                       height: 50.0,
                       child: Create_GradiantGreenButton(
                           content: Text(
-                            'login',
+                                Provider.of<LanguageProvider>(context).isArabic ? "تسجيل الدخول" : "Login",
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 24.0,
@@ -306,7 +344,7 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                         Container(
                           margin: EdgeInsets.symmetric(horizontal: 10.0),
                           child: Text(
-                            'OR',
+                            Provider.of<LanguageProvider>(context).isArabic ? 'أو' : 'OR',
                             style: TextStyle(
                                 color: Color(0xff00B92E),
                                 fontFamily: 'eras-itc-demi'),
@@ -345,7 +383,9 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                                     Image.asset(
                                         "assets/welcome_signup_login/imgs/google.png",
                                         width: 32.0),
-                                    Text('google',
+                                    Text( Provider.of<LanguageProvider>(context).isArabic
+                                        ? 'جوجل'
+                                        : 'google',
                                         style: TextStyle(
                                             color: Color(0xFFFF3D00),
                                             fontSize: 18.0)),
@@ -380,7 +420,9 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                                       "assets/welcome_signup_login/imgs/facebook.png",
                                       width: 32.0,
                                     ),
-                                    Text('facebook',
+                                    Text(Provider.of<LanguageProvider>(context).isArabic
+                                      ? 'فيسبوك'
+                                      : 'facebook',
                                         style: TextStyle(
                                             color: Color(0xFF0680DD),
                                             fontSize: 18.0)),
@@ -410,7 +452,9 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('don\'t have account? ',
+                        Text(Provider.of<LanguageProvider>(context).isArabic
+                            ? 'ليس لديك حساب؟ '
+                            : 'don\'t have account? ',
                             style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 16.0,
@@ -420,7 +464,9 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                               Navigator.pushNamed(
                                   context, '/sign_up_pg1_stdowner');
                             },
-                            child: Text('sign up',
+                            child: Text(Provider.of<LanguageProvider>(context).isArabic
+                                ? 'سجل الآن'
+                                : 'sign up',
                                 style: TextStyle(
                                   color: mainColor,
                                   fontSize: 16.0,

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:typewritertext/typewritertext.dart';
+import 'package:provider/provider.dart';
+import 'package:graduation_project_main/provider/language_provider.dart';
 class Welcome extends StatefulWidget {
   @override
   State<Welcome> createState() => _WelcomeState();
@@ -71,8 +73,21 @@ class _WelcomeState extends State<Welcome> {
           actions: [
             IconButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/splash');
-
+                // Toggle between English and Arabic
+                final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+                languageProvider.toggleLanguage();
+                
+                // Show a snackbar to indicate the language change
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      languageProvider.isArabic ?  'Language changed to English': 'تم تغيير اللغة إلى العربية',
+                      style: TextStyle(fontFamily: 'eras-itc-bold'),
+                    ),
+                    duration: Duration(seconds: 2),
+                    backgroundColor: mainColor,
+                  ),
+                );
               },
               icon: Icon(Icons.language, color: Color(0xFFFFFFFF)),
             ),
@@ -110,7 +125,10 @@ class _WelcomeState extends State<Welcome> {
                             ),
                             SizedBox(height: 8.0),
                             TypeWriterText(
-                              text: Text('Book the best fields or be the best of them',
+                              text: Text(
+                                Provider.of<LanguageProvider>(context).isArabic 
+                                  ? 'احجز أفضل الملاعب أو كن الأفضل فيها'
+                                  : 'Book the best fields or be the best of them',
                                 style: TextStyle(
                                   color: Color(0xffffffff),
                                   fontSize: 8.0,
@@ -119,7 +137,10 @@ class _WelcomeState extends State<Welcome> {
                               duration: Duration(milliseconds: 50),
                             ),
                             TypeWriterText(
-                              text: Text('and enjoy an unmatched service we brought\n the distances closer to you',
+                              text: Text(
+                                Provider.of<LanguageProvider>(context).isArabic 
+                                  ? 'واستمتع بخدمة لا مثيل لها، لقد قربنا المسافات إليك'
+                                  : 'and enjoy an unmatched service we brought\n the distances closer to you',
                                 style: TextStyle(
                                   color: Color(0xffffffff),
                                   fontSize: 8.0,
@@ -134,11 +155,15 @@ class _WelcomeState extends State<Welcome> {
 
                     SizedBox(height: 180.0),
                     Center(
-                        child: Text('start as',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20.0,
-                            ))),
+                        child: Text(
+                          Provider.of<LanguageProvider>(context).isArabic 
+                            ? 'ابدأ كـ'
+                            : 'start as',
+                          style: TextStyle(
+                            fontFamily: Provider.of<LanguageProvider>(context).isArabic ? 'Cairo' : 'eras-itc-bold',
+                            color: Colors.white,
+                            fontSize: 20.0,
+                          ))),
                     SizedBox(
                       height: 38,
                     ),
@@ -148,11 +173,13 @@ class _WelcomeState extends State<Welcome> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Stadium Owner',
+                            Provider.of<LanguageProvider>(context).isArabic 
+                              ? 'مالك ملعب'
+                              : 'Stadium Owner',
                             style: TextStyle(
                               color: Color(0xFFFFFFFF),
                               fontSize: 22.0,
-                              fontFamily: 'eras-itc-bold',
+                              fontFamily: Provider.of<LanguageProvider>(context).isArabic ? 'Cairo' : 'eras-itc-bold',
                             ),
                           ),
                           Image.asset(
@@ -174,11 +201,13 @@ class _WelcomeState extends State<Welcome> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'player',
+                            Provider.of<LanguageProvider>(context).isArabic 
+                              ? 'لاعب'
+                              : 'player',
                             style: TextStyle(
                               color: Color(0xFFFFFFFF),
                               fontSize: 22.0,
-                              fontFamily: 'eras-itc-bold',
+                              fontFamily: Provider.of<LanguageProvider>(context).isArabic ? 'Cairo' : 'eras-itc-bold',
                             ),
                           ),
                           Image.asset(
@@ -232,11 +261,13 @@ class _WelcomeState extends State<Welcome> {
                                     bottom: 16.0,
                                   ),
                                   child: Text(
-                                    'stadium owner',
+                                     Provider.of<LanguageProvider>(context).isArabic 
+                              ? 'مالك ملعب'
+                              : 'Stadium Owner',
                                     style: TextStyle(
                                       color: Color(0xff00B92E),
                                       fontSize: 24.0,
-                                      fontFamily: 'eras-itc-bold',
+                                      fontFamily: Provider.of<LanguageProvider>(context).isArabic ? 'Cairo' : 'eras-itc-bold',
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
@@ -248,7 +279,9 @@ class _WelcomeState extends State<Welcome> {
                                     horizontal: 34.0,
                                   ),
                                   child: Text(
-                                    'Field owners can list their fields in the app, allowing players to book directly from them and manage reservations easily.',
+                                    Provider.of<LanguageProvider>(context).isArabic
+                                      ? 'يمكن لمالكي الملاعب عرض ملاعبهم في التطبيق، مما يتيح للاعبين الحجز مباشرة منهم وإدارة الحجوزات بسهولة.'
+                                      : 'Field owners can list their fields in the app, allowing players to book directly from them and manage reservations easily.',
                                     style: TextStyle(
                                       color: Color(0xff00B92E),
                                       fontSize: 14.0,
@@ -286,11 +319,13 @@ class _WelcomeState extends State<Welcome> {
                                     bottom: 16.0,
                                   ),
                                   child: Text(
-                                    'Player',
+                                    Provider.of<LanguageProvider>(context).isArabic 
+                                      ? 'لاعب'
+                                      : 'Player',
                                     style: TextStyle(
                                       color: Color(0xFFFFFFFF),
                                       fontSize: 24.0,
-                                      fontFamily: 'eras-itc-bold',
+                                      fontFamily: Provider.of<LanguageProvider>(context).isArabic ? 'Cairo' : 'eras-itc-bold',
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
@@ -302,7 +337,9 @@ class _WelcomeState extends State<Welcome> {
                                     horizontal: 34.0,
                                   ),
                                   child: Text(
-                                    'Players who register in the application will have access to book fields, play games, and enjoy the platform’s features.',
+                                    Provider.of<LanguageProvider>(context).isArabic
+                                      ? 'يمكن للاعبين المسجلين في التطبيق حجز الملاعب، لعب المباريات، والاستمتاع بمزايا المنصة.'
+                                      : 'Players who register in the application will have access to book fields, play games, and enjoy the platform’s features.',
                                     style: TextStyle(
                                       color: Color(0xFFFFFFFF),
                                       fontSize: 14.0,
@@ -372,11 +409,13 @@ class _WelcomeState extends State<Welcome> {
                                   width: double.infinity,
                                   margin: EdgeInsets.all(20.0),
                                   child: Text(
-                                    'The app connects players with field owners to save time and effort. Players can book and pay online securely, while field owners can showcase their fields and manage bookings easily, all with reliable security.',
+                                    Provider.of<LanguageProvider>(context).isArabic
+                                      ? 'تطبيق فامونوس هو منصتك الشاملة لحجز الملاعب الرياضية بسهولة وسرعة. سواء كنت مالك ملعب أو لاعب، نوفر لك تجربة فريدة لإدارة الحجوزات، التواصل، والاستمتاع بالرياضة في أي وقت وأي مكان.'
+                                      : 'Vamonos is your all-in-one platform for booking sports fields easily and quickly. Whether you are a field owner or a player, we provide you with a unique experience to manage reservations, communicate, and enjoy sports anytime and anywhere.',
                                     style: TextStyle(
                                       color: Color(0xFF000000),
                                       fontSize: 16.0,
-                                      fontFamily: 'eras-itc-demi',
+                                      fontFamily: Provider.of<LanguageProvider>(context).isArabic ? 'Cairo' : 'eras-itc-bold',
                                     ),
                                     textAlign: TextAlign.center,
                                   ),

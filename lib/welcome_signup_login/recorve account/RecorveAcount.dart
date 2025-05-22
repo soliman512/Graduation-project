@@ -4,6 +4,8 @@ import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/welcome_signup_login/loginPages/loginPlayer.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
+import 'package:provider/provider.dart';
+import 'package:graduation_project_main/provider/language_provider.dart';
 
 class Recorve_Account extends StatefulWidget {
   @override
@@ -14,7 +16,7 @@ class _Recorve_AccountState extends State<Recorve_Account> {
   final emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  // Reset password
+  // إعادة تعيين كلمة المرور
   resetpaswword() async {
     showDialog(
         context: context,
@@ -32,10 +34,21 @@ class _Recorve_AccountState extends State<Recorve_Account> {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => Login_player()));
     } on FirebaseAuthException catch (e) {
-      showSnackBar(context, "ERROR : ${e.code}");
+      final isArabic = Provider.of<LanguageProvider>(context, listen: false).isArabic;
+      showSnackBar(
+        context,
+        isArabic
+        ? "خطأ: ${e.code}"
+        : "Error: ${e.code}",
+      );
     }
     if (!mounted) return;
-    showSnackBar(context, "Done : Please check your email");
+   showSnackBar(
+      context,
+      Provider.of<LanguageProvider>(context, listen: false).isArabic
+        ? "تم: يرجى التحقق من بريدك الإلكتروني"
+        : "Done: Please check your email",
+    );
   }
 
   @override
@@ -46,13 +59,13 @@ class _Recorve_AccountState extends State<Recorve_Account> {
 
   @override
   Widget build(BuildContext context) {
+    final isArabic = Provider.of<LanguageProvider>(context).isArabic;
     return SafeArea(
       child: Scaffold(
           extendBodyBehindAppBar: false,
-          //app bar language
           appBar: AppBar(
             centerTitle: true,
-            title: Text("Recorve account",
+            title: Text(isArabic ? "استعادة الحساب" : "Recorve account",
                 style: TextStyle(
                   color: Color(0xFF000000),
                   fontWeight: FontWeight.w400,
@@ -66,7 +79,6 @@ class _Recorve_AccountState extends State<Recorve_Account> {
                 "assets/welcome_signup_login/imgs/back.png",
                 color: Color(0xFF000000),
               ),
-              // icon: Image.asset("assets/welcome_signup_login/imgs/ligh back.png"),
             ),
             toolbarHeight: 80.0,
             elevation: 0,
@@ -91,7 +103,7 @@ class _Recorve_AccountState extends State<Recorve_Account> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        // title
+                        // العنوان
                         Add_AppName(
                             font_size: 34.0,
                             align: TextAlign.center,
@@ -99,14 +111,16 @@ class _Recorve_AccountState extends State<Recorve_Account> {
                         SizedBox(
                           height: 10.0,
                         ),
-                        //logo
+                        // الشعار
                         logo,
 
-                        //please check:
+                        // يرجى التحقق:
                         Container(
                             margin: EdgeInsets.only(top: 29.0),
                             child: Text(
-                              "Please check your email",
+                              isArabic
+                                  ? "يرجى التحقق من بريدك الإلكتروني"
+                                  : "Please check your email",
                               style: TextStyle(
                                   fontSize: 20.0, fontFamily: "eras-itc-bold"),
                             )),
@@ -114,19 +128,23 @@ class _Recorve_AccountState extends State<Recorve_Account> {
                         Container(
                             margin: EdgeInsets.only(top: 6.0),
                             child: Text(
-                              "We’ve sent a code to helloworld@gmail.com",
+                              isArabic
+                                  ? "لقد أرسلنا رمزًا إلى helloworld@gmail.com"
+                                  : "We’ve sent a code to helloworld@gmail.com",
                               style: TextStyle(
                                 fontSize: 10.0,
                               ),
                             )),
-                        //enter your email
+                        // أدخل بريدك الإلكتروني
                         Container(
                           child: Text(
-                            "Enter your email to rest your password.",
+                            isArabic
+                                ? "أدخل بريدك الإلكتروني لإعادة تعيين كلمة المرور."
+                                : "Enter your email to reset your password.",
                             style: TextStyle(fontSize: 15),
                           ),
                         ),
-                        // email
+                        // البريد الإلكتروني
                         Container(
                           width: 330.0,
                           height: 44,
@@ -136,7 +154,7 @@ class _Recorve_AccountState extends State<Recorve_Account> {
                               return email!.contains(RegExp(
                                       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"))
                                   ? null
-                                  : "Enter a valid email";
+                                  : (isArabic ? "أدخل بريدًا إلكترونيًا صحيحًا" : "Enter a valid email");
                             },
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
@@ -146,11 +164,12 @@ class _Recorve_AccountState extends State<Recorve_Account> {
                                 fontSize: 20.0,
                                 fontWeight: FontWeight.w400),
                             keyboardType: TextInputType.emailAddress,
-                            textInputAction: TextInputAction.next,
                             decoration: InputDecoration(
                               prefixIcon: Icon(Icons.account_circle_rounded),
                               contentPadding: EdgeInsets.symmetric(vertical: 5),
-                              hintText: "Email",
+                                hintText: Provider.of<LanguageProvider>(context).isArabic
+                                  ? "البريد الإلكتروني"
+                                  : "Email",
                               hintStyle: TextStyle(
                                   color: Color(0x4F000000),
                                   fontSize: 20.0,

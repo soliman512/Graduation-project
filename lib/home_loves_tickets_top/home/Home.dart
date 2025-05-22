@@ -12,6 +12,8 @@ import 'package:bottom_picker/bottom_picker.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
 import 'package:graduation_project_main/widgets/ticket_card.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:graduation_project_main/provider/language_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Home screen widget that displays list of stadiums with search and filter functionality
@@ -63,6 +65,7 @@ class _HomeState extends State<Home> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => Stadium_info_playerPG(
+                      
                           stadiumName: stadiums[index]['name'],
                           stadiumtitle: stadiums[index]['name'],
                           stadiumPrice: stadiums[index]['price'].toString(),
@@ -86,35 +89,44 @@ class _HomeState extends State<Home> {
   }
 
   /// Builds empty state message when no stadiums are found
-  Widget _buildEmptyMessage([String message = "No stadiums found or shown"]) {
+  Widget _buildEmptyMessage([String messageEn = "No stadiums found or shown", String messageAr = "لم يتم العثور على أي ملاعب أو عرضها"]) {
+    final bool isArabic = Provider.of<LanguageProvider>(context).isArabic;
+    final String message = isArabic ? messageAr : messageEn;
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.error_outline,
-              size: 100, color: Color.fromARGB(38, 0, 0, 0)),
-          SizedBox(height: 16),
-          Text(
-            message,
-            style: TextStyle(fontSize: 20, color: Color.fromARGB(38, 0, 0, 0)),
-          ),
-        ],
-      ),
+      child: Builder(builder: (context) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline,
+                size: 100, color: Color.fromARGB(38, 0, 0, 0)),
+            SizedBox(height: 16),
+            Text(
+              message,
+              style: TextStyle(fontSize: 20, color: Color.fromARGB(38, 0, 0, 0)),
+              textAlign: isArabic ? TextAlign.right : TextAlign.left,
+            ),
+          ],
+        );
+      }),
     );
   }
 
   //notifications:
   final CollectionReference itemsCollection =
       FirebaseFirestore.instance.collection('players_notifications');
-  daysBefore(DateTime date) {
+
+  String daysBefore(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
+    
+    final bool isArabic = Provider.of<LanguageProvider>(context, listen: false).isArabic;
+
     if (difference.inDays > 0) {
-      return '${difference.inDays} days ago';
+      return isArabic ? 'منذ ${difference.inDays} أيام' : '${difference.inDays} days ago';
     } else if (difference.inHours > 0) {
-      return '${difference.inHours} hours ago';
+      return isArabic ? 'منذ ${difference.inHours} ساعات' : '${difference.inHours} hours ago';
     } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} minutes ago';
+      return isArabic ? 'منذ ${difference.inMinutes} دقائق' : '${difference.inMinutes} minutes ago';
     } else {
       return '';
     }
@@ -322,16 +334,19 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+     final bool isArabic =
+                        Provider.of<LanguageProvider>(context).isArabic;
     return SafeArea(
       child: Scaffold(
         backgroundColor: Color(0xFFFFFFFF),
         extendBodyBehindAppBar: false,
-        drawer: Create_Drawer(),
+        drawer: Create_Drawer(refreshData: true),
         appBar: Create_AppBar(
             notificationState: () => showDialog(
                   barrierColor: const Color.fromARGB(237, 0, 0, 0),
                   context: context,
                   builder: (BuildContext context) {
+                   
                     return Dialog(
                       backgroundColor: Colors.transparent,
                       alignment: Alignment.topCenter,
@@ -358,7 +373,7 @@ class _HomeState extends State<Home> {
                                 );
                               }
                               if (snapshot.hasError) {
-                                return Text('Error: ${snapshot.error}');
+                                return Text(isArabic ? 'حدث خطأ: ${snapshot.error}' : 'Error: ${snapshot.error}');
                               }
                               if (!snapshot.hasData ||
                                   snapshot.data!.docs.isEmpty) {
@@ -367,7 +382,7 @@ class _HomeState extends State<Home> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                      Text('No notifications',
+                                      Text(isArabic ? 'لا توجد إشعارات' : 'No notifications',
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 20.0,
@@ -533,7 +548,9 @@ class _HomeState extends State<Home> {
                               bottom: BorderSide(color: mainColor, width: 0.5),
                             ),
                           ),
+
                           child: TextField(
+
                             controller: searchController,
                             onChanged: (value) {
                               setState(() {
@@ -551,7 +568,7 @@ class _HomeState extends State<Home> {
                             decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText:
-                                  "What the stadiums you looking for ? ...",
+                                  isArabic ? "ما الذي تبحث عنه؟ ..." : "What the stadiums you looking for ? ...",
                               hintStyle: TextStyle(
                                 color: Color(0x73000000),
                                 fontSize: 12.0,
@@ -610,7 +627,9 @@ class _HomeState extends State<Home> {
                         child: GestureDetector(
                           onTap: () {
                             BottomPicker(
-                              items: egyptGovernoratesWidgets,
+                              items: isArabic
+                                  ? getEgyptGovernoratesWidgets(context)
+                                  : egyptGovernoratesWidgets,
                               height: 600.0,
                               titlePadding:
                                   EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
@@ -623,12 +642,11 @@ class _HomeState extends State<Home> {
                               ),
                               pickerTextStyle: TextStyle(
                                   fontSize: 20.0, color: Colors.black),
-                              pickerTitle: Text('Select Governorate',
+                              pickerTitle: Text(isArabic ? 'اختار المحافظه' : 'Select Governorate',
                                   style: TextStyle(
                                       fontWeight: FontWeight.w800,
                                       fontSize: 24.0)),
-                              pickerDescription: Text(
-                                  'Choose the governorate where the stadium is located',
+                              pickerDescription: Text(isArabic ?  ' اختار المحافظه التي فيها الملعب'  : 'Choose the governorate where the stadium is located',
                                   style:
                                       TextStyle(fontWeight: FontWeight.w400)),
                               onSubmit: (selectedIndex) {
@@ -670,12 +688,11 @@ class _HomeState extends State<Home> {
                                     ),
                                     pickerTextStyle: TextStyle(
                                         fontSize: 20.0, color: Colors.black),
-                                    pickerTitle: Text('Select Place',
+                                    pickerTitle: Text(isArabic ? 'اختار المكان' : 'Select Place',
                                         style: TextStyle(
                                             fontWeight: FontWeight.w800,
                                             fontSize: 24.0)),
-                                    pickerDescription: Text(
-                                        'Choose the place where the stadium is located',
+                                    pickerDescription: Text(isArabic ? 'اختر المكان الذي يقع فيه الملعب' : 'Choose the place where the stadium is located',
                                         style: TextStyle(
                                             fontWeight: FontWeight.w400)),
                                     onSubmit: (selectedPlaceIndex) {
@@ -773,7 +790,7 @@ class _HomeState extends State<Home> {
                                           'assets/home_loves_tickets_top/imgs/city_Vector.png'),
                                       SizedBox(width: 10.0),
                                       Text(
-                                        "City",
+                                        isArabic ? "المدينة" :   "City",
                                         style: TextStyle(
                                           fontSize: 18.0,
                                           color: mainColor,

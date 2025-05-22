@@ -7,6 +7,8 @@ import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:graduation_project_main/provider/language_provider.dart';
+
 
 class Login_player extends StatefulWidget {
   @override
@@ -34,31 +36,38 @@ class _Login_playerState extends State<Login_player> {
           .get();
 
       if (playerDoc.exists) {
-        showSnackBar(context, "Done ... ");
+        showSnackBar(context, Provider.of<LanguageProvider>(context, listen: false).isArabic
+        ? "تم تسجيل الدخول بنجاح"
+        : "Done ... ");
         final prefs = await SharedPreferences.getInstance();
         await prefs.setBool('isLoggedIn', true);
         await prefs.setString('role', 'users');
         Navigator.pushReplacementNamed(context, '/home');
       } else {
-        showSnackBar(context, "This account is not an Player account!");
+        showSnackBar(context, Provider.of<LanguageProvider>(context, listen: false).isArabic
+        ? "هذا الحساب ليس حساب لاعب!"
+        : "This account is not a Player account!");
         await FirebaseAuth.instance.signOut();
       }
-    } on FirebaseAuthException catch (e) {
+        } on FirebaseAuthException catch (e) {
       String errorMessage;
 
       print("snackbar  ${e.code}");
+      final isArabic = Provider.of<LanguageProvider>(context, listen: false).isArabic;
       switch (e.code) {
         case 'invalid-credential':
-          errorMessage = "Email not found";
+          errorMessage = isArabic ? "البريد الإلكتروني غير موجود" : "Email not found";
           break;
         case 'wrong-password':
-          errorMessage = "Wrong-Password";
+          errorMessage = isArabic ? "كلمة المرور خاطئة" : "Wrong-Password";
           break;
         case 'invalid-email':
-          errorMessage = 'Invalid-Email';
+          errorMessage = isArabic ? "البريد الإلكتروني غير صالح" : 'Invalid-Email';
           break;
         default:
-          errorMessage = "An unexpected error occurred.Try again.";
+          errorMessage = isArabic
+          ? "حدث خطأ غير متوقع. حاول مرة أخرى."
+          : "An unexpected error occurred.Try again.";
       }
       showSnackBar(context, errorMessage);
     } finally {
@@ -86,13 +95,19 @@ class _Login_playerState extends State<Login_player> {
           //app bar
           appBar: AppBar(
             centerTitle: true,
-            title: Text("login",
+            title: Consumer<LanguageProvider>(
+              builder: (context, languageProvider, child) {
+              return Text(
+                languageProvider.isArabic ? "تسجيل الدخول" : "login",
                 style: TextStyle(
-                  color: Color(0xFF000000),
-                  // fontFamily: "eras-itc-bold",
-                  fontWeight: FontWeight.w400,
-                  fontSize: 20.0,
-                )),
+                color: Color(0xFF000000),
+                fontFamily: languageProvider.isArabic ? "Cairo" : "eras-itc-bold",
+                fontWeight: FontWeight.w400,
+                fontSize: 20.0,
+                ),
+              );
+              },
+            ),
             leading: IconButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/Welcome');
@@ -106,13 +121,27 @@ class _Login_playerState extends State<Login_player> {
             elevation: 0,
             backgroundColor: Colors.transparent,
             actions: [
-              IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.language,
-                    color: Color(0xFF000000),
-                  )),
-            ],
+            IconButton(
+              onPressed: () {
+                // Toggle between English and Arabic
+                final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+                languageProvider.toggleLanguage();
+                
+                // Show a snackbar to indicate the language change
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      languageProvider.isArabic ?  'Language changed to English': 'تم تغيير اللغة إلى العربية',
+                      style: TextStyle(fontFamily: 'eras-itc-bold'),
+                    ),
+                    duration: Duration(seconds: 2),
+                    backgroundColor: mainColor,
+                  ),
+                );
+              },
+              icon: Icon(Icons.language, color: Color.fromARGB(255, 0, 0, 0)),
+            ),
+          ],
           ),
           body: Stack(
             children: [
@@ -128,13 +157,19 @@ class _Login_playerState extends State<Login_player> {
                         align: TextAlign.center,
                         color: Colors.black),
                     //specific user
-                    Text("player",
+                    Consumer<LanguageProvider>(
+                      builder: (context, languageProvider, child) {
+                      return Text(
+                        languageProvider.isArabic ? "لاعب" : "player",
                         style: TextStyle(
-                          color: Color(0xB6000000),
-                          fontFamily: "eras-itc-light",
-                          fontWeight: FontWeight.w200,
-                          fontSize: 20.0,
-                        )),
+                        color: Color(0xB6000000),
+                        fontFamily: languageProvider.isArabic ? "Cairo" : "eras-itc-light",
+                        fontWeight: FontWeight.w200,
+                        fontSize: 20.0,
+                        ),
+                      );
+                      },
+                    ),
                     //just for space
                     SizedBox(
                       height: 60.0,
@@ -166,7 +201,7 @@ class _Login_playerState extends State<Login_player> {
                             color: mainColor,
                           ),
                           contentPadding: EdgeInsets.symmetric(vertical: 5),
-                          hintText: "Email Address",
+                            hintText: Provider.of<LanguageProvider>(context).isArabic ? "البريد الإلكتروني" : "Email Address",
                           hintStyle: TextStyle(
                             color: Color(0x4F000000),
                             fontSize: 20.0,
@@ -224,7 +259,7 @@ class _Login_playerState extends State<Login_player> {
                             color: mainColor,
                           ),
                           contentPadding: EdgeInsets.symmetric(vertical: 5),
-                          hintText: "Password",
+                            hintText: Provider.of<LanguageProvider>(context).isArabic ? "كلمة المرور" : "Password",
                           hintStyle: TextStyle(
                             color: Color(0x4F000000),
                             fontSize: 20.0,
@@ -255,7 +290,10 @@ class _Login_playerState extends State<Login_player> {
                                 WidgetStateProperty.all(Colors.transparent),
                             foregroundColor:
                                 WidgetStateProperty.all(Color(0xffffffff))),
-                        child: Text("Forgot your password ?",
+                        child: Text(
+                          Provider.of<LanguageProvider>(context).isArabic
+                            ? "هل نسيت كلمة المرور؟"
+                            : "Forgot your password ?",
                             style: TextStyle(
                                 color: Color(0xff004FFB),
                                 fontFamily: "eras-itc-demi",
@@ -277,7 +315,7 @@ class _Login_playerState extends State<Login_player> {
                                 color: Colors.white,
                               )
                             : Text(
-                                "Login",
+                                Provider.of<LanguageProvider>(context).isArabic ? "تسجيل الدخول" : "Login",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: Color(0xffffffff),
@@ -311,7 +349,7 @@ class _Login_playerState extends State<Login_player> {
                         Container(
                           margin: EdgeInsets.symmetric(horizontal: 10.0),
                           child: Text(
-                            'OR',
+                            Provider.of<LanguageProvider>(context).isArabic ? 'أو' : 'OR',
                             style: TextStyle(
                                 color: Color(0xff00B92E),
                                 fontFamily: 'eras-itc-demi'),
@@ -355,10 +393,14 @@ class _Login_playerState extends State<Login_player> {
                                     Image.asset(
                                         "assets/welcome_signup_login/imgs/google.png",
                                         width: 32.0),
-                                    Text('google',
-                                        style: TextStyle(
-                                            color: Color(0xFFFF3D00),
-                                            fontSize: 18.0)),
+                                    Text(
+                                      Provider.of<LanguageProvider>(context).isArabic
+                                        ? 'جوجل'
+                                        : 'google',
+                                      style: TextStyle(
+                                        color: Color(0xFFFF3D00),
+                                        fontSize: 18.0),
+                                    ),
                                   ],
                                 ),
                                 style: ButtonStyle(
@@ -390,10 +432,15 @@ class _Login_playerState extends State<Login_player> {
                                       "assets/welcome_signup_login/imgs/facebook.png",
                                       width: 32.0,
                                     ),
-                                    Text('facebook',
-                                        style: TextStyle(
-                                            color: Color(0xFF0680DD),
-                                            fontSize: 18.0)),
+                                    Text(
+                                      Provider.of<LanguageProvider>(context).isArabic
+                                      ? 'فيسبوك'
+                                      : 'facebook',
+                                      style: TextStyle(
+                                      color: Color(0xFF0680DD),
+                                      fontSize: 18.0,
+                                      ),
+                                    ),
                                   ],
                                 ),
                                 style: ButtonStyle(
@@ -420,21 +467,29 @@ class _Login_playerState extends State<Login_player> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('don\'t have account? ',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.w300)),
+                        Text(
+                          Provider.of<LanguageProvider>(context).isArabic
+                            ? 'ليس لديك حساب؟ '
+                            : 'don\'t have account? ',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w300),
+                        ),
                         TextButton(
                             onPressed: () {
                               Navigator.pushNamed(
                                   context, '/sign_up_pg1_player');
                             },
-                            child: Text('sign up',
-                                style: TextStyle(
-                                  color: mainColor,
-                                  fontSize: 16.0,
-                                )))
+                            child: Text(
+                              Provider.of<LanguageProvider>(context).isArabic
+                                ? 'سجل الآن'
+                                : 'sign up',
+                              style: TextStyle(
+                              color: mainColor,
+                              fontSize: 16.0,
+                              ),
+                            ),),
                       ],
                     )
                   ],

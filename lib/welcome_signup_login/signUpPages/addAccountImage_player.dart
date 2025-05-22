@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
+import 'package:graduation_project_main/provider/language_provider.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/signup_pg2_player.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
+
+import 'package:provider/provider.dart';
 
 class addAccountImage_player extends StatefulWidget {
   @override
@@ -12,22 +17,76 @@ class addAccountImage_player extends StatefulWidget {
 
 class _addAccountImage_playerState extends State<addAccountImage_player> {
   File? imgPath;
-  late String imagePath;
+  String? imageUrl; // URL of the uploaded image
+  bool isImageSelected = false;
+  bool isUploading = false;
 
-  // choose image from camera or gallery
+  // choose image from camera or gallery and upload to Supabase
   uploadImage2Screen(ImageSource source) async {
     final pickedImg = await ImagePicker().pickImage(source: source);
     try {
       if (pickedImg != null) {
         setState(() {
           imgPath = File(pickedImg.path);
-          imagePath = pickedImg.path;
+          isUploading = true;
         });
+        
+        // Upload to Supabase
+        await uploadImageToSupabase(File(pickedImg.path));
       } else {
         print("No image selected");
       }
     } catch (e) {
+      setState(() {
+        isUploading = false;
+      });
       print("Error => $e");
+    }
+  }
+  
+  // Upload image to Supabase and get public URL
+  Future<void> uploadImageToSupabase(File imageFile) async {
+    try {
+      final SupabaseClient supabase = Supabase.instance.client;
+      // Generate a unique filename using UUID
+      final String uniqueFileName = '${Uuid().v4()}.png';
+
+      // Upload the image to Supabase storage
+      final String fullPath = await supabase.storage.from('photo').upload(
+            'public/$uniqueFileName',
+            imageFile,
+            fileOptions: const FileOptions(cacheControl: '3600', upsert: true),
+          );
+
+      // Get the public URL of the uploaded image with cache-busting parameter
+      String url = supabase.storage.from('photo').getPublicUrl('public/$uniqueFileName');
+      // Add a timestamp parameter to prevent caching issues
+      url = '$url?t=${DateTime.now().millisecondsSinceEpoch}';
+      
+      print('Image uploaded successfully. URL: $url');
+      
+      setState(() {
+        imageUrl = url;
+        isImageSelected = true;
+        isUploading = false;
+      });
+    } catch (e) {
+      print('Error uploading image to Supabase: $e');
+      setState(() {
+        isUploading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            Provider.of<LanguageProvider>(context, listen: false).isArabic 
+                ? 'خطأ في تحميل الصورة: $e' 
+                : 'Error uploading image: $e',
+            style: TextStyle(fontFamily: 'eras-itc-bold'),
+          ),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
+        ),
+      );
     }
   }
 
@@ -42,7 +101,7 @@ class _addAccountImage_playerState extends State<addAccountImage_player> {
               ListTile(
                 leading: Icon(Icons.photo_library),
                 title: Text(
-                  'Photo Library',
+                  Provider.of<LanguageProvider>(context).isArabic ? 'مكتبة الصور': 'Photo Library',
                   style: TextStyle(fontFamily: "eras-itc-bold", fontSize: 15),
                 ),
                 onTap: () {
@@ -53,7 +112,7 @@ class _addAccountImage_playerState extends State<addAccountImage_player> {
               ListTile(
                 leading: Icon(Icons.photo_camera),
                 title: Text(
-                  'Camera',
+                  Provider.of<LanguageProvider>(context).isArabic ? 'الكاميرا': 'Camera',
                   style: TextStyle(fontFamily: "eras-itc-bold", fontSize: 15),
                 ),
                 onTap: () async {
@@ -74,7 +133,7 @@ class _addAccountImage_playerState extends State<addAccountImage_player> {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text("Account Picture",
+          title: Text(Provider.of<LanguageProvider>(context).isArabic ? 'صورة الحساب': 'Account Picture',
               style: TextStyle(
                 color: Color(0xFF000000),
                 fontWeight: FontWeight.w400,
@@ -153,20 +212,47 @@ class _addAccountImage_playerState extends State<addAccountImage_player> {
                     height: 50.0,
                     child: Create_GradiantGreenButton(
                       content: Text(
-                        'Next',
+                        Provider.of<LanguageProvider>(context).isArabic ? 'التالي': 'Next',
                         style: TextStyle(
                             color: Colors.white,
                             fontFamily: "eras-itc-bold",
                             fontSize: 24.0),
                       ),
                       onButtonPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                Signup_pg2_player(profileImage: imagePath),
-                          ),
-                        );
+                        final isArabic = Provider.of<LanguageProvider>(context, listen: false).isArabic;
+                        if (isUploading) {
+                          // Show a message if the image is still uploading
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                isArabic ? 'جاري تحميل الصورة، يرجى الانتظار...' : 'Image is uploading, please wait...',
+                                style: TextStyle(fontFamily: 'eras-itc-bold'),
+                              ),
+                              backgroundColor: Colors.orange,
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        } else if (isImageSelected && imageUrl != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  Signup_pg2_player(profileImage: imageUrl),
+                            ),
+                          );
+                        } else {
+                          // Show a snackbar message if no image is selected
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                isArabic ? 'الرجاء اختيار صورة للملف الشخصي' : 'Please select a profile image',
+                                style: TextStyle(fontFamily: 'eras-itc-bold'),
+                              ),
+                              backgroundColor: Colors.red,
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        }
                       },
                     ),
                   ),

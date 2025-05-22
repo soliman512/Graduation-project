@@ -1,24 +1,24 @@
 import 'package:bottom_picker/bottom_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:graduation_project_main/payment/done.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/constants/constants.dart';
+import 'package:graduation_project_main/provider/language_provider.dart';
+import 'package:provider/provider.dart';
+
 import 'package:numberpicker/numberpicker.dart';
 
 class Payment extends StatefulWidget {
   @override
   State<Payment> createState() => _PaymentState();
-  final String stadiumName;
-  final String stadiumPrice;
-  final String stadiumLocation;
+
   final String stadiumID;
 
   Payment({
     required this.stadiumID,
-    required this.stadiumName,
-    required this.stadiumPrice,
-    required this.stadiumLocation,
+
   });
 }
 
@@ -42,6 +42,21 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
         paymentWay.isNotEmpty;
   }
 
+late Map<String, dynamic> stadiumData; // متغير يخزن بيانات الطالب
+
+Future<void> getStudentData() async {
+  DocumentSnapshot doc = await FirebaseFirestore.instance
+      .collection('stadiums')
+      .doc(widget.stadiumID)
+      .get();
+          stadiumData = doc.data() as Map<String, dynamic>;
+
+}
+
+initState() {
+  super.initState();
+  getStudentData();
+}
   void showDurationPicker(BuildContext context) {
     int hours = 1;
     int minutes = 0;
@@ -154,6 +169,7 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final isArabic = Provider.of<LanguageProvider>(context).isArabic;
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -172,22 +188,22 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text("Discard Payment"),
+                    title: Text(isArabic ? "إلغاء الدفع" : "Discard Payment"),
                     content:
-                        Text("Are you sure you want to discard the payment?"),
+                        Text(isArabic ? "هل أنت متأكد من إلغاء الدفع؟" : "Are you sure you want to discard the payment?"),
                     actions: [
                       TextButton(
                         onPressed: () {
                           Navigator.pop(context); // Close the dialog
                         },
-                        child: Text("Return"),
+                        child: Text(isArabic ? "عودة" : "Return"),
                       ),
                       TextButton(
                         onPressed: () {
                           Navigator.pop(context); // Close the dialog
                           Navigator.pop(context); // Navigate back
                         },
-                        child: Text("Discard",
+                        child: Text(isArabic ? "إلغاء" : "Discard",
                             style: TextStyle(color: Colors.red)),
                       ),
                     ],
@@ -323,7 +339,7 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                       width: MediaQuery.of(context).size.width * 0.01,
                     ),
                     Text(
-                      "wembley",
+                      stadiumData['name'],
                       style: TextStyle(
                           color: mainColor,
                           fontSize: MediaQuery.of(context).size.width * 0.06,
@@ -332,7 +348,7 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                     ),
                     SizedBox(width: MediaQuery.of(context).size.width * 0.3),
                     Text(
-                      "200.LE",
+                      stadiumData['price'] + '00.LE',
                       style: TextStyle(
                           color: mainColor,
                           fontSize: MediaQuery.of(context).size.width * 0.05,
@@ -353,7 +369,7 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                       width: MediaQuery.of(context).size.width * 0.01,
                     ),
                     Text(
-                      "Assiut-new assiut city-suzan",
+                      stadiumData['location'],
                       style: TextStyle(
                         color: const Color.fromARGB(255, 0, 0, 0),
                         fontSize: MediaQuery.of(context).size.width * 0.03,
@@ -371,7 +387,7 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                         ),
                         SizedBox(width: 5),
                         Text(
-                          "3.8",
+                          stadiumData['rating'].toString(),
                           style: TextStyle(
                               color: const Color.fromARGB(255, 0, 0, 0),
                               fontSize:
@@ -756,6 +772,14 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
             
                  
             SizedBox(height: 20),
+            Create_GradiantGreenButton(content: Text("verify booking"), onButtonPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => Done(),
+                ),
+              );
+              
+            })
               ],
             ),
           ),

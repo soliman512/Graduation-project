@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
+import 'package:graduation_project_main/provider/language_provider.dart';
 import 'package:graduation_project_main/stdown_addNewStd/stdown_editStadium.dart';
+import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class Stadium_info_stadiumOwner extends StatefulWidget {
@@ -47,6 +49,7 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
   bool isFavorite = false;
   @override
   Widget build(BuildContext context) {
+    final isArabic = Provider.of<LanguageProvider>(context).isArabic;
     return Scaffold(
         extendBodyBehindAppBar: true,
         backgroundColor: Colors.white,
@@ -97,7 +100,6 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                       stadiumStartTime: widget.startTime,
                       stadiumEndTime: widget.endTime,
                       // imagesUrl: widget.imagesUrl,
-
                     ),
                   ),
                 );
@@ -248,7 +250,7 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: Text(
-                      'features',
+                      isArabic ? 'الميزات' : 'features',
                       style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -305,8 +307,8 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                                   SizedBox(height: 6),
                                   Text(
                                       widget.isWaterAvailbale
-                                          ? 'Available'
-                                          : 'Univailable',
+                                          ? isArabic ? 'متاح' : 'Available'
+                                          : isArabic ? 'غير متاح' : 'Univailable',
                                       style: TextStyle(
                                           fontSize: 14, color: Colors.white)),
                                 ],
@@ -318,8 +320,8 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                                   SizedBox(height: 6),
                                   Text(
                                       widget.isTrackAvailable
-                                          ? 'Available'
-                                          : 'Univailable',
+                                          ? isArabic ? 'متاح' : 'Available'
+                                          : isArabic ? 'غير متاح' : 'Univailable',
                                       style: TextStyle(
                                           fontSize: 14, color: Colors.white)),
                                 ],
@@ -331,8 +333,8 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                                   SizedBox(height: 6),
                                   Text(
                                       widget.isGrassNormal
-                                          ? 'normal'
-                                          : 'industry',
+                                          ? isArabic ? 'طبيعي' : 'industry'
+                                          : isArabic ? 'صناعي' : 'normal',
                                       style: TextStyle(
                                           fontSize: 14, color: Colors.white)),
                                 ],
@@ -363,13 +365,13 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                       children: [
                         Text(
                           widget.isWaterAvailbale
-                              ? 'water is avalablie'
-                              : 'no water ',
+                              ? isArabic ? '  متاح ماء' : 'water is avalablie'
+                              : isArabic ? ' غير متاح ماء' : 'no water ',
                           style: TextStyle(color: Colors.white),
                         ),
                         SizedBox(height: 9),
                         Text(
-                          '${widget.capacity} players',
+                          '${widget.capacity} ${isArabic ? 'لاعب' : 'players' }',
                           style: TextStyle(color: Colors.white),
                         ),
                       ],
@@ -379,15 +381,15 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                       children: [
                         Text(
                           widget.isTrackAvailable
-                              ? 'running track'
-                              : 'no running track',
+                              ? isArabic ? ' مسار الجري متاح' : 'running track'
+                              : isArabic ? ' مسار الجري غير متاح' : 'no running track',
                           style: TextStyle(color: Colors.white),
                         ),
                         SizedBox(height: 9),
                         Text(
                           widget.isGrassNormal
-                              ? 'grass is normal'
-                              : 'grass is indusrty',
+                              ? isArabic ? 'عشب طبيعي' : 'grass is normal'
+                              : isArabic ? 'عشب صناعي' : 'grass is indusrty',
                           style: TextStyle(color: Colors.white),
                         ),
                       ],
@@ -409,7 +411,7 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: Text(
-                      'description',
+                      isArabic ? 'الوصف' : 'description',
                       style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -442,7 +444,7 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: Text(
-                      'work time and days',
+                      isArabic ? 'وقت العمل والأيام' : 'work time and days',
                       style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -494,7 +496,7 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                             ),
                           ),
                           child: Text(
-                            'Work Time',
+                            isArabic ? 'وقت العمل' : 'Work Time',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -513,7 +515,7 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Text(
-                                      'From',
+                                      isArabic ? 'من' : 'From',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -552,7 +554,7 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Text(
-                                      'To',
+                                      isArabic ? 'الى' : 'To',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -591,7 +593,7 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Text(
-                                      'Days',
+                                      isArabic ? 'الايام' : 'Days',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -627,7 +629,7 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: Text(
-                      'feedbacks',
+                      isArabic ? 'التعليقات' : 'feedbacks',
                       style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -647,10 +649,11 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                     .orderBy('timestamp', descending: true)
                     .snapshots(),
                 builder: (context, snapshot) {
+                  final isArabic = Provider.of<LanguageProvider>(context, listen: false).isArabic;
                   if (!snapshot.hasData) return CircularProgressIndicator();
                   final reviews = snapshot.data!.docs;
                   if (reviews.isEmpty) {
-                    return Text('No reviews yet');
+                    return Text(isArabic ? 'لا يوجد مراجعات' : 'No reviews yet');
                   }
                   return Column(
                     children: reviews.map((doc) {
@@ -758,7 +761,7 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                             fontFamily: 'eras-itc-demi'),
                       ),
                       Text(
-                        "Completed",
+                        isArabic ? "تم" : "Completed",
                         style: TextStyle(
                           fontSize: 14,
                           color: mainColor,
@@ -789,7 +792,7 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                             fontFamily: 'eras-itc-demi'),
                       ),
                       Text(
-                        "Live",
+                        isArabic ? "نشط" : "Live",
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.white,
@@ -826,7 +829,7 @@ class _Stadium_info_stadiumOwnerState extends State<Stadium_info_stadiumOwner> {
                             fontFamily: 'eras-itc-demi'),
                       ),
                       Text(
-                        "Canceled",
+                        isArabic ? "تم الالغاء" : "Canceled",
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey,

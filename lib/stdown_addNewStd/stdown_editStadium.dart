@@ -3,12 +3,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:graduation_project_main/Home_stadium_owner/Home_owner.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:graduation_project_main/constants/constants.dart';
+import 'package:graduation_project_main/provider/language_provider.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:bottom_picker/bottom_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class EditSelectedStadium extends StatefulWidget {
   final String stadiumName;
@@ -350,6 +353,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
 
   @override
   Widget build(BuildContext context) {
+    final isArabic = Provider.of<LanguageProvider>(context).isArabic;
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.white,
@@ -365,22 +369,24 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: const Text("Discard changes?"),
-                    content: const Text(
-                        "Are you sure you want to discard your changes?"),
+                    title: Text(
+                        isArabic ? "تجاهل التغييرات؟" : "Discard changes?"),
+                    content: Text(isArabic
+                        ? "هل أنت متأكد أنك تريد تجاهل التغييرات؟"
+                        : "Are you sure you want to discard your changes?"),
                     actions: [
                       TextButton(
                         onPressed: () {
                           Navigator.pushNamed(context, '/home_owner');
                         },
-                        child: const Text("Discard",
+                        child: Text(isArabic ? "تجاهل" : "Discard",
                             style: TextStyle(color: Colors.red)),
                       ),
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: const Text("Return"),
+                        child: Text(isArabic ? "رجوع" : "Return"),
                       ),
                     ],
                   );
@@ -406,7 +412,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                     stadiumNameController.text = value;
                   },
                   initValue: stadiumNameController.text,
-                  lableText: 'Stadium Name',
+                  lableText: isArabic ? 'اسم الملعب' : 'Stadium Name',
                   textInputType: TextInputType.text,
                   add_prefix: Image.asset(
                     'assets/stdowner_addNewStadium/imgs/sign.png',
@@ -420,7 +426,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'Stadium Data',
+                        isArabic ? 'بيانات الملعب' : 'Stadium Data',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -437,85 +443,88 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                   padding: EdgeInsets.all(8.0),
                   width: double.infinity,
                   decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.8),
-                  borderRadius: BorderRadius.circular(10.0),
-                  border: Border.all(color: mainColor, width: 1.0),
+                    color: Colors.white.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(10.0),
+                    border: Border.all(color: mainColor, width: 1.0),
                   ),
                   child: GridView.builder(
-                  itemCount: selectedImages.isNotEmpty
-                    ? selectedImages.length + 1
-                    : selectedImagesUrl.length + 1,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 4.0,
-                    mainAxisSpacing: 4.0,
-                    childAspectRatio: 1.0,
-                  ),
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == 0) {
-                    return GestureDetector(
-                      onTap: getImages,
-                      child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10.0),
-                        border: Border.all(color: mainColor, width: 1.0),
-                      ),
-                      child: Center(
-                        child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.add, size: 40.0, color: mainColor),
-                          Text(
-                          'Add Image',
-                          style: TextStyle(
-                            color: mainColor,
-                            fontSize: 16.0,
-                          ),
-                          ),
-                        ],
-                        ),
-                      ),
-                      ),
-                    );
-                    } else {
-                    int adjustedIndex = index - 1;
-                    return Stack(
-                      children: [
-                      GestureDetector(
-                        onTap: () {
-                        setState(() {
-                          isImageOpend = true;
-                        });
-                        openImage = selectedImages.isNotEmpty
-                          ? Image.file(
-                            selectedImages[adjustedIndex],
-                            fit: BoxFit.cover,
-                            )
-                          : Image.network(
-                            selectedImagesUrl[adjustedIndex],
-                            fit: BoxFit.cover,
-                            );
-                        },
-                        child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        child: selectedImages.isNotEmpty
-                          ? Image.file(
-                            selectedImages[adjustedIndex],
-                            fit: BoxFit.cover,
-                            )
-                          : Image.network(
-                            selectedImagesUrl[adjustedIndex],
-                            fit: BoxFit.cover,
+                    itemCount: selectedImages.isNotEmpty
+                        ? selectedImages.length + 1
+                        : selectedImagesUrl.length + 1,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 4.0,
+                      mainAxisSpacing: 4.0,
+                      childAspectRatio: 1.0,
+                    ),
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == 0) {
+                        return GestureDetector(
+                          onTap: getImages,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10.0),
+                              border: Border.all(color: mainColor, width: 1.0),
                             ),
-                        ),
-                      ),
-                      ],
-                    );
-                    }
-                  },
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.add, size: 40.0, color: mainColor),
+                                  Text(
+                                    Provider.of<LanguageProvider>(context)
+                                            .isArabic
+                                        ? 'إضافة صورة'
+                                        : 'Add Image',
+                                    style: TextStyle(
+                                      color: mainColor,
+                                      fontSize: 16.0,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      } else {
+                        int adjustedIndex = index - 1;
+                        return Stack(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  isImageOpend = true;
+                                });
+                                openImage = selectedImages.isNotEmpty
+                                    ? Image.file(
+                                        selectedImages[adjustedIndex],
+                                        fit: BoxFit.contain,
+                                      )
+                                    : Image.network(
+                                        selectedImagesUrl[adjustedIndex],
+                                        fit: BoxFit.contain,
+                                      );
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                child: selectedImages.isNotEmpty
+                                    ? Image.file(
+                                        selectedImages[adjustedIndex],
+                                        fit: BoxFit.contain,
+                                      )
+                                    : Image.network(
+                                        selectedImagesUrl[adjustedIndex],
+                                        fit: BoxFit.contain,
+                                      ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    },
                   ),
                 ),
                 SizedBox(height: 40.0),
@@ -535,11 +544,14 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                       ),
                       pickerTextStyle:
                           TextStyle(fontSize: 20.0, color: Colors.black),
-                      pickerTitle: Text('Select Governorate',
+                      pickerTitle: Text(
+                          isArabic ? 'اختر المحافظة' : 'Select Governorate',
                           style: TextStyle(
                               fontWeight: FontWeight.w800, fontSize: 24.0)),
                       pickerDescription: Text(
-                          'Choose the governorate where the stadium is located',
+                          isArabic
+                              ? 'اختر المحافظة التي يوجد بها الملعب'
+                              : 'Choose the governorate where the stadium is located',
                           style: TextStyle(fontWeight: FontWeight.w400)),
                       onSubmit: (selectedIndex) {
                         String governorate = egyptGovernorates[selectedIndex];
@@ -574,12 +586,17 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                             ),
                             pickerTextStyle:
                                 TextStyle(fontSize: 20.0, color: Colors.black),
-                            pickerTitle: Text('Select Place',
+                            pickerTitle: Text(
+                                Provider.of<LanguageProvider>(context).isArabic
+                                    ? 'حدد مكان'
+                                    : 'Select Place',
                                 style: TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 24.0)),
                             pickerDescription: Text(
-                                'Choose the place where the stadium is located',
+                                Provider.of<LanguageProvider>(context).isArabic
+                                    ? 'اختر مكان الملعب'
+                                    : 'Choose the place where the stadium is located',
                                 style: TextStyle(fontWeight: FontWeight.w400)),
                             onSubmit: (selectedPlaceIndex) {
                               String place = egyptGovernoratesAndCenters[
@@ -609,7 +626,12 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Text('Enter Neighborhood',
+                                          Text(
+                                              Provider.of<LanguageProvider>(
+                                                          context)
+                                                      .isArabic
+                                                  ? 'أدخل الحي'
+                                                  : 'Enter Neighborhood',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 20)),
@@ -617,8 +639,12 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                                           TextField(
                                             controller: neighborhoodEnterd,
                                             decoration: InputDecoration(
-                                              hintText:
-                                                  'Enter your neighborhood',
+                                              hintText: Provider.of<
+                                                              LanguageProvider>(
+                                                          context)
+                                                      .isArabic
+                                                  ? 'أدخل الحي الخاص بك'
+                                                  : 'Enter your neighborhood',
                                               border: OutlineInputBorder(),
                                             ),
                                           ),
@@ -631,7 +657,12 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                                               });
                                               Navigator.pop(context);
                                             },
-                                            child: Text('Save'),
+                                            child: Text(
+                                                Provider.of<LanguageProvider>(
+                                                            context)
+                                                        .isArabic
+                                                    ? 'حفظ'
+                                                    : 'Save'),
                                           ),
                                         ],
                                       ),
@@ -645,7 +676,9 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                       },
                     ).show(context);
                   },
-                  lableText: 'Stadium Location',
+                  lableText: Provider.of<LanguageProvider>(context).isArabic
+                      ? 'موقع الملعب'
+                      : 'Stadium Location',
                   initValue: location,
                   isReadOnly: true,
                   textInputType: TextInputType.text,
@@ -698,7 +731,9 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                     stadiumCapacityController.text = value;
                   },
                   initValue: stadiumCapacityController.text,
-                  lableText: 'Capacity',
+                  lableText: Provider.of<LanguageProvider>(context).isArabic
+                      ? 'السعة'
+                      : 'Capacity',
                   textInputType: TextInputType.number,
                   add_prefix: Icon(
                     Icons.group,
@@ -713,7 +748,9 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'Features',
+                        Provider.of<LanguageProvider>(context).isArabic
+                            ? 'المميزات'
+                            : 'Features',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -788,7 +825,10 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                           textBuilder: (value) => value
                               ? Center(
                                   child: Text(
-                                    'Water is Available',
+                                    Provider.of<LanguageProvider>(context)
+                                            .isArabic
+                                        ? 'متاح ماء'
+                                        : 'Water is Available',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontFamily: 'eras-itc-bold',
@@ -798,7 +838,10 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                                 )
                               : Center(
                                   child: Text(
-                                    'Water not Available',
+                                    Provider.of<LanguageProvider>(context)
+                                            .isArabic
+                                        ? 'غير متاح ماء'
+                                        : 'Water not Available',
                                     style: TextStyle(
                                       fontFamily: 'eras-itc-bold',
                                       fontWeight: FontWeight.w600,
@@ -873,7 +916,10 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                           textBuilder: (value) => value
                               ? Center(
                                   child: Text(
-                                    'Track Available',
+                                    Provider.of<LanguageProvider>(context)
+                                            .isArabic
+                                        ? ' المسار متاح'
+                                        : 'Track Available',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontFamily: 'eras-itc-bold',
@@ -883,7 +929,10 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                                 )
                               : Center(
                                   child: Text(
-                                    'Track not Available',
+                                    Provider.of<LanguageProvider>(context)
+                                            .isArabic
+                                        ? ' المسار غير متاح'
+                                        : 'Track not Available',
                                     style: TextStyle(
                                       fontFamily: 'eras-itc-bold',
                                       fontWeight: FontWeight.w600,
@@ -955,7 +1004,10 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                           textBuilder: (value) => value
                               ? Center(
                                   child: Text(
-                                    'Industry Grass',
+                                    Provider.of<LanguageProvider>(context)
+                                            .isArabic
+                                        ? 'عشب الصناعي'
+                                        : 'Industry Grass',
                                     style: TextStyle(
                                       color: const Color.fromARGB(
                                         255,
@@ -970,7 +1022,10 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                                 )
                               : Center(
                                   child: Text(
-                                    'Natural Grass',
+                                    Provider.of<LanguageProvider>(context)
+                                            .isArabic
+                                        ? 'عشب طبيعي'
+                                        : 'Natural Grass',
                                     style: TextStyle(
                                       color: const Color.fromARGB(
                                         255,
@@ -996,7 +1051,9 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'Work Time',
+                        Provider.of<LanguageProvider>(context).isArabic
+                            ? 'وقت العمل'
+                            : 'Work Time',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -1029,8 +1086,11 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                             showTimeSeparator: true,
                             pickerTextStyle:
                                 TextStyle(fontSize: 20.0, color: Colors.black),
-                            pickerTitle: Text(
-                                'When will you open the stadium each day?'),
+                            pickerTitle: Text(Provider.of<LanguageProvider>(
+                                        context)
+                                    .isArabic
+                                ? 'متى ستفتح الملعب كل يوم؟'
+                                : 'When will you open the stadium each day?'),
                             initialTime: Time(hours: 7, minutes: 30),
                             onSubmit: (timeStartValue) {
                               final formattedTime =
@@ -1050,7 +1110,10 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                         readOnly: true,
                         textAlign: TextAlign.center,
                         decoration: InputDecoration(
-                          hintText: 'Start From',
+                          hintText:
+                              Provider.of<LanguageProvider>(context).isArabic
+                                  ? 'يبدأ من'
+                                  : 'Start From',
                           hintStyle: TextStyle(fontSize: 16.0),
                           fillColor: Colors.white60,
                           filled: true,
@@ -1091,8 +1154,11 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                             showTimeSeparator: true,
                             pickerTextStyle:
                                 TextStyle(fontSize: 20.0, color: Colors.black),
-                            pickerTitle: Text(
-                                'When will you close the stadium each day?'),
+                            pickerTitle: Text(Provider.of<LanguageProvider>(
+                                        context)
+                                    .isArabic
+                                ? 'متى سيتم إغلاق الملعب كل يوم؟'
+                                : 'When will you close the stadium each day?'),
                             initialTime: Time(hours: 7, minutes: 30),
                             onSubmit: (timeEndValue) {
                               final formattedTime =
@@ -1111,7 +1177,10 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                         readOnly: true,
                         textAlign: TextAlign.center,
                         decoration: InputDecoration(
-                          hintText: 'End On',
+                          hintText:
+                              Provider.of<LanguageProvider>(context).isArabic
+                                  ? 'ينتهي في '
+                                  : 'End On',
                           hintStyle: TextStyle(fontSize: 16.0),
                           fillColor: Colors.white60,
                           filled: true,
@@ -1142,7 +1211,9 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'Work Days',
+                        Provider.of<LanguageProvider>(context).isArabic
+                            ? ' أيام العمل'
+                            : 'Work Days',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -1232,7 +1303,9 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'Update Your Stadium',
+                        Provider.of<LanguageProvider>(context).isArabic
+                            ? 'تحديث الملعب'
+                            : 'Update Your Stadium',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -1244,18 +1317,134 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                 ),
                 SizedBox(height: 60.0),
                 // Update button
-                SizedBox(
-                  height: 50.0,
-                  child: Create_GradiantGreenButton(
-                    onButtonPressed: _handleUpdateButtonPressed,
-                    content: Text(
-                      'Update',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'eras-itc-demi',
-                          fontSize: 20.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: SizedBox(
+                        height: 50.0,
+                        child: Create_GradiantGreenButton(
+                          onButtonPressed: _handleUpdateButtonPressed,
+                          content: Text(
+                            Provider.of<LanguageProvider>(context).isArabic
+                                ? 'تحديث'
+                                : 'Update',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'eras-itc-demi',
+                                fontSize: 20.0),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                    SizedBox(width: 10.0),
+                    Expanded(
+                      flex: 1,
+                      child: SizedBox(
+                        height: 50.0,
+                        child: GestureDetector(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text(
+                                      Provider.of<LanguageProvider>(context)
+                                              .isArabic
+                                          ? 'حذف الملعب'
+                                          : 'Delete Stadium', style: TextStyle(fontSize: 18.0, color: Colors.red),),
+                                  content: Text(Provider.of<LanguageProvider>(
+                                              context)
+                                          .isArabic
+                                      ? 'هل أنت متأكد من حذف الملعب؟'
+                                      : 'Are you sure you want to delete the stadium?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(),
+                                      child: Text(
+                                          Provider.of<LanguageProvider>(context)
+                                                  .isArabic
+                                              ? 'إلغاء'
+                                              : 'Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () async {
+                                        try {
+                                          final stadiumDoc = FirebaseFirestore
+                                              .instance
+                                              .collection('stadiums')
+                                              .doc(widget.stadiumId);
+                                          await stadiumDoc.delete();
+                                          Navigator.of(context).pop();
+                                          Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  Home_Owner(),
+                                            ),
+                                          );
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(Provider.of<
+                                                              LanguageProvider>(
+                                                          context)
+                                                      .isArabic
+                                                  ? 'تم حذف الملعب بنجاح'
+                                                  : 'Stadium deleted successfully'),
+                                              backgroundColor: Colors.grey[900],
+                                            ),
+                                          );
+                                        } catch (e) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(Provider.of<
+                                                              LanguageProvider>(
+                                                          context)
+                                                      .isArabic
+                                                  ? 'خطأ في حذف الملعب: $e'
+                                                  : 'Error deleting stadium: $e'),
+                                              backgroundColor: Colors.red,
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      child: Text(
+                                          Provider.of<LanguageProvider>(context)
+                                                  .isArabic
+                                              ? 'نعم'
+                                              : 'Yes'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30.0),
+                              border: Border.all(
+                                color: Colors.red,
+                                width: 2.0,
+                              ),
+                              color: Colors.white,
+                            ),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 20.0,
+                              vertical: 10.0,
+                            ),
+                            child: Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                              size: 30.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
                 ),
                 SizedBox(height: 10.0),
               ],
@@ -1271,97 +1460,104 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                  children: [
                     // Close button
                     Padding(
                       padding: const EdgeInsets.only(right: 20.0),
                       child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                        isImageOpend = false;
-                        openImage = null;
-                        });
-                      },
-                      child: CircleAvatar(
-                        backgroundColor: Colors.grey,
-                        radius: 20.0,
-                        child: Icon(
-                        Icons.close,
-                        color: Colors.white,
+                        onTap: () {
+                          setState(() {
+                            isImageOpend = false;
+                            openImage = null;
+                          });
+                        },
+                        child: CircleAvatar(
+                          backgroundColor: Colors.grey,
+                          radius: 20.0,
+                          child: Icon(
+                            Icons.close,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
                       ),
                     ),
                     // Display image
                     Container(
                       width: double.infinity,
-                      margin: EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+                      margin: EdgeInsets.symmetric(
+                          horizontal: 20.0, vertical: 20.0),
                       height: 300.0,
                       child: openImage,
                       decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(15),
                       ),
                     ),
                     // Remove image button
                     GestureDetector(
                       onTap: () {
-                      if (openImage != null) {
-                        String? openImagePath;
-                        if (openImage!.image is FileImage) {
-                          openImagePath = (openImage!.image as FileImage).file.path;
-                        } else if (openImage!.image is NetworkImage) {
-                          openImagePath = (openImage!.image as NetworkImage).url;
-                        }
+                        if (openImage != null) {
+                          String? openImagePath;
+                          if (openImage!.image is FileImage) {
+                            openImagePath =
+                                (openImage!.image as FileImage).file.path;
+                          } else if (openImage!.image is NetworkImage) {
+                            openImagePath =
+                                (openImage!.image as NetworkImage).url;
+                          }
 
-                        if (openImagePath != null) {
-                          int indexToRemove = selectedImages.isNotEmpty
-                              ? selectedImages.indexWhere((image) => image.path == openImagePath)
-                              : selectedImagesUrl.indexWhere((url) => url == openImagePath);
+                          if (openImagePath != null) {
+                            int indexToRemove = selectedImages.isNotEmpty
+                                ? selectedImages.indexWhere(
+                                    (image) => image.path == openImagePath)
+                                : selectedImagesUrl
+                                    .indexWhere((url) => url == openImagePath);
 
-                          if (indexToRemove != -1) {
-                            String removedImageUrl = selectedImagesUrl[indexToRemove];
-                            setState(() {
-                              selectedImagesUrl.removeAt(indexToRemove);
-                              isImageOpend = false;
-                              openImage = null;
-                            });
+                            if (indexToRemove != -1) {
+                              String removedImageUrl =
+                                  selectedImagesUrl[indexToRemove];
+                              setState(() {
+                                selectedImagesUrl.removeAt(indexToRemove);
+                                isImageOpend = false;
+                                openImage = null;
+                              });
 
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Image removed successfully'),
-                                backgroundColor: Colors.black87,
-                                action: SnackBarAction(
-                                  label: 'Undo',
-                                  textColor: Colors.green,
-                                  onPressed: () {
-                                    setState(() {
-                                      selectedImagesUrl.insert(indexToRemove, removedImageUrl);
-                                    });
-                                  },
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Image removed successfully'),
+                                  backgroundColor: Colors.black87,
+                                  action: SnackBarAction(
+                                    label: 'Undo',
+                                    textColor: Colors.green,
+                                    onPressed: () {
+                                      setState(() {
+                                        selectedImagesUrl.insert(
+                                            indexToRemove, removedImageUrl);
+                                      });
+                                    },
+                                  ),
                                 ),
-                              ),
-                            );
+                              );
+                            }
                           }
                         }
-                      }
                       },
                       child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                      height: 50.0,
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Center(
-                        child: Icon(
-                        Icons.delete,
-                        color: Colors.white,
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 20.0, vertical: 10.0),
+                        height: 50.0,
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: Center(
+                          child: Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                      ),
                     ),
-                    ],
-                  
+                  ],
                 ),
               ),
             ],
