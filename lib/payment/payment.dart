@@ -18,7 +18,6 @@ class Payment extends StatefulWidget {
 
   Payment({
     required this.stadiumID,
-
   });
 }
 
