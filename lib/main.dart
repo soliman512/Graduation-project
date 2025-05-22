@@ -1,9 +1,11 @@
 // Import Flutter core packages
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:graduation_project_main/payment/payment.dart';
 // import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:graduation_project_main/shared/aboutApp.dart';
+import 'package:graduation_project_main/stripe_payment/stripe_keys.dart';
 // import 'package:graduation_project_main/stdown_addNewStd/stdown_editStadium.dart';
 import 'package:graduation_project_main/welcome_signup_login/recorve%20account/RecoverAcountSTU.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/addAccountImage_owner.dart';
@@ -55,6 +57,7 @@ import 'no_internetConnection/no_internetConnection.dart';
 /// Main function that initializes the application
 /// Initializes Firebase and Supabase before running the app
 Future<void> main() async {
+  Stripe.publishableKey = ApiKeys.publishableKey;
   // Ensure Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
 

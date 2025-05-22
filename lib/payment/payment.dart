@@ -6,6 +6,7 @@ import 'package:graduation_project_main/payment/done.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/provider/language_provider.dart';
+import 'package:graduation_project_main/stripe_payment/payment_manger.dart';
 import 'package:provider/provider.dart';
 
 import 'package:numberpicker/numberpicker.dart';
@@ -42,21 +43,24 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
         paymentWay.isNotEmpty;
   }
 
-late Map<String, dynamic> stadiumData; // متغير يخزن بيانات الطالب
+Map<String, dynamic>? stadiumData; // متغير يخزن بيانات الاستاد
 
 Future<void> getStudentData() async {
   DocumentSnapshot doc = await FirebaseFirestore.instance
       .collection('stadiums')
       .doc(widget.stadiumID)
       .get();
-          stadiumData = doc.data() as Map<String, dynamic>;
-
+  setState(() {
+    stadiumData = doc.data() as Map<String, dynamic>;
+  });
 }
 
-initState() {
+@override
+void initState() {
   super.initState();
   getStudentData();
 }
+
   void showDurationPicker(BuildContext context) {
     int hours = 1;
     int minutes = 0;
@@ -169,6 +173,11 @@ initState() {
 
   @override
   Widget build(BuildContext context) {
+  if (stadiumData == null) {
+    return Scaffold(
+      body: Center(child: CircularProgressIndicator()),
+    );
+  }
     final isArabic = Provider.of<LanguageProvider>(context).isArabic;
     return SafeArea(
       child: Scaffold(
@@ -339,21 +348,22 @@ initState() {
                       width: MediaQuery.of(context).size.width * 0.01,
                     ),
                     Text(
-                      stadiumData['name'],
+                      stadiumData!['name'],
                       style: TextStyle(
-                          color: mainColor,
-                          fontSize: MediaQuery.of(context).size.width * 0.06,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: "eras-itc-demi"),
+                        color: mainColor,
+                        fontSize: MediaQuery.of(context).size.width * 0.06,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: "eras-itc-demi"),
                     ),
-                    SizedBox(width: MediaQuery.of(context).size.width * 0.3),
+                    Spacer(),
                     Text(
-                      stadiumData['price'] + '00.LE',
+                      stadiumData!['price'].toString() + '.00 LE',
                       style: TextStyle(
-                          color: mainColor,
-                          fontSize: MediaQuery.of(context).size.width * 0.05,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: "eras-itc-demi"),
+                        color: mainColor,
+                        fontSize: MediaQuery.of(context).size.width * 0.05,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: "eras-itc-demi"
+                      ),
                     ),
                   ],
                 ),
@@ -369,7 +379,7 @@ initState() {
                       width: MediaQuery.of(context).size.width * 0.01,
                     ),
                     Text(
-                      stadiumData['location'],
+                      stadiumData!['location'],
                       style: TextStyle(
                         color: const Color.fromARGB(255, 0, 0, 0),
                         fontSize: MediaQuery.of(context).size.width * 0.03,
@@ -387,7 +397,7 @@ initState() {
                         ),
                         SizedBox(width: 5),
                         Text(
-                          stadiumData['rating'].toString(),
+                          stadiumData!['rating'].toString(),
                           style: TextStyle(
                               color: const Color.fromARGB(255, 0, 0, 0),
                               fontSize:
@@ -587,13 +597,23 @@ initState() {
                         Flexible(
                           flex: creditCard ? 3 : 1,
                           child: GestureDetector(
-                            onTap: () {
+                            onTap: () async {
                               setState(() {
                                 creditCard = true;
                                 fawry = false;
                                 cash = false;
                                 paymentWay = "Credit Card";
                               });
+                              // استدعاء دالة الدفع
+                              try {
+                                await PaymentManger.makePayment(80, "EGP");
+                                // يمكنك هنا إظهار رسالة نجاح أو الانتقال لصفحة أخرى
+                              } catch (e) {
+                                // يمكنك هنا إظهار رسالة خطأ
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Payment failed: $e')),
+                                );
+                              }
                             },
                             child: AnimatedContainer(
                               duration: Duration(milliseconds: 300),
