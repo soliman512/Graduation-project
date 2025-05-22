@@ -8,7 +8,6 @@ import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
-
 class StadiumCard extends StatefulWidget {
   final String title;
   final String location;
@@ -69,7 +68,11 @@ class _StadiumCardState extends State<StadiumCard> {
 
     if (isFavorite) {
       await favRef.delete();
-      showSnackBar(context, Provider.of<LanguageProvider>(context, listen: false).isArabic ? "تم إزالة ${widget.title} من المفضلة" : "${widget.title} removed from favorites");
+      showSnackBar(
+          context,
+          Provider.of<LanguageProvider>(context, listen: false).isArabic
+              ? "تم إزالة ${widget.title} من المفضلة"
+              : "${widget.title} removed from favorites");
     } else {
       await favRef.set({
         'title': widget.title,
@@ -78,7 +81,11 @@ class _StadiumCardState extends State<StadiumCard> {
         'rating': widget.rating,
         'imagePath': widget.selectedImages[0],
       });
-      showSnackBar(context, Provider.of<LanguageProvider>(context, listen: false).isArabic ? "تم إضافة ${widget.title} إلى المفضلة" : "${widget.title} added to favorites");
+      showSnackBar(
+          context,
+          Provider.of<LanguageProvider>(context, listen: false).isArabic
+              ? "تم إضافة ${widget.title} إلى المفضلة"
+              : "${widget.title} added to favorites");
     }
 
     setState(() {
@@ -276,7 +283,7 @@ class DrawerItem extends StatelessWidget {
 //statful widget for the drawer
 class Create_Drawer extends StatefulWidget {
   final bool refreshData;
-  
+
   const Create_Drawer({Key? key, this.refreshData = false}) : super(key: key);
 
   @override
@@ -291,7 +298,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
     super.initState();
     _loadUserData();
   }
-  
+
   @override
   void didUpdateWidget(Create_Drawer oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -302,7 +309,8 @@ class _Create_DrawerState extends State<Create_Drawer> {
   }
 
   Future<void> _loadUserData() async {
-    final isArabic = Provider.of<LanguageProvider>(context, listen: false).isArabic;
+    final isArabic =
+        Provider.of<LanguageProvider>(context, listen: false).isArabic;
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
@@ -311,21 +319,23 @@ class _Create_DrawerState extends State<Create_Drawer> {
             .collection('users')
             .doc(user.uid)
             .get();
-        
+
         if (docSnapshot.exists) {
           final userData = docSnapshot.data();
-          
+
           // Get user data
           String? newUsername = userData?['username'];
           String? newProfileImageUrl = userData?['profileImage'];
-          
+
           // Only update state if there are actual changes to avoid unnecessary rebuilds
-          if (newUsername != username || newProfileImageUrl != profileImageUrl) {
+          if (newUsername != username ||
+              newProfileImageUrl != profileImageUrl) {
             setState(() {
               // Make sure we always display the username from Firestore if available
               username = newUsername;
               if (username == null || username!.isEmpty) {
-                username = user.displayName ?? user.email?.split('@')[0] ?? 'User';
+                username =
+                    user.displayName ?? user.email?.split('@')[0] ?? 'User';
               }
               profileImageUrl = newProfileImageUrl;
               print('Updated profile image URL: $profileImageUrl');
@@ -352,7 +362,6 @@ class _Create_DrawerState extends State<Create_Drawer> {
     }
   }
 
-  
   @override
   Widget build(BuildContext context) {
     // User Google
@@ -379,45 +388,51 @@ class _Create_DrawerState extends State<Create_Drawer> {
                   border: Border.all(color: mainColor, width: 3.0),
                 ),
                 child: profileImageUrl != null && profileImageUrl!.isNotEmpty
-                  ? CircleAvatar(
-                      radius: 60.0,
-                      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-                      child: ClipOval(
-                        child: Image.network(
-                          profileImageUrl!,
-                          width: 120.0,
-                          height: 120.0,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            print('Error loading profile image: $error');
-                            return Icon(Icons.person, size: 60, color: mainColor);
-                          },
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Center(
-                              child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes != null
-                                    ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                    : null,
-                                color: mainColor,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    )
-                  : userr != null && userr.photoURL != null
                     ? CircleAvatar(
                         radius: 60.0,
-                        backgroundImage: NetworkImage(userr.photoURL!),
-                        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                        backgroundColor:
+                            const Color.fromARGB(255, 255, 255, 255),
+                        child: ClipOval(
+                          child: Image.network(
+                            profileImageUrl!,
+                            width: 120.0,
+                            height: 120.0,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              print('Error loading profile image: $error');
+                              return Icon(Icons.person,
+                                  size: 60, color: mainColor);
+                            },
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                  color: mainColor,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                       )
-                    : CircleAvatar(
-                        radius: 60.0,
-                        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-                        child: Icon(Icons.person_outline_rounded,
-                            size: 80, color: mainColor),
-                      ),
+                    : userr != null && userr.photoURL != null
+                        ? CircleAvatar(
+                            radius: 60.0,
+                            backgroundImage: NetworkImage(userr.photoURL!),
+                            backgroundColor:
+                                const Color.fromARGB(255, 255, 255, 255),
+                          )
+                        : CircleAvatar(
+                            radius: 60.0,
+                            backgroundColor:
+                                const Color.fromARGB(255, 255, 255, 255),
+                            child: Icon(Icons.person_outline_rounded,
+                                size: 80, color: mainColor),
+                          ),
               ),
               SizedBox(
                 height: 20.0,
@@ -537,7 +552,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
                   builder: (context, constraints) {
                     return Container(
                       margin: EdgeInsets.symmetric(
-                          horizontal: constraints.maxWidth *0.11),
+                          horizontal: constraints.maxWidth * 0.11),
                       height: constraints.maxHeight * 0.15,
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -557,9 +572,7 @@ class _Create_DrawerState extends State<Create_Drawer> {
                               "assets/home_loves_tickets_top/imgs/Vector_drawerSettings.png",
                               width: constraints.maxWidth * 0.1,
                               height: constraints.maxHeight * 0.1),
-                          SizedBox(
-                              width:
-                                  constraints.maxWidth * 0.05),
+                          SizedBox(width: constraints.maxWidth * 0.05),
                           Text(
                             isArabic ? "الإعدادات" : "Settings",
                             style: TextStyle(
@@ -890,6 +903,7 @@ class Create_RequiredInput extends StatelessWidget {
   final ValueChanged<String>? onChange;
   final TextInputType textInputType;
   final String lableText;
+  final Color? borderColor;
   Create_RequiredInput({
     required this.add_prefix,
     required this.textInputType,
@@ -899,6 +913,7 @@ class Create_RequiredInput extends StatelessWidget {
     this.initValue,
     this.onTap,
     this.onChange,
+    this.borderColor,
   });
 
   @override
@@ -928,12 +943,12 @@ class Create_RequiredInput extends StatelessWidget {
         filled: true,
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15.0),
-          borderSide: BorderSide(color: mainColor, width: 2.0),
+          borderSide: BorderSide(color: borderColor ?? mainColor, width: 2.0),
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
           borderSide: BorderSide(
-            color: Color.fromARGB(75, 0, 0, 0),
+            color: borderColor ?? Color.fromARGB(75, 0, 0, 0),
             width: 1.0,
           ),
         ),
