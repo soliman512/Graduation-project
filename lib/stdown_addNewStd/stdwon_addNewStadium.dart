@@ -113,7 +113,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
     }
     return false;
   }
-
+bool isLoading = false;
 // generate final location
   void initValueOflocation() {
     if (citySelected == null) {
@@ -144,7 +144,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
   }
 
 // Handle Post Button Press
-  void _handlePostButtonPressed() async {
+  Future<void> _handlePostButtonPressed() async {
     if (_isFormIncomplete()) {
       _showIncompleteDataDialog();
     } else {
@@ -152,20 +152,20 @@ class _AddNewStadiumState extends State<AddNewStadium> {
       selectedImagesUrl = await uploadImagesToSupabase(selectedImages);
 
       await addStadiumToFirestore(
-        name: stadiumNameController.text,
-        location: location,
-        hasWater: isWaterAvailable,
-        hasTrack: isTrackAvailable,
-        isNaturalGrass: isGrassNormal,
-        price: double.parse(stadiumPriceController.text),
-        description: stadiumDescriptionController.text,
-        capacity: int.parse(stadiumCapacityController.text),
-        startTime: timeStart,
-        endTime: timeEnd,
-        workingDays: daysSelected,
-        imagesUrl: selectedImagesUrl,
-        userID: FirebaseAuth.instance.currentUser?.uid ?? 'No User ID'
-      );
+          name: stadiumNameController.text,
+          location: location,
+          hasWater: isWaterAvailable,
+          hasTrack: isTrackAvailable,
+          isNaturalGrass: isGrassNormal,
+          price: double.parse(stadiumPriceController.text),
+          description: stadiumDescriptionController.text,
+          capacity: int.parse(stadiumCapacityController.text),
+          startTime: timeStart,
+          endTime: timeEnd,
+          workingDays: daysSelected,
+          imagesUrl: selectedImagesUrl,
+          rating: 0,
+          userID: FirebaseAuth.instance.currentUser?.uid ?? 'No User ID');
 
       Navigator.pushNamed(context, '/home_owner');
     }
@@ -186,6 +186,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
     required List<String> workingDays,
     required String userID,
     required List<String> imagesUrl,
+    required int rating,
   }) async {
     final stadiumData = {
       "name": name,
@@ -200,15 +201,18 @@ class _AddNewStadiumState extends State<AddNewStadium> {
       "endTime": endTime,
       "workingDays": workingDays,
       "createdAt": FieldValue.serverTimestamp(),
-      "userID" : userID,
-      "images" : imagesUrl,
+      "userID": userID,
+      "images": imagesUrl,
+      "rating": 0
     };
 
     try {
       await FirebaseFirestore.instance.collection("stadiums").add(stadiumData);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(Provider.of<LanguageProvider>(context).isArabic ? 'تم إضافة الملعب بنجاح' : 'Stadium added successfully'),
+          content: Text(Provider.of<LanguageProvider>(context).isArabic
+              ? 'تم إضافة الملعب بنجاح'
+              : 'Stadium added successfully'),
           backgroundColor: Colors.green,
           duration: Duration(seconds: 2),
         ),
@@ -216,7 +220,9 @@ class _AddNewStadiumState extends State<AddNewStadium> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(Provider.of<LanguageProvider>(context).isArabic ? ':حدث خطأ $e' : 'Error: $e'),
+          content: Text(Provider.of<LanguageProvider>(context).isArabic
+              ? ':حدث خطأ $e'
+              : 'Error: $e'),
           backgroundColor: Colors.red,
           duration: Duration(seconds: 2),
         ),
@@ -243,8 +249,12 @@ class _AddNewStadiumState extends State<AddNewStadium> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(Provider.of<LanguageProvider>(context).isArabic ? 'بيانات غير كاملة' : 'Incomplete Data'),
-          content: Text(Provider.of<LanguageProvider>(context).isArabic ? 'الرجاء ملء جميع الحقول المطلوبة.' : 'Please fill all the required fields.'),
+          title: Text(Provider.of<LanguageProvider>(context).isArabic
+              ? 'بيانات غير كاملة'
+              : 'Incomplete Data'),
+          content: Text(Provider.of<LanguageProvider>(context).isArabic
+              ? 'الرجاء ملء جميع الحقول المطلوبة.'
+              : 'Please fill all the required fields.'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -260,21 +270,23 @@ class _AddNewStadiumState extends State<AddNewStadium> {
   }
 
   Future<List<String>> uploadImagesToSupabase(List<File> images) async {
-  final SupabaseClient supabase = Supabase.instance.client;
-  List<String> urls = [];
+    final SupabaseClient supabase = Supabase.instance.client;
+    List<String> urls = [];
 
-  for (var image in images) {
-    final String fileName = 'stadiums/${DateTime.now().millisecondsSinceEpoch}_${image.path.split('/').last}';
-    final String fullPath = await supabase.storage.from('photo').upload(
-      fileName,
-      image,
-      fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
-    );
-    final String url = supabase.storage.from('photo').getPublicUrl(fileName);
-    urls.add(url);
+    for (var image in images) {
+      final String fileName =
+          'stadiums/${DateTime.now().millisecondsSinceEpoch}_${image.path.split('/').last}';
+      // ignore: unused_local_variable
+      final String fullPath = await supabase.storage.from('photo').upload(
+            fileName,
+            image,
+            fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+          );
+      final String url = supabase.storage.from('photo').getPublicUrl(fileName);
+      urls.add(url);
+    }
+    return urls;
   }
-  return urls;
-}
 
   @override
   Widget build(BuildContext context) {
@@ -292,8 +304,13 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text(Provider.of<LanguageProvider>(context).isArabic ? 'إلغاء البيانات؟' : 'Discard data?'),
-                    content: Text(Provider.of<LanguageProvider>(context).isArabic ? 'هل أنت متأكد أنك تريد إلغاء البيانات؟' : 'Are you sure you want to discard?'),
+                    title: Text(Provider.of<LanguageProvider>(context).isArabic
+                        ? 'إلغاء البيانات؟'
+                        : 'Discard data?'),
+                    content: Text(
+                        Provider.of<LanguageProvider>(context).isArabic
+                            ? 'هل أنت متأكد أنك تريد إلغاء البيانات؟'
+                            : 'Are you sure you want to discard?'),
                     actions: [
                       TextButton(
                         onPressed: () {
@@ -328,20 +345,22 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                 SizedBox(height: 12.0),
                 Image.asset(
                     'assets/stdowner_addNewStadium/imgs/NewStadium.png'),
-                    // Text(
-                    //   FirebaseAuth.instance.currentUser?.uid ?? 'No User ID',
-                    //   style: TextStyle(
-                    //     fontSize: 14,
-                    //     color: Colors.grey,
-                    //   ),
-                    // ),
+                // Text(
+                //   FirebaseAuth.instance.currentUser?.uid ?? 'No User ID',
+                //   style: TextStyle(
+                //     fontSize: 14,
+                //     color: Colors.grey,
+                //   ),
+                // ),
                 // name input
                 Create_RequiredInput(
                   onChange: (value) {
                     stadiumNameController.text = value;
                   },
                   initValue: stadiumNameController.text,
-                  lableText: Provider.of<LanguageProvider>(context).isArabic ? 'اسم الملعب' : 'Stadium Name',
+                  lableText: Provider.of<LanguageProvider>(context).isArabic
+                      ? 'اسم الملعب'
+                      : 'Stadium Name',
                   textInputType: TextInputType.text,
                   add_prefix: Image.asset(
                     'assets/stdowner_addNewStadium/imgs/sign.png',
@@ -355,7 +374,9 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        Provider.of<LanguageProvider>(context).isArabic ? 'بيانات الملعب' : 'Stadium data',
+                        Provider.of<LanguageProvider>(context).isArabic
+                            ? 'بيانات الملعب'
+                            : 'Stadium data',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -397,7 +418,10 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                                 ),
                                 child: Center(
                                   child: Text(
-                                    Provider.of<LanguageProvider>(context).isArabic ? 'إضافة صورة' : 'Add Image',
+                                    Provider.of<LanguageProvider>(context)
+                                            .isArabic
+                                        ? 'إضافة صورة'
+                                        : 'Add Image',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 18.0,
@@ -411,7 +435,9 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                               ),
                             ),
                             Text(
-                              Provider.of<LanguageProvider>(context).isArabic ? '5MB حجم الملف الأقصى المقبول \nفي التوقيعات التالية:  .jpg   .jpeg,   .png ' : '5MB maximum file size accepted \nin the following formats:  .jpg   .jpeg,   .png ',
+                              Provider.of<LanguageProvider>(context).isArabic
+                                  ? '5MB حجم الملف الأقصى المقبول \nفي التوقيعات التالية:  .jpg   .jpeg,   .png '
+                                  : '5MB maximum file size accepted \nin the following formats:  .jpg   .jpeg,   .png ',
                               textAlign: TextAlign.center,
                               style: TextStyle(fontSize: 12.0),
                             ),
@@ -439,7 +465,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                                   ),
                                   child: Image.file(
                                     selectedImages[index],
-                                    fit: BoxFit.cover,
+                                    fit: BoxFit.contain,
                                   ),
                                 ),
                               ],
@@ -466,11 +492,18 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                       ),
                       pickerTextStyle:
                           TextStyle(fontSize: 20.0, color: Colors.black),
-                      pickerTitle: Text(Provider.of<LanguageProvider>(context).isArabic ? 'اختر المحافظة' : 'Select Governorate',
+                      pickerTitle: Text(
+                          Provider.of<LanguageProvider>(context, listen: false)
+                                  .isArabic
+                              ? 'اختر المحافظة'
+                              : 'Select Governorate',
                           style: TextStyle(
                               fontWeight: FontWeight.w800, fontSize: 24.0)),
                       pickerDescription: Text(
-                          Provider.of<LanguageProvider>(context).isArabic ? 'اختر المحافظة حيث يوجد الملعب' : 'Choose the governorate where the stadium is located',
+                          Provider.of<LanguageProvider>(context, listen: false)
+                                  .isArabic
+                              ? 'اختر المحافظة حيث يوجد الملعب'
+                              : 'Choose the governorate where the stadium is located',
                           style: TextStyle(fontWeight: FontWeight.w400)),
                       onSubmit: (selectedIndex) {
                         String governorate = egyptGovernorates[selectedIndex];
@@ -507,12 +540,21 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                             ),
                             pickerTextStyle:
                                 TextStyle(fontSize: 20.0, color: Colors.black),
-                            pickerTitle: Text(Provider.of<LanguageProvider>(context).isArabic ? 'اختر المكان' : 'Select Place',
+                            pickerTitle: Text(
+                                Provider.of<LanguageProvider>(context,
+                                            listen: false)
+                                        .isArabic
+                                    ? 'اختر المكان'
+                                    : 'Select Place',
                                 style: TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 24.0)),
                             pickerDescription: Text(
-                                Provider.of<LanguageProvider>(context).isArabic ? 'اختر المكان حيث يوجد الملعب' : 'Choose the place where the stadium is located',
+                                Provider.of<LanguageProvider>(context,
+                                            listen: false)
+                                        .isArabic
+                                    ? 'اختر المكان حيث يوجد الملعب'
+                                    : 'Choose the place where the stadium is located',
                                 style: TextStyle(fontWeight: FontWeight.w400)),
                             onSubmit: (selectedPlaceIndex) {
                               String place = egyptGovernoratesAndCenters[
@@ -542,7 +584,13 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Text(Provider.of<LanguageProvider>(context).isArabic ? 'أدخل الحي' : 'Enter Neighborhood',
+                                          Text(
+                                              Provider.of<LanguageProvider>(
+                                                          context,
+                                                          listen: false)
+                                                      .isArabic
+                                                  ? 'أدخل الحي'
+                                                  : 'Enter Neighborhood',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 20)),
@@ -550,8 +598,13 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                                           TextField(
                                             controller: neighborhoodEnterd,
                                             decoration: InputDecoration(
-                                              hintText:
-                                                  Provider.of<LanguageProvider>(context).isArabic ? 'أدخل الحي' : 'Enter your neighborhood',
+                                              hintText: Provider.of<
+                                                              LanguageProvider>(
+                                                          context,
+                                                          listen: false)
+                                                      .isArabic
+                                                  ? 'أدخل الحي'
+                                                  : 'Enter your neighborhood',
                                               border: OutlineInputBorder(),
                                             ),
                                           ),
@@ -564,7 +617,13 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                                               });
                                               Navigator.pop(context);
                                             },
-                                            child: Text(Provider.of<LanguageProvider>(context).isArabic ? 'حفظ' : 'Save'),
+                                            child: Text(
+                                                Provider.of<LanguageProvider>(
+                                                            context,
+                                                            listen: false)
+                                                        .isArabic
+                                                    ? 'حفظ'
+                                                    : 'Save'),
                                           ),
                                         ],
                                       ),
@@ -578,7 +637,11 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                       },
                     ).show(context);
                   },
-                  lableText: Provider.of<LanguageProvider>(context).isArabic ? 'موقع الملعب': 'Stadium location',
+                  lableText:
+                      Provider.of<LanguageProvider>(context, listen: false)
+                              .isArabic
+                          ? 'موقع الملعب'
+                          : 'Stadium location',
                   initValue: location,
                   isReadOnly: true,
                   textInputType: TextInputType.text,
@@ -586,6 +649,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                     'assets/stdowner_addNewStadium/imgs/location.png',
                   ),
                 ),
+
                 SizedBox(height: 32.0),
                 //stadium price
                 Create_RequiredInput(
@@ -593,7 +657,9 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                     stadiumPriceController.text = value;
                   },
                   initValue: stadiumPriceController.text,
-                  lableText: Provider.of<LanguageProvider>(context).isArabic ? 'السعر': 'Set Price',
+                  lableText: Provider.of<LanguageProvider>(context).isArabic
+                      ? 'السعر'
+                      : 'Set Price',
                   textInputType: TextInputType.number,
                   add_prefix: Image.asset(
                     'assets/stdowner_addNewStadium/imgs/price.png',
@@ -619,7 +685,9 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                     stadiumDescriptionController.text = value;
                   },
                   initValue: stadiumDescriptionController.text,
-                  lableText: Provider.of<LanguageProvider>(context).isArabic ? 'الوصف' : 'Description',
+                  lableText: Provider.of<LanguageProvider>(context).isArabic
+                      ? 'الوصف'
+                      : 'Description',
                   textInputType: TextInputType.text,
                   add_prefix: Image.asset(
                     'assets/stdowner_addNewStadium/imgs/desc.png',
@@ -633,7 +701,9 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                     stadiumCapacityController.text = value;
                   },
                   initValue: stadiumCapacityController.text,
-                  lableText: Provider.of<LanguageProvider>(context).isArabic ? 'الكميه' : 'Capacity',
+                  lableText: Provider.of<LanguageProvider>(context).isArabic
+                      ? 'الكميه'
+                      : 'Capacity',
                   textInputType: TextInputType.number,
                   add_prefix: Icon(
                     Icons.group,
@@ -648,7 +718,9 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        Provider.of<LanguageProvider>(context).isArabic ? 'المميزات' : 'features',
+                        Provider.of<LanguageProvider>(context).isArabic
+                            ? 'المميزات'
+                            : 'features',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -724,7 +796,10 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                           textBuilder: (value) => value
                               ? Center(
                                   child: Text(
-                                    Provider.of<LanguageProvider>(context).isArabic ? ' متوفر ماء' : 'Water is Available',
+                                    Provider.of<LanguageProvider>(context)
+                                            .isArabic
+                                        ? ' متوفر ماء'
+                                        : 'Water is Available',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontFamily: 'eras-itc-bold',
@@ -734,7 +809,10 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                                 )
                               : Center(
                                   child: Text(
-                                    Provider.of<LanguageProvider>(context).isArabic ? 'غير متوفر ماء' : 'Water not available',
+                                    Provider.of<LanguageProvider>(context)
+                                            .isArabic
+                                        ? 'غير متوفر ماء'
+                                        : 'Water not available',
                                     style: TextStyle(
                                       fontFamily: 'eras-itc-bold',
                                       fontWeight: FontWeight.w600,
@@ -810,7 +888,10 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                           textBuilder: (value) => value
                               ? Center(
                                   child: Text(
-                                    Provider.of<LanguageProvider>(context).isArabic ? 'متوفر مسار': 'Available Track',
+                                    Provider.of<LanguageProvider>(context)
+                                            .isArabic
+                                        ? 'متوفر مسار'
+                                        : 'Available Track',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontFamily: 'eras-itc-bold',
@@ -820,7 +901,10 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                                 )
                               : Center(
                                   child: Text(
-                                    Provider.of<LanguageProvider>(context).isArabic ? 'غير متوفر مسار': 'Unavailable Track',
+                                    Provider.of<LanguageProvider>(context)
+                                            .isArabic
+                                        ? 'غير متوفر مسار'
+                                        : 'Unavailable Track',
                                     style: TextStyle(
                                       fontFamily: 'eras-itc-bold',
                                       fontWeight: FontWeight.w600,
@@ -893,7 +977,10 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                           textBuilder: (value) => value
                               ? Center(
                                   child: Text(
-                                    Provider.of<LanguageProvider>(context).isArabic ? 'عشب صناعي': 'Industry Grass',
+                                    Provider.of<LanguageProvider>(context)
+                                            .isArabic
+                                        ? 'عشب صناعي'
+                                        : 'Industry Grass',
                                     style: TextStyle(
                                       color: const Color.fromARGB(
                                         255,
@@ -908,7 +995,10 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                                 )
                               : Center(
                                   child: Text(
-                                    Provider.of<LanguageProvider>(context).isArabic ? 'عشب طبيعي': 'Normal Grass',
+                                    Provider.of<LanguageProvider>(context)
+                                            .isArabic
+                                        ? 'عشب طبيعي'
+                                        : 'Normal Grass',
                                     style: TextStyle(
                                       color: const Color.fromARGB(
                                         255,
@@ -934,7 +1024,11 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        Provider.of<LanguageProvider>(context).isArabic ? 'وقت العمل': 'time work',
+                        Provider.of<LanguageProvider>(context,
+                                    listen: false)
+                                .isArabic
+                            ? 'وقت العمل'
+                            : 'time work',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -988,8 +1082,11 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                             showTimeSeparator: true,
                             pickerTextStyle:
                                 TextStyle(fontSize: 20.0, color: Colors.black),
-                            pickerTitle: Text(
-                                Provider.of<LanguageProvider>(context).isArabic ? 'متى تريد فتح الملعب في اليوم؟': 'when you will open stadium in each day ?'),
+                            pickerTitle: Text(Provider.of<LanguageProvider>(
+                                        context, listen: false)
+                                    .isArabic
+                                ? 'متى تريد فتح الملعب في اليوم؟'
+                                : 'when you will open stadium in each day ?'),
                             initialTime: Time(hours: 7, minutes: 30),
                             onSubmit: (timeStartValue) {
                               final formattedTime =
@@ -1009,7 +1106,12 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                         readOnly: true,
                         textAlign: TextAlign.center,
                         decoration: InputDecoration(
-                          hintText: Provider.of<LanguageProvider>(context).isArabic ? 'بداية من': 'start from',
+                          hintText:
+                              Provider.of<LanguageProvider>(context,
+                                          listen: false)
+                                      .isArabic
+                                  ? 'بداية من'
+                                  : 'start from',
                           hintStyle: TextStyle(fontSize: 16.0),
                           fillColor: Colors.white60,
                           filled: true,
@@ -1071,8 +1173,11 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                             showTimeSeparator: true,
                             pickerTextStyle:
                                 TextStyle(fontSize: 20.0, color: Colors.black),
-                            pickerTitle: Text(
-                               Provider.of<LanguageProvider>(context).isArabic ?'متى تريد فتح الملعب في اليوم؟': 'when you will open stadium in each day ?'),
+                            pickerTitle: Text(Provider.of<LanguageProvider>(
+                                        context, listen: false)
+                                    .isArabic
+                                ? 'متى تريد فتح الملعب في اليوم؟'
+                                : 'when you will open stadium in each day ?'),
                             initialTime: Time(hours: 7, minutes: 30),
                             onSubmit: (timeEndValue) {
                               final formattedTime =
@@ -1091,7 +1196,12 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                         readOnly: true,
                         textAlign: TextAlign.center,
                         decoration: InputDecoration(
-                          hintText: Provider.of<LanguageProvider>(context).isArabic ? 'ينتهي في': 'End on',
+                          hintText:
+                              Provider.of<LanguageProvider>(context,
+                                          listen: false)
+                                      .isArabic
+                                  ? 'ينتهي في'
+                                  : 'End on',
                           hintStyle: TextStyle(fontSize: 16.0),
                           fillColor: Colors.white60,
                           filled: true,
@@ -1122,7 +1232,9 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        Provider.of<LanguageProvider>(context).isArabic ? ' أيام العمل': 'work days',
+                        Provider.of<LanguageProvider>(context).isArabic
+                            ? ' أيام العمل'
+                            : 'work days',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -1224,7 +1336,9 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        Provider.of<LanguageProvider>(context).isArabic ? 'انشر ملعبك': 'Post your stadium',
+                        Provider.of<LanguageProvider>(context).isArabic
+                            ? 'انشر ملعبك'
+                            : 'Post your stadium',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -1240,14 +1354,38 @@ class _AddNewStadiumState extends State<AddNewStadium> {
                 SizedBox(
                   height: 50.0,
                   child: Create_GradiantGreenButton(
-                    onButtonPressed: _handlePostButtonPressed,
-                    content: Text(
-                      Provider.of<LanguageProvider>(context).isArabic ? 'انشر': 'Post',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'eras-itc-bold',
-                          fontSize: 24.0),
-                    ),
+                    onButtonPressed: () async {
+                      setState(() {
+                        isLoading = true;
+                      });
+                      await _handlePostButtonPressed();
+                      setState(() {
+                        isLoading = false;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            Provider.of<LanguageProvider>(context, listen: false).isArabic
+                                ? 'تم إضافة الملعب بنجاح'
+                                : 'Stadium added successfully',
+                          ),
+                        ),
+                      );
+                      Navigator.pushNamed(context, '/home_owner');
+                    },
+                    content: isLoading
+                        ? CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          )
+                        : Text(
+                            Provider.of<LanguageProvider>(context, listen: false).isArabic
+                                ? 'انشر'
+                                : 'Post',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'eras-itc-bold',
+                                fontSize: 24.0),
+                          ),
                   ),
                 ),
                 SizedBox(height: 10.0),
@@ -1256,376 +1394,7 @@ class _AddNewStadiumState extends State<AddNewStadium> {
           ),
         ),
 
-        //location popup
-//         Stack(
-//           children: [
-//             Visibility(
-//               visible: locationPopup,
-//               child: Container(
-//                 width: double.infinity,
-//                 color: Colors.transparent,
-//               ),
-//             ),
-//             Center(
-//               child: AnimatedContainer(
-//                   duration: Duration(milliseconds: 500),
-//                   width: double.infinity,
-//                   height: locationPopupHeight,
-//                   margin: EdgeInsets.symmetric(horizontal: 32.0),
-//                   decoration: BoxDecoration(
-//                     color: Colors.white,
-//                     borderRadius: BorderRadius.circular(30.0),
-//                     boxShadow: [
-//                       BoxShadow(
-//                         color: Colors.black.withOpacity(0.75),
-//                         blurRadius: 100.0,
-//                         offset: Offset(0, 0),
-//                       ),
-//                     ],
-//                   ),
-//                   child: Stack(
-//                     children: [
-// //close button
-//                       Positioned(
-//                         top: 10.0,
-//                         right: 10.0,
-//                         child: IconButton(
-//                           onPressed: () {
-//                             setState(() {
-//                               locationPopup = false;
-//                               locationPopupHeight = 0.0;
-//                             });
-//                           },
-//                           icon: Icon(Icons.close),
-//                         ),
-//                       ),
-// //content and done button
-//                       Center(
-//                         child: SingleChildScrollView(
-//                           child: Column(
-//                             children: [
-//                               SizedBox(
-//                                 height: 30.0,
-//                               ),
-//                               Text("select your location",
-//                                   style: TextStyle(
-//                                       fontSize: 20.0,
-//                                       color: const Color.fromARGB(80, 0, 0, 0),
-//                                       fontFamily: 'eras-itc-demi')),
-//                               SizedBox(height: 12.0),
-//                               Text(
-//                                 'if you don't find your place please write your place before \nyour neighborhood',
-//                                 style: TextStyle(
-//                                   color: Colors.black,
-//                                   fontSize: 10.0,
-//                                 ),
-//                                 textAlign: TextAlign.center,
-//                               ), //inputs
-//                               SizedBox(height: 60.0),
-//                               //city
-//                               ListTile(
-//                                 leading: Container(
-//                                   padding: EdgeInsets.all(8.0),
-//                                   width: 40.0,
-//                                   decoration: BoxDecoration(
-//                                     shape: BoxShape.circle,
-//                                     color: Colors.white,
-//                                     boxShadow: [
-//                                       BoxShadow(
-//                                         color: Color(0x7C000000),
-//                                         blurRadius: 10.0,
-//                                       ),
-//                                     ],
-//                                   ),
-//                                   child: Image.asset(
-//                                     'assets/home_loves_tickets_top/imgs/city_Vector.png',
-//                                     fit: BoxFit.contain,
-//                                   ),
-//                                 ),
-//                                 title: Container(
-//                                   width: double.infinity,
-//                                   margin: EdgeInsets.symmetric(
-//                                     horizontal: 20.0,
-//                                   ),
-//                                   height: 40.0,
-//                                   decoration: BoxDecoration(
-//                                     color: Colors.white,
-//                                     boxShadow: [
-//                                       BoxShadow(
-//                                         color: Color(0x7C000000),
-//                                         blurRadius: 10.0,
-//                                       ),
-//                                     ],
-//                                     borderRadius: BorderRadius.circular(10.0),
-//                                   ),
-//                                   child: Center(
-//                                     child: DropdownButton<String>(
-//                                       onChanged: (String? cityValue) {
-//                                         setState(() {
-//                                           visibleOfPlace = true;
-//                                           citySelected = cityValue;
-//                                           placesOfCityOnSelected = null;
-//                                           placeSelected = null;
-//                                         });
-//                                         placesOfCityOnSelected =
-//                                             egyptGovernoratesAndCenters[
-//                                                 cityValue];
-//                                       },
-//                                       items: egyptGovernorates.map((city) {
-//                                         return DropdownMenuItem<String>(
-//                                           value: city,
-//                                           child: Text(city),
-//                                         );
-//                                       }).toList(),
-//                                       menuMaxHeight: 300.0,
-//                                       value: citySelected,
-//                                       hint: Text('select City'),
-//                                       icon: Icon(
-//                                         Icons.arrow_drop_down_circle_outlined,
-//                                         size: 30.0,
-//                                         color: mainColor,
-//                                       ),
-//                                       style: TextStyle(
-//                                         color: Colors.black,
-//                                         fontSize: 18.0,
-//                                       ),
-//                                       alignment: Alignment.center,
-//                                       underline: null,
-//                                       borderRadius: BorderRadius.circular(
-//                                         20.0,
-//                                       ),
-//                                     ),
-//                                   ),
-//                                 ),
-//                               ),
-
-//                               //place
-//                               Visibility(
-//                                 visible: visibleOfPlace,
-//                                 child: Padding(
-//                                   padding: EdgeInsets.only(top: 20.0),
-//                                   child: ListTile(
-//                                     leading: Container(
-//                                       padding: EdgeInsets.all(8.0),
-//                                       width: 40.0,
-//                                       decoration: BoxDecoration(
-//                                         shape: BoxShape.circle,
-//                                         color: Colors.white,
-//                                         boxShadow: [
-//                                           BoxShadow(
-//                                             color: Color(0x7C000000),
-//                                             blurRadius: 10.0,
-//                                           ),
-//                                         ],
-//                                       ),
-//                                       child: Image.asset(
-//                                         'assets/home_loves_tickets_top/imgs/stash_pin-place.png',
-//                                         fit: BoxFit.contain,
-//                                       ),
-//                                     ),
-//                                     title: Container(
-//                                       width: double.infinity,
-//                                       margin: EdgeInsets.symmetric(
-//                                         horizontal: 20.0,
-//                                       ),
-//                                       height: 40.0,
-//                                       decoration: BoxDecoration(
-//                                         color: Colors.white,
-//                                         boxShadow: [
-//                                           BoxShadow(
-//                                             color: Color(0x7C000000),
-//                                             blurRadius: 10.0,
-//                                           ),
-//                                         ],
-//                                         borderRadius: BorderRadius.circular(
-//                                           10.0,
-//                                         ),
-//                                       ),
-//                                       child: Center(
-//                                         child: DropdownButton<String>(
-//                                           items: placesOfCityOnSelected?.map((
-//                                             String place,
-//                                           ) {
-//                                             return DropdownMenuItem<String>(
-//                                               child: Text(place),
-//                                               value: place,
-//                                             );
-//                                           }).toList(),
-//                                           onChanged: (String? placeValue) {
-//                                             setState(() {
-//                                               visibleOfNeighborhood = true;
-//                                               placeSelected = placeValue;
-//                                             });
-//                                           },
-//                                           menuMaxHeight: 300.0,
-//                                           value: placeSelected,
-//                                           hint: Text('select place'),
-//                                           icon: Icon(
-//                                             Icons
-//                                                 .arrow_drop_down_circle_outlined,
-//                                             size: 30.0,
-//                                             color: mainColor,
-//                                           ),
-//                                           style: TextStyle(
-//                                             color: Colors.black,
-//                                             fontSize: 18.0,
-//                                           ),
-//                                           alignment: Alignment.center,
-//                                           underline: null,
-//                                           borderRadius: BorderRadius.circular(
-//                                             20.0,
-//                                           ),
-//                                         ),
-//                                       ),
-//                                     ),
-//                                   ),
-//                                 ),
-//                               ),
-
-//                               //neighborhood
-//                               Visibility(
-//                                 visible: visibleOfNeighborhood,
-//                                 child: Padding(
-//                                   padding: EdgeInsets.symmetric(
-//                                     vertical: 20.0,
-//                                   ),
-//                                   child: ListTile(
-//                                     leading: Container(
-//                                       padding: EdgeInsets.all(8.0),
-//                                       width: 40.0,
-//                                       decoration: BoxDecoration(
-//                                         shape: BoxShape.circle,
-//                                         color: Colors.white,
-//                                         boxShadow: [
-//                                           BoxShadow(
-//                                             color: Color(0x7C000000),
-//                                             blurRadius: 10.0,
-//                                           ),
-//                                         ],
-//                                       ),
-//                                       child: Image.asset(
-//                                         'assets/home_loves_tickets_top/imgs/nighborhood.png',
-//                                         fit: BoxFit.contain,
-//                                       ),
-//                                     ),
-//                                     title: Container(
-//                                       width: double.infinity,
-//                                       margin: EdgeInsets.symmetric(
-//                                         horizontal: 20.0,
-//                                       ),
-//                                       height: 40.0,
-//                                       decoration: BoxDecoration(
-//                                         color: Colors.white,
-//                                         boxShadow: [
-//                                           BoxShadow(
-//                                             color: Color(0x7C000000),
-//                                             blurRadius: 10.0,
-//                                           ),
-//                                         ],
-//                                         borderRadius: BorderRadius.circular(
-//                                           10.0,
-//                                         ),
-//                                       ),
-//                                       child: TextField(
-//                                         controller: neighborhoodEnterd,
-//                                         textAlign: TextAlign.center,
-//                                         style: TextStyle(
-//                                           color: Colors.black,
-//                                           fontSize: 18.0,
-//                                         ),
-//                                         keyboardType: TextInputType.text,
-//                                         textInputAction: TextInputAction.done,
-//                                         decoration: InputDecoration(
-//                                           border: InputBorder.none,
-//                                           contentPadding: EdgeInsets.only(
-//                                             bottom: 10.0,
-//                                           ),
-//                                           hintText: 'neighborhood',
-//                                         ),
-//                                       ),
-//                                     ),
-//                                   ),
-//                                 ),
-//                               ),
-
-//                               SizedBox(height: 20.0),
-//                               //button
-//                               Visibility(
-//                                 visible: checkInputs(),
-//                                 child: SizedBox(
-//                                   height: 50.0,
-//                                   child: Create_GradiantGreenButton(
-//                                     content: Text(
-//                                       'Done',
-//                                       style: TextStyle(
-//                                           color: Colors.white,
-//                                           fontFamily: 'eras-itc-demi',
-//                                           fontSize: 20.0),
-//                                     ),
-//                                     onButtonPressed: () {
-//                                       if (citySelected == 'another' &&
-//                                               neighborhoodEnterd.text.isEmpty ||
-//                                           placeSelected == 'another' &&
-//                                               neighborhoodEnterd.text.isEmpty) {
-//                                         showDialog(
-//                                           context: context,
-//                                           barrierColor: const Color.fromARGB(
-//                                               113, 0, 0, 0),
-//                                           builder: (BuildContext context) {
-//                                             return AlertDialog(
-//                                               elevation: 120,
-//                                               backgroundColor: Colors.white,
-//                                               title: Row(
-//                                                 children: [
-//                                                   Icon(Icons.error,
-//                                                       color: Colors.red),
-//                                                   SizedBox(width: 8.0),
-//                                                   Text("infull location"),
-//                                                 ],
-//                                               ),
-//                                               content: Text(
-//                                                 "Please, write a full location in neightborhood field.",
-//                                                 style: TextStyle(
-//                                                   fontSize: 12.0,
-//                                                   color: const Color.fromARGB(
-//                                                       255, 0, 0, 0),
-//                                                 ),
-//                                               ),
-//                                               actions: [
-//                                                 TextButton(
-//                                                   onPressed: () {
-//                                                     Navigator.of(context).pop();
-//                                                   },
-//                                                   child: Text("OK",
-//                                                       style: TextStyle(
-//                                                         fontSize: 12.0,
-//                                                         color: mainColor,
-//                                                       )),
-//                                                 ),
-//                                               ],
-//                                             );
-//                                           },
-//                                         );
-//                                       } else {
-//                                         setState(() {
-//                                           initValueOflocation();
-//                                           locationPopupHeight = 0.0;
-//                                           locationPopup = false;
-//                                         });
-//                                       }
-//                                     },
-//                                   ),
-//                                 ),
-//                               ),
-//                             ],
-//                           ),
-//                         ),
-//                       ),
-//                     ],
-//                   )),
-//             ),
-//           ],
-//         )
+    
       ]),
     );
   }

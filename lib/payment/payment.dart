@@ -1,6 +1,8 @@
 import 'package:bottom_picker/bottom_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:graduation_project_main/payment/done.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/provider/language_provider.dart';
@@ -11,16 +13,12 @@ import 'package:numberpicker/numberpicker.dart';
 class Payment extends StatefulWidget {
   @override
   State<Payment> createState() => _PaymentState();
-  final String stadiumName;
-  final String stadiumPrice;
-  final String stadiumLocation;
+
   final String stadiumID;
 
   Payment({
     required this.stadiumID,
-    required this.stadiumName,
-    required this.stadiumPrice,
-    required this.stadiumLocation,
+
   });
 }
 
@@ -37,6 +35,28 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
   bool fawry = false;
   bool cash = false;
 
+  bool isFormValid() {
+    return matchDate.isNotEmpty &&
+        matchTime.isNotEmpty &&
+        matchDuration.isNotEmpty &&
+        paymentWay.isNotEmpty;
+  }
+
+late Map<String, dynamic> stadiumData; // متغير يخزن بيانات الطالب
+
+Future<void> getStudentData() async {
+  DocumentSnapshot doc = await FirebaseFirestore.instance
+      .collection('stadiums')
+      .doc(widget.stadiumID)
+      .get();
+          stadiumData = doc.data() as Map<String, dynamic>;
+
+}
+
+initState() {
+  super.initState();
+  getStudentData();
+}
   void showDurationPicker(BuildContext context) {
     int hours = 1;
     int minutes = 0;
@@ -319,7 +339,7 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                       width: MediaQuery.of(context).size.width * 0.01,
                     ),
                     Text(
-                      "wembley",
+                      stadiumData['name'],
                       style: TextStyle(
                           color: mainColor,
                           fontSize: MediaQuery.of(context).size.width * 0.06,
@@ -328,7 +348,7 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                     ),
                     SizedBox(width: MediaQuery.of(context).size.width * 0.3),
                     Text(
-                      "200.LE",
+                      stadiumData['price'] + '00.LE',
                       style: TextStyle(
                           color: mainColor,
                           fontSize: MediaQuery.of(context).size.width * 0.05,
@@ -349,7 +369,7 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                       width: MediaQuery.of(context).size.width * 0.01,
                     ),
                     Text(
-                      "Assiut-new assiut city-suzan",
+                      stadiumData['location'],
                       style: TextStyle(
                         color: const Color.fromARGB(255, 0, 0, 0),
                         fontSize: MediaQuery.of(context).size.width * 0.03,
@@ -367,7 +387,7 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                         ),
                         SizedBox(width: 5),
                         Text(
-                          "3.8",
+                          stadiumData['rating'].toString(),
                           style: TextStyle(
                               color: const Color.fromARGB(255, 0, 0, 0),
                               fontSize:
@@ -407,110 +427,6 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                   ],
                 ),
                 const SizedBox(height: 40.0),
-
-                // Container(
-                //   padding:
-                //       EdgeInsets.all(MediaQuery.of(context).size.width * 0.03),
-                //   decoration: BoxDecoration(
-                //     color: Colors.transparent,
-                //     borderRadius: BorderRadius.circular(10),
-                //     border: Border.all(
-                //       color: const Color.fromARGB(80, 0, 185, 46),
-                //       width: MediaQuery.of(context).size.width * 0.0017,
-                //     ),
-                //   ),
-                //   child: Row(
-                //     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                //     children: [
-                //       Column(
-                //         children: [
-                //           Text(
-                //             "Day",
-                //             style: TextStyle(
-                //               color: mainColor,
-                //               fontSize:
-                //                   MediaQuery.of(context).size.width * 0.04,
-                //               fontFamily: "eras-itc-demi",
-                //             ),
-                //           ),
-                //           SizedBox(
-                //             height: MediaQuery.of(context).size.width * 0.02,
-                //           ),
-                //           Text(
-                //             "Friday",
-                //             style: TextStyle(
-                //               color: const Color.fromARGB(255, 0, 0, 0),
-                //               fontSize:
-                //                   MediaQuery.of(context).size.width * 0.03,
-                //             ),
-                //           ),
-                //           Text(
-                //             "6/5/2025",
-                //             style: TextStyle(
-                //               color: const Color.fromARGB(255, 0, 0, 0),
-                //               fontSize:
-                //                   MediaQuery.of(context).size.width * 0.03,
-                //             ),
-                //           ),
-                //         ],
-                //       ),
-                //       Column(
-                //         children: [
-                //           Text(
-                //             "Time",
-                //             style: TextStyle(
-                //                 color: mainColor,
-                //                 fontSize:
-                //                     MediaQuery.of(context).size.width * 0.04,
-                //                 fontFamily: "eras-itc-demi"),
-                //           ),
-                //           SizedBox(
-                //             height: MediaQuery.of(context).size.width * 0.04,
-                //           ),
-                //           Text(
-                //             "2:30",
-                //             style: TextStyle(
-                //               color: const Color.fromARGB(255, 0, 0, 0),
-                //               fontSize:
-                //                   MediaQuery.of(context).size.width * 0.03,
-                //             ),
-                //           ),
-                //         ],
-                //       ),
-                //       Column(
-                //         children: [
-                //           Text(
-                //             "Duration",
-                //             style: TextStyle(
-                //                 color: mainColor,
-                //                 fontSize:
-                //                     MediaQuery.of(context).size.width * 0.04,
-                //                 fontFamily: "eras-itc-demi"),
-                //           ),
-                //           SizedBox(
-                //             height: MediaQuery.of(context).size.width * 0.02,
-                //           ),
-                //           Text(
-                //             "1:30",
-                //             style: TextStyle(
-                //               color: const Color.fromARGB(255, 0, 0, 0),
-                //               fontSize:
-                //                   MediaQuery.of(context).size.width * 0.03,
-                //             ),
-                //           ),
-                //           Text(
-                //             "hour",
-                //             style: TextStyle(
-                //                 color: const Color.fromARGB(255, 0, 0, 0),
-                //                 fontSize:
-                //                     MediaQuery.of(context).size.width * 0.03,
-                //                 fontFamily: "light"),
-                //           ),
-                //         ],
-                //       ),
-                //     ],
-                //   ),
-                // ),
 
                 // date, time, duration
                 // payment way: fawary, credit card, cashr
@@ -823,7 +739,47 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                       ],
                     ),
                   ),
-                )
+                ),
+            SizedBox(height: 20),
+              Visibility(
+                visible: isFormValid(),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Done()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: mainColor,
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      'Continue',
+                      style: TextStyle(
+                        fontFamily: 'eras-itc-demi',
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            
+                 
+            SizedBox(height: 20),
+            Create_GradiantGreenButton(content: Text("verify booking"), onButtonPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => Done(),
+                ),
+              );
+              
+            })
               ],
             ),
           ),
