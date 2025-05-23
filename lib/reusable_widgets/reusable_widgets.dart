@@ -1,11 +1,11 @@
-import 'dart:io';
+// import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/provider/language_provider.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
 class StadiumCard extends StatefulWidget {
@@ -280,7 +280,6 @@ class DrawerItem extends StatelessWidget {
   }
 }
 
-//statful widget for the drawer
 class Create_Drawer extends StatefulWidget {
   final bool refreshData;
 
@@ -293,6 +292,7 @@ class Create_Drawer extends StatefulWidget {
 class _Create_DrawerState extends State<Create_Drawer> {
   String? username;
   String? profileImageUrl;
+
   @override
   void initState() {
     super.initState();
@@ -302,331 +302,270 @@ class _Create_DrawerState extends State<Create_Drawer> {
   @override
   void didUpdateWidget(Create_Drawer oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Refresh data if the refreshData flag is true
-    if (widget.refreshData) {
-      _loadUserData();
-    }
+    if (widget.refreshData) _loadUserData();
   }
 
   Future<void> _loadUserData() async {
-    final isArabic =
-        Provider.of<LanguageProvider>(context, listen: false).isArabic;
     final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      try {
-        // Get user data from Firestore
-        final docSnapshot = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
+    if (user == null) {
+      setState(() => username = 'Guest');
+      return;
+    }
 
-        if (docSnapshot.exists) {
-          final userData = docSnapshot.data();
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      final data = doc.data();
 
-          // Get user data
-          String? newUsername = userData?['username'];
-          String? newProfileImageUrl = userData?['profileImage'];
+      String? newUsername = data?['username'];
+      String? newProfileImageUrl = data?['profileImage'];
 
-          // Only update state if there are actual changes to avoid unnecessary rebuilds
-          if (newUsername != username ||
-              newProfileImageUrl != profileImageUrl) {
-            setState(() {
-              // Make sure we always display the username from Firestore if available
-              username = newUsername;
-              if (username == null || username!.isEmpty) {
-                username =
-                    user.displayName ?? user.email?.split('@')[0] ?? 'User';
-              }
-              profileImageUrl = newProfileImageUrl;
-              print('Updated profile image URL: $profileImageUrl');
-            });
-          }
-        } else {
-          // If document doesn't exist but user is logged in
-          setState(() {
-            username = user.displayName ?? user.email?.split('@')[0] ?? 'User';
-          });
-        }
-      } catch (e) {
-        print('Error loading user data: $e');
-        // Fallback to Firebase user data if Firestore fails
+      if (newUsername != username || newProfileImageUrl != profileImageUrl) {
         setState(() {
-          username = user.displayName ?? user.email?.split('@')[0] ?? 'User';
+          username = newUsername?.isNotEmpty == true
+              ? newUsername
+              : user.displayName ?? user.email?.split('@')[0] ?? 'User';
+          profileImageUrl = newProfileImageUrl;
         });
       }
-    } else {
-      // User is not logged in
+    } catch (e) {
       setState(() {
-        username = 'Guest';
+        username = user.displayName ?? user.email?.split('@')[0] ?? 'User';
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // User Google
     final isArabic = Provider.of<LanguageProvider>(context).isArabic;
-    final userr = FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser;
+
     return Stack(
       children: [
-        Container(
-          width: double.infinity,
-          margin: EdgeInsets.fromLTRB(14.0, 10.0, 24.0, 10.0),
+        _buildDrawerContent(context, isArabic, user),
+        _buildBackButton(context),
+      ],
+    );
+  }
+
+  Widget _buildDrawerContent(BuildContext context, bool isArabic, User? user) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.fromLTRB(14, 10, 24, 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 50),
+          _buildProfileImage(user),
+          const SizedBox(height: 20),
+          _buildUsernameRow(),
+          const SizedBox(height: 10),
+          _buildEmailText(user),
+          const SizedBox(height: 70),
+          _buildDrawerItemsRow(context, isArabic),
+          const SizedBox(height: 32),
+          _buildDrawerExtraRow(context, isArabic),
+          const SizedBox(height: 32),
+          _buildSettingsButton(context, isArabic),
+          const SizedBox(height: 32),
+          _buildBallImage(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileImage(User? user) {
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: mainColor, width: 3),
+      ),
+      child: profileImageUrl?.isNotEmpty == true
+          ? CircleAvatar(
+              radius: 60,
+              backgroundColor: Colors.white,
+              child: ClipOval(
+                child: Image.network(
+                  profileImageUrl!,
+                  width: 120,
+                  height: 120,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) =>
+                      Icon(Icons.person, size: 60, color: mainColor),
+                  loadingBuilder: (context, child, progress) => progress == null
+                      ? child
+                      : CircularProgressIndicator(
+                          value: progress.expectedTotalBytes != null
+                              ? progress.cumulativeBytesLoaded /
+                                  progress.expectedTotalBytes!
+                              : null,
+                          color: mainColor,
+                        ),
+                ),
+              ),
+            )
+          : user?.photoURL != null
+              ? CircleAvatar(
+                  radius: 60,
+                  backgroundImage: NetworkImage(user!.photoURL!),
+                  backgroundColor: Colors.white)
+              : CircleAvatar(
+                  radius: 60,
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.person_outline_rounded,
+                      size: 80, color: mainColor)),
+    );
+  }
+
+  Widget _buildUsernameRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Expanded(child: Divider(thickness: 2, color: mainColor)),
+        Expanded(
+          flex: 2,
+          child: Text(
+            username ?? 'Guest',
+            style: const TextStyle(
+                fontFamily: 'eras-itc-bold', fontSize: 24, color: Colors.black),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        Expanded(child: Divider(thickness: 2, color: mainColor)),
+      ],
+    );
+  }
+
+  Widget _buildEmailText(User? user) => Text(
+        user?.email ?? 'guest@gmail.com',
+        style: const TextStyle(
+            fontSize: 14,
+            fontFamily: 'eras-itc-light',
+            letterSpacing: 1.5,
+            color: Colors.black54),
+        textAlign: TextAlign.center,
+      );
+
+  Widget _buildDrawerItemsRow(BuildContext context, bool isArabic) {
+    return Row(
+      children: [
+        const SizedBox(width: 40),
+        Expanded(
+          child: DrawerItem(
+            title: isArabic ? "الرئيسية" : "Home",
+            icon: Image.asset(
+                "assets/home_loves_tickets_top/imgs/Vector_drawerHome.png",
+                width: 30),
+            onTap: () {},
+          ),
+        ),
+        const SizedBox(width: 32),
+        Expanded(
+          child: DrawerItem(
+            title: isArabic ? "الملف الشخصي" : "Profile",
+            icon: Image.asset(
+                "assets/home_loves_tickets_top/imgs/Vector_drawerProfile.png",
+                width: 30),
+            onTap: () => Navigator.pushNamed(context, '/profilepage'),
+          ),
+        ),
+        const SizedBox(width: 40),
+      ],
+    );
+  }
+
+  Widget _buildDrawerExtraRow(BuildContext context, bool isArabic) {
+    return Row(
+      children: [
+        const SizedBox(width: 40),
+        Expanded(
+          child: DrawerItem(
+            title: isArabic ? "تسجيل الخروج" : "Logout",
+            icon: Image.asset(
+                "assets/home_loves_tickets_top/imgs/vector_drawerLog_out.png",
+                width: 30),
+            onTap: () => Navigator.pushNamed(context, '/Welcome'),
+          ),
+        ),
+        const SizedBox(width: 32),
+        Expanded(
+          child: DrawerItem(
+            title: isArabic ? "عن التطبيق" : "About us",
+            icon: Icon(Icons.info, size: 30, color: Color(0xFF009926)),
+            onTap: () => Navigator.pushNamed(context, '/aboutApp'),
+          ),
+        ),
+        const SizedBox(width: 40),
+      ],
+    );
+  }
+
+  Widget _buildSettingsButton(BuildContext context, bool isArabic) {
+    return Expanded(
+      child: LayoutBuilder(
+        builder: (context, constraints) => Container(
+          margin: EdgeInsets.symmetric(horizontal: constraints.maxWidth * 0.11),
+          height: constraints.maxHeight * 0.15,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(30.0),
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              BoxShadow(
+                  color: mainColor.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 5)
+            ],
           ),
-          child: Column(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(
-                height: 50.0,
-              ),
-              //user image
-              Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: mainColor, width: 3.0),
-                ),
-                child: profileImageUrl != null && profileImageUrl!.isNotEmpty
-                    ? CircleAvatar(
-                        radius: 60.0,
-                        backgroundColor:
-                            const Color.fromARGB(255, 255, 255, 255),
-                        child: ClipOval(
-                          child: Image.network(
-                            profileImageUrl!,
-                            width: 120.0,
-                            height: 120.0,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              print('Error loading profile image: $error');
-                              return Icon(Icons.person,
-                                  size: 60, color: mainColor);
-                            },
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes !=
-                                          null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes!
-                                      : null,
-                                  color: mainColor,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      )
-                    : userr != null && userr.photoURL != null
-                        ? CircleAvatar(
-                            radius: 60.0,
-                            backgroundImage: NetworkImage(userr.photoURL!),
-                            backgroundColor:
-                                const Color.fromARGB(255, 255, 255, 255),
-                          )
-                        : CircleAvatar(
-                            radius: 60.0,
-                            backgroundColor:
-                                const Color.fromARGB(255, 255, 255, 255),
-                            child: Icon(Icons.person_outline_rounded,
-                                size: 80, color: mainColor),
-                          ),
-              ),
-              SizedBox(
-                height: 20.0,
-              ),
-
-              //username and line
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  //first line
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      height: 2.0,
-                      color: mainColor,
-                      width: 40.0,
-                    ),
-                  ),
-                  //username
-                  Expanded(
-                    flex: 2,
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Text(
-                        username ?? 'Guest',
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontFamily: 'eras-itc-bold',
-                            fontSize: 24.0),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                  //second line
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      height: 2.0,
-                      color: mainColor,
-                      width: 40.0,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              //email
+              Image.asset(
+                  "assets/home_loves_tickets_top/imgs/Vector_drawerSettings.png",
+                  width: 30),
+              SizedBox(width: constraints.maxWidth * 0.05),
               Text(
-                userr?.email ?? 'gust@gmail.com',
+                isArabic ? "الإعدادات" : "Settings",
                 style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 14.0,
-                  fontFamily: 'eras-itc-light',
-                  letterSpacing: 1.5,
-                ),
-                textAlign: TextAlign.center,
+                    fontSize: constraints.maxWidth * 0.025,
+                    fontFamily: "eras-itc-demi",
+                    color: Colors.black),
               ),
-              SizedBox(
-                height: 70.0,
-              ),
-              //options:
-              Row(
-                children: [
-                  SizedBox(width: 40.0),
-                  Expanded(
-                    child: DrawerItem(
-                        title: isArabic ? "الرئيسية" : "Home",
-                        icon: Image.asset(
-                            "assets/home_loves_tickets_top/imgs/Vector_drawerHome.png",
-                            width: 30.0),
-                        onTap: () {}),
-                  ),
-                  SizedBox(width: 32.0),
-                  Expanded(
-                    child: DrawerItem(
-                        title: isArabic ? "الملف الشخصي" : "Profile",
-                        icon: Image.asset(
-                            "assets/home_loves_tickets_top/imgs/Vector_drawerProfile.png",
-                            width: 30.0),
-                        onTap: () {
-                          Navigator.pushNamed(context, '/profilepage');
-                        }),
-                  ),
-                  SizedBox(width: 40.0),
-                ],
-              ),
-              SizedBox(height: 32.0),
-              Row(
-                children: [
-                  SizedBox(width: 40.0),
-                  Expanded(
-                    child: DrawerItem(
-                        title: isArabic ? "تسجيل الخروج" : "Logout",
-                        icon: Image.asset(
-                            "assets/home_loves_tickets_top/imgs/vector_drawerLog_out.png",
-                            width: 30.0),
-                        onTap: () {
-                          Navigator.pushNamed(context, '/Welcome');
-                        }),
-                  ),
-                  SizedBox(width: 32.0),
-                  Expanded(
-                    child: DrawerItem(
-                        title: isArabic ? "عن التطبيق" : "About us",
-                        icon: Icon(Icons.info, size: 30.0, color: mainColor),
-                        onTap: () {
-                          Navigator.pushNamed(context, '/aboutApp');
-                        }),
-                  ),
-                  SizedBox(width: 40.0),
-                ],
-              ),
-              SizedBox(height: 32.0),
-              Expanded(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return Container(
-                      margin: EdgeInsets.symmetric(
-                          horizontal: constraints.maxWidth * 0.11),
-                      height: constraints.maxHeight * 0.15,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(30.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: mainColor.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                              "assets/home_loves_tickets_top/imgs/Vector_drawerSettings.png",
-                              width: constraints.maxWidth * 0.1,
-                              height: constraints.maxHeight * 0.1),
-                          SizedBox(width: constraints.maxWidth * 0.05),
-                          Text(
-                            isArabic ? "الإعدادات" : "Settings",
-                            style: TextStyle(
-                                fontSize: constraints.maxWidth * 0.025,
-                                fontFamily: "eras-itc-demi",
-                                color: const Color.fromARGB(255, 0, 0, 0)),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-              SizedBox(width: 40.0),
-              SizedBox(height: 32.0),
-
-              //ball img
-              Expanded(
-                child: Stack(
-                  // clipBehavior: Clip.none,
-                  children: [
-                    Positioned(
-                      right: -90.0,
-                      bottom: -90.0,
-                      child: Center(
-                        // top: 0,
-                        child: Image.asset(
-                          'assets/home_loves_tickets_top/imgs/ball.png',
-                          width: 238.0,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )
             ],
           ),
         ),
-        // Back button
-        Positioned(
-          top: 30,
-          right: 30,
-          child: IconButton(
-            icon: Icon(
-              Icons.arrow_back_rounded,
-              color: const Color.fromARGB(255, 0, 0, 0),
-              size: 30,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+      ),
+    );
+  }
+
+  Widget _buildBallImage() {
+    return Expanded(
+      child: Stack(
+        children: [
+          Positioned(
+            right: -90,
+            bottom: -90,
+            child: Image.asset('assets/home_loves_tickets_top/imgs/ball.png',
+                width: 238),
           ),
-        ),
-      ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBackButton(BuildContext context) {
+    return Positioned(
+      top: 30,
+      right: 30,
+      child: IconButton(
+        icon:
+            const Icon(Icons.arrow_back_rounded, color: Colors.black, size: 30),
+        onPressed: () => Navigator.pop(context),
+      ),
     );
   }
 }

@@ -7,7 +7,7 @@ import 'package:graduation_project_main/payment/done.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/provider/language_provider.dart';
-import 'package:graduation_project_main/stripe_payment/payment_manger.dart';
+// import 'package:graduation_project_main/stripe_payment/payment_manger.dart';
 import 'package:provider/provider.dart';
 
 import 'package:numberpicker/numberpicker.dart';
@@ -577,7 +577,7 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        'payment method',
+                        'payment',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -794,7 +794,9 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
 
                 // SizedBox(height: 20),
                 Create_GradiantGreenButton(
-                    content: Text("verify booking"),
+                    content: Text("verify booking",
+                        style: TextStyle(
+                            fontFamily: 'eras-itc-demi', fontSize: 18.0)),
                     onButtonPressed: () async {
                       if (!isFormValid()) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -802,9 +804,14 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                         );
                         return;
                       }
+                      // Get username from email
+                      final email =
+                          FirebaseAuth.instance.currentUser?.email ?? '';
+                      final username = email.split('@')[0];
+
                       await FirebaseFirestore.instance
                           .collection("bookings")
-                          .doc()
+                          .doc(username)
                           .set({
                         "stadiumID": widget.stadiumID,
                         "playerID": FirebaseAuth.instance.currentUser?.uid,
@@ -821,20 +828,29 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                       });
                       // استدعاء دالة الدفع
                       try {
-                        await PaymentManger.makePayment(
-                            matchCost as int, "EGP");
-                        // يمكنك هنا إظهار رسالة نجاح أو الانتقال لصفحة أخرى
+                        // await PaymentManger.makePayment(
+                        //     matchCost as int, "EGP");
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => Done(
+                              bookID: FirebaseFirestore.instance
+                                  .collection("bookings")
+                                  .doc(username)
+                                  .id,
+                              matchTime: matchTime,
+                              matchDate: matchDate,
+                              stadiumID: widget.stadiumID,
+                              matchCost: matchCost.toString(),
+                              matchDuration: matchDuration,
+                            ),
+                          ),
+                        );
                       } catch (e) {
                         // يمكنك هنا إظهار رسالة خطأ
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Payment failed: $e')),
                         );
                       }
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => Done(),
-                        ),
-                      );
                     })
               ],
             ),

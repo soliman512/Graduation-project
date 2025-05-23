@@ -273,9 +273,14 @@ class Tickets extends StatelessWidget {
                     backgroundColor: Colors.white12,
                     radius: 6.0,
                   ),
-                  Image.asset(
-                      "assets/home_loves_tickets_top/imgs/ticket_active.png",
-                      width: 40.0)
+                   IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/tickets');
+              },
+              icon:
+                  Image.asset("assets/home_loves_tickets_top/imgs/ticket_active.png"),
+              iconSize: 40.0,
+            ),
                 ],
               ),
 

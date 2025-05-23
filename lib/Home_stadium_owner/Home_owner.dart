@@ -1,4 +1,4 @@
-import 'dart:io';
+// import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -156,6 +156,7 @@ class _HomeState extends State<Home_Owner> {
   }
 
   PreferredSizeWidget _buildAppBar() {
+    // ignore: unused_local_variable
     final isArabic = Provider.of<LanguageProvider>(context).isArabic;
     return AppBar(
       toolbarHeight: 80.0,

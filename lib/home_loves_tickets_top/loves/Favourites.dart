@@ -368,9 +368,12 @@ class _FavouritesState extends State<Favourites> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Image.asset(
-              "assets/home_loves_tickets_top/imgs/favourite_active.png",
-              width: 40.0,
+          IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/');
+              },
+              icon: Image.asset("assets/home_loves_tickets_top/imgs/favourite_active.png"),
+              iconSize: 40.0,
             ),
             CircleAvatar(
               backgroundColor: Colors.white12,
