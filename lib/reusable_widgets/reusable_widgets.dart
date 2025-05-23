@@ -50,6 +50,8 @@ class _StadiumCardState extends State<StadiumCard> {
         .doc(widget.title)
         .get();
 
+    if (!mounted) return; // أضف هذا السطر قبل setState
+
     setState(() {
       isFavorite = favDoc.exists;
     });

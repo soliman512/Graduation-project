@@ -7,6 +7,7 @@ import 'package:graduation_project_main/payment/done.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/provider/language_provider.dart';
+import 'package:graduation_project_main/stripe_payment/payment_manger.dart';
 // import 'package:graduation_project_main/stripe_payment/payment_manger.dart';
 import 'package:provider/provider.dart';
 
@@ -819,6 +820,7 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                         "matchTime": matchTime,
                         "matchDuration": matchDuration,
                         "matchCost": matchCost,
+                        "isRated": false, // أضف هذا السطر
                       });
                       setState(() {
                         creditCard = true;
@@ -828,8 +830,8 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                       });
                       // استدعاء دالة الدفع
                       try {
-                        // await PaymentManger.makePayment(
-                        //     matchCost as int, "EGP");
+                        await PaymentManger.makePayment(
+                            100, "EGP");
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => Done(
