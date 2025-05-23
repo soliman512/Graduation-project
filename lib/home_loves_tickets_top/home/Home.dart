@@ -211,29 +211,64 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     addNotificationsToFirestore();
-    _getFirstStadiumIdAndShowPopup();
+    checkForUnratedBookings(); // استدعاء الدالة الجديدة هنا
   }
 
-  Future<void> _getFirstStadiumIdAndShowPopup() async {
-    // Get open count
-    final prefs = await SharedPreferences.getInstance();
-    int openCount = prefs.getInt('openCount') ?? 0;
-    openCount++;
-    await prefs.setInt('openCount', openCount);
+  Future<void> checkForUnratedBookings() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
 
-    // Get first stadium id from Firestore
-    final stadiumsSnapshot =
-        await FirebaseFirestore.instance.collection('stadiums').limit(1).get();
-    if (stadiumsSnapshot.docs.isNotEmpty) {
-      testStadiumId = stadiumsSnapshot.docs.first.id;
-    }
+    // جيب كل الحجوزات الخاصة باللاعب
+    final bookingsSnapshot = await FirebaseFirestore.instance
+        .collection('bookings')
+        .where('playerID', isEqualTo: user.uid)
+        .get();
 
-    // Show popup on second open only
-    if (openCount == 2 && testStadiumId != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        showStadiumReviewPopup(context, testStadiumId!);
-      });
+    for (var doc in bookingsSnapshot.docs) {
+      final data = doc.data();
+      final matchDate = data['matchDate'];
+      final matchTime = data['matchTime'];
+      final isRated = data['isRated'] ?? false;
+
+      // حول التاريخ والوقت لـ DateTime
+      final bookingDateTime = parseBookingDateTime(matchDate, matchTime);
+
+      // لو الحجز انتهى ولسه متقيمش
+      if (bookingDateTime.isBefore(DateTime.now()) && !isRated) {
+        // جيب اسم الملعب
+        final stadiumDoc = await FirebaseFirestore.instance
+            .collection('stadiums')
+            .doc(data['stadiumID'])
+            .get();
+        final stadiumName = stadiumDoc.data()?['name'] ?? '';
+
+        // اعرض popup التقييم
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showStadiumReviewPopup(context, data['stadiumID'], doc.id, stadiumName);
+        });
+        break; // اعرض واحد بس في كل مرة
+      }
     }
+  }
+
+  // دالة لتحويل التاريخ والوقت لـ DateTime
+  DateTime parseBookingDateTime(String matchDate, String matchTime) {
+    // matchDate: "23/5/2025", matchTime: "10:30 AM"
+    final dateParts = matchDate.split('/');
+    final timeParts = matchTime.split(' ');
+    final hourMinute = timeParts[0].split(':');
+    int hour = int.parse(hourMinute[0]);
+    int minute = int.parse(hourMinute[1]);
+    final isPM = timeParts[1].toUpperCase() == 'PM';
+    if (isPM && hour != 12) hour += 12;
+    if (!isPM && hour == 12) hour = 0;
+    return DateTime(
+      int.parse(dateParts[2]),
+      int.parse(dateParts[1]),
+      int.parse(dateParts[0]),
+      hour,
+      minute,
+    );
   }
 
   void _showRatingPopup() {
@@ -295,7 +330,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void showStadiumReviewPopup(BuildContext context, String stadiumId) {
+  void showStadiumReviewPopup(BuildContext context, String stadiumId, String bookingId, String stadiumName) {
     double rating = 0;
     TextEditingController commentController = TextEditingController();
 
@@ -307,7 +342,7 @@ class _HomeState extends State<Home> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text("Please rate the stadium and write your comment"),
+              Text("Please rate $stadiumName and write your comment"),
               SizedBox(height: 16),
               RatingBar.builder(
                 minRating: 1,
@@ -321,8 +356,7 @@ class _HomeState extends State<Home> {
               SizedBox(height: 16),
               TextField(
                 controller: commentController,
-                decoration:
-                    InputDecoration(hintText: "Write your comment here"),
+                decoration: InputDecoration(hintText: "Write your comment here"),
               ),
             ],
           ),
@@ -355,6 +389,11 @@ class _HomeState extends State<Home> {
                   'comment': commentController.text,
                   'timestamp': FieldValue.serverTimestamp(),
                 });
+                // علم الحجز أنه اتقيم
+                await FirebaseFirestore.instance
+                    .collection('bookings')
+                    .doc(bookingId)
+                    .update({'isRated': true});
                 Navigator.of(context).pop();
                 showSnackBar(context, "Your review has been submitted!");
               },

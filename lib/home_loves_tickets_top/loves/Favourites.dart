@@ -7,8 +7,6 @@ import 'package:provider/provider.dart';
 import 'package:graduation_project_main/provider/language_provider.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
 
-
-
 Widget buildCard({
   required BuildContext context,
   required String title,
@@ -16,12 +14,12 @@ Widget buildCard({
   required String imageUrl,
   required String price,
   required VoidCallback onRemove,
-  Color borderColor = const Color(0xff00B92E), // Default to green if not provided
+  Color borderColor =
+      const Color(0xff00B92E), // Default to green if not provided
 }) {
-      final bool isArabic = Provider.of<LanguageProvider>(context).isArabic;
+  final bool isArabic = Provider.of<LanguageProvider>(context).isArabic;
 
   return Center(
-    
     child: Container(
       width: 360.0,
       decoration: BoxDecoration(
@@ -59,12 +57,19 @@ Widget buildCard({
                 height: 120,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: Image.asset(
-                    imageUrl,
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
+                  child: imageUrl.startsWith('http')
+                      ? Image.network(
+                          imageUrl,
+                          width: double.infinity,
+                          height: double.infinity,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.asset(
+                          imageUrl,
+                          width: double.infinity,
+                          height: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
                 ),
               ),
               // Content section
@@ -221,6 +226,7 @@ Widget buildCard({
     ),
   );
 }
+
 Widget _buildEmptyMessage(String message) {
   return Center(
     child: Padding(
@@ -235,7 +241,6 @@ Widget _buildEmptyMessage(String message) {
     ),
   );
 }
-
 
 // Widget _buildRemoveButton() {
 //   return Container(
@@ -298,10 +303,9 @@ class Favourites extends StatefulWidget {
 }
 
 class _FavouritesState extends State<Favourites> {
-
   void _removeFromFavorites(String stadiumId) async {
     final userId = FirebaseAuth.instance.currentUser!.uid;
-    
+
     // Get stadium name before deleting
     final stadiumDoc = await FirebaseFirestore.instance
         .collection('users')
@@ -309,12 +313,12 @@ class _FavouritesState extends State<Favourites> {
         .collection('favorites')
         .doc(stadiumId)
         .get();
-    
+
     String stadiumName = stadiumId;
     if (stadiumDoc.exists && stadiumDoc.data()!.containsKey('title')) {
       stadiumName = stadiumDoc.data()!['title'] as String;
     }
-    
+
     // Delete from favorites
     await FirebaseFirestore.instance
         .collection('users')
@@ -325,10 +329,10 @@ class _FavouritesState extends State<Favourites> {
 
     // Show snackbar
     showSnackBar(
-      context, 
+      context,
       Provider.of<LanguageProvider>(context, listen: false).isArabic
-        ? "\u062a\u0645 \u0625\u0632\u0627\u0644\u0629 $stadiumName \u0645\u0646 \u0627\u0644\u0645\u0641\u0636\u0644\u0629"
-        : "$stadiumName removed from favorites"
+          ? "\u062a\u0645 \u0625\u0632\u0627\u0644\u0629 $stadiumName \u0645\u0646 \u0627\u0644\u0645\u0641\u0636\u0644\u0629"
+          : "$stadiumName removed from favorites",
     );
 
     setState(() {});
@@ -353,7 +357,9 @@ class _FavouritesState extends State<Favourites> {
                   fontSize: 24.0),
               children: [
                 TextSpan(text: isArabic ? "الم" : "Fa"),
-                TextSpan(text: isArabic ? "فض" : "v", style: TextStyle(color: Color(0xff00B92E))),
+                TextSpan(
+                    text: isArabic ? "فض" : "v",
+                    style: TextStyle(color: Color(0xff00B92E))),
                 TextSpan(text: isArabic ? "لات" : "ourites"),
               ]),
         ),
@@ -368,11 +374,12 @@ class _FavouritesState extends State<Favourites> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-          IconButton(
+            IconButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/');
               },
-              icon: Image.asset("assets/home_loves_tickets_top/imgs/favourite_active.png"),
+              icon: Image.asset(
+                  "assets/home_loves_tickets_top/imgs/favourite_active.png"),
               iconSize: 40.0,
             ),
             CircleAvatar(
@@ -400,7 +407,6 @@ class _FavouritesState extends State<Favourites> {
             ),
           ],
         ),
-
         alignment: Alignment.center,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -408,23 +414,24 @@ class _FavouritesState extends State<Favourites> {
         builder: (context) {
           final user = FirebaseAuth.instance.currentUser;
           if (user == null) {
-            return Center(child: Text(isArabic ? "الرجاء تسجيل الدخول" : "Please login"));
+            return Center(
+                child: Text(isArabic ? "الرجاء تسجيل الدخول" : "Please login"));
           }
-          
 
           return StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
                 .collection('users')
                 .doc(user.uid)
                 .collection('favorites')
-                .snapshots(), 
+                .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
               }
 
               if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return _buildEmptyMessage(isArabic ? "لا يوجد مفضلة" : 'No favorites yet');
+                return _buildEmptyMessage(
+                    isArabic ? "لا يوجد مفضلة" : 'No favorites yet');
               }
 
               final favorites = snapshot.data!.docs;
