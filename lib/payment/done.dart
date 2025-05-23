@@ -1,21 +1,43 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:graduation_project_main/constants/constants.dart';
 
 class Done extends StatefulWidget {
-  const Done({super.key});
+  final String bookID;
+  final String matchDate;
+  final String stadiumID;
+  final String matchCost;
+  final String matchDuration;
+  final String matchTime;
+
+  const Done({
+    required this.bookID,
+    required this.matchDate,
+    required this.matchTime,
+    required this.stadiumID,
+    required this.matchCost,
+    required this.matchDuration,
+    super.key,
+  });
 
   @override
   State<Done> createState() => _DoneState();
 }
 
 class _DoneState extends State<Done> {
+  String matchTime = '';
+  String stadiumName = '';
+  String stadiumLocation = '';
+
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((Duration timeStamp) {
-      // Call your method here
       Future.delayed(Duration(seconds: 1), () {
         _AnimatedCheck();
       });
     });
+    setCardDetails();
   }
 
   double opacity = 0;
@@ -229,327 +251,314 @@ class _DoneState extends State<Done> {
 
   int duration = 800;
   int durationAll = 600;
+
+  void setCardDetails() async {
+    // Get booking details
+    final bookingDoc = await FirebaseFirestore.instance
+        .collection("bookings")
+        .doc(widget.bookID)
+        .get();
+
+    matchTime = bookingDoc.data()?['matchTime'] ?? '';
+
+    // Get stadium details
+    final stadiumDoc = await FirebaseFirestore.instance
+        .collection("stadiums")
+        .doc(widget.stadiumID)
+        .get();
+
+    setState(() {
+      stadiumName = stadiumDoc.data()?['name'] ?? '';
+      stadiumLocation = stadiumDoc.data()?['location'] ?? '';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        toolbarHeight: 80,
         backgroundColor: Colors.transparent,
-        centerTitle: true,
-        title: RichText(
-          text: TextSpan(children: [
-            TextSpan(
-                text: "V",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 40,
-                    fontFamily: "myfont",
-                    fontWeight: FontWeight.bold)),
-            TextSpan(
-                text: "á",
-                style: TextStyle(
-                    color: Colors.green,
-                    fontSize: 40,
-                    fontFamily: "myfont",
-                    fontWeight: FontWeight.bold)),
-            TextSpan(
-                text: "monos",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 40,
-                    fontFamily: "myfont",
-                    fontWeight: FontWeight.bold))
-          ]),
-        ),
+        // centerTitle: true,
+        // title: Add_AppName(
+        //   font_size: 30,
+        //   align: TextAlign.center,
+        //   color: Colors.white,
+        // ),
       ),
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(
-            "assets/welcome_signup_login/imgs/Welcome.jpg",
-            fit: BoxFit.cover,
-          ),
+          backgroundImage,
+          blackBackground,
           Container(
-            color: Colors.black.withOpacity(0.7),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 250, 0, 0),
-            child: Column(
-              children: [
-                Text(
-                  "Booking Successfully",
-                  style: TextStyle(
-                    color: Colors.green,
-                    fontSize: 26,
-                    fontFamily: "myfont",
+            margin: EdgeInsets.fromLTRB(0, 200, 0, 0),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Text(
+                    "Booking Successfully",
+                    style: TextStyle(
+                      color: Colors.green,
+                      fontSize: 26,
+                      fontFamily: "eras-itc-demi",
+                    ),
                   ),
-                ),
-                Text(
-                  " has been completed",
-                  style: TextStyle(
-                      color: Colors.white, fontSize: 14, fontFamily: "myfont"),
-                ),
-                Container(
-                  width: 500,
-                  margin: EdgeInsets.fromLTRB(0, 300, 0, 0),
-                  child: Column(
-                    children: [
-                      Stack(
-                        children: [
-                          Image.asset(
-                            "assets/img/Frame 63.png",
-                            fit: BoxFit.cover,
-                          ),
-                          Positioned(
-                            left: 0,
-                            right: 0,
-                            top: 0,
-                            bottom: 100,
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                  Text(
+                    " has been completed",
+                    style: TextStyle(color: Colors.white, fontSize: 14),
+                  ),
+                  Container(
+                    width: 500,
+                    margin: EdgeInsets.fromLTRB(0, 300, 0, 0),
+                    child: Column(
+                      children: [
+                        Stack(
+                          children: [
+                            Image.asset(
+                              "assets/payment_successful_check/imgs/successCard.png",
+                              fit: BoxFit.cover,
+                            ),
+                            Positioned(
+                              left: 0,
+                              right: 0,
+                              top: 0,
+                              bottom: 100,
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      FirebaseAuth.instance.currentUser
+                                              ?.displayName ??
+                                          'Guest',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: "eras-itc-demi"),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              left: 20,
+                              top: 60,
+                              child: Row(
                                 children: [
+                                  Icon(Icons.calendar_month_rounded,
+                                      color: Colors.white, size: 20.0),
+                                  SizedBox(width: 4.0),
                                   Text(
-                                    "AbdelAziz Adel",
+                                    widget.matchDate.toString(),
                                     style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: "myfont"),
+                                        fontSize: 10,
+                                        fontFamily: "eras-itc-demi"),
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-                          Positioned(
-                            left: 20,
-                            top: 60,
-                            child: Row(
-                              children: [
-                                Image.asset(
-                                  "assets/img/🦆 icon _calendar_.png",
-                                  width: 20,
-                                ),
-                                Text(
-                                  "Friday 6/5/2025",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 10,
-                                      fontFamily: "myfont"),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Positioned(
-                            right: 20,
-                            top: 60,
-                            child: Row(
-                              children: [
-                                Image.asset(
-                                  "assets/img/🦆 icon _clock_.png",
-                                  width: 20,
-                                ),
-                                Text(
-                                  "2:30Pm-4:00Pm",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 10,
-                                      fontFamily: "myfont"),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Positioned(
-                            left: 0,
-                            right: 0,
-                            top: 90,
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                            Positioned(
+                              right: 20,
+                              top: 60,
+                              child: Row(
                                 children: [
+                                  Icon(Icons.access_time_filled,
+                                      color: Colors.white, size: 20.0),
                                   Text(
-                                    "Wembley",
+                                    matchTime + ' : ' + widget.matchDuration,
                                     style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 26,
+                                        fontSize: 10,
+                                        fontFamily: "eras-itc-demi"),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Positioned(
+                              left: 0,
+                              right: 0,
+                              top: 90,
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      stadiumName,
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 26,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: "eras-itc-demi"),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              left: 0,
+                              right: 0,
+                              top: 125,
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      stadiumLocation,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 8,
                                         fontWeight: FontWeight.bold,
-                                        fontFamily: "myfont"),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            left: 0,
-                            right: 0,
-                            top: 125,
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "Assiut_new assiut city_suzan",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 8,
-                                      fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                          Positioned(
-                            left: 20,
-                            top: 150,
-                            child: Container(
-                              width: 100,
-                              height: 30,
-                              decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(60),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "Booked",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontFamily: "myfont",
+                            // Positioned(
+                            //   left: 20,
+                            //   top: 150,
+                            //   child: Container(
+                            //     width: 100,
+                            //     height: 30,
+                            //     decoration: BoxDecoration(
+                            //       color: Colors.black,
+                            //       borderRadius: BorderRadius.circular(60),
+                            //     ),
+                            //     child: Row(
+                            //       mainAxisAlignment: MainAxisAlignment.center,
+                            //       children: [
+                            //         Text(
+                            //           "Booked",
+                            //           style: TextStyle(
+                            //             color: Colors.white,
+                            //             fontSize: 14,
+                            //             fontFamily: "eras-itc-demi",
+                            //           ),
+                            //         ),
+                            //         SizedBox(
+                            //           width: 10,
+                            //         ),
+                            //         Icon(Icons.price_check_rounded,
+                            //             color: Colors.white, size: 20.0),
+                            //       ],
+                            //     ),
+                            //   ),
+                            // ),
+                            Positioned(
+                              right: 20,
+                              top: 150,
+                              child: Container(
+                                width: 100,
+                                height: 30,
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius: BorderRadius.circular(60),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    RichText(
+                                      text: TextSpan(children: [
+                                        TextSpan(
+                                            text: widget.matchCost.toString(),
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontFamily: "eras-itc-demi",
+                                            )),
+                                        TextSpan(
+                                            text: ".LE",
+                                            style: TextStyle(
+                                              color: Colors.green,
+                                              fontSize: 16,
+                                              fontFamily: "eras-itc-demi",
+                                            ))
+                                      ]),
                                     ),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Container(
-                                    child: Image.asset(
-                                      "assets/img/icons8-visa-100.png",
-                                      width: 20,
-                                      height: 20,
-                                    ),
-                                  )
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          ),
-                          Positioned(
-                            right: 20,
-                            top: 150,
-                            child: Container(
-                              width: 100,
-                              height: 30,
-                              decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(60),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  RichText(
-                                    text: TextSpan(children: [
-                                      TextSpan(
-                                          text: "200.00",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontFamily: "myfont",
-                                          )),
-                                      TextSpan(
-                                          text: ".LE",
-                                          style: TextStyle(
-                                            color: Colors.green,
-                                            fontSize: 16,
-                                            fontFamily: "myfont",
-                                          ))
-                                    ]),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ],
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                Container(
-                  margin: EdgeInsets.fromLTRB(50, 0, 0, 0),
-                  child: Row(
-                    children: [
-                      Container(
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            shape: MaterialStateProperty.all(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(50))),
-                            backgroundColor:
-                                MaterialStateProperty.all(Color(0xFFFFFFFF)),
-                          ),
-                          onPressed: () {},
-                          child: Image.asset(
-                            "assets/img/🦆 icon _bookmark_.png",
-                            width: 10,
-                            height: 20,
-                          ),
+                  Container(
+                    margin: EdgeInsets.fromLTRB(50, 0, 0, 0),
+                    child: Row(
+                      children: [
+                        Container(
+                          child: ElevatedButton(
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(50))),
+                                backgroundColor: MaterialStateProperty.all(
+                                    Color(0xFFFFFFFF)),
+                              ),
+                              onPressed: () {},
+                              child: Icon(Icons.save_alt, size: 16)),
+                          margin: EdgeInsets.only(top: 20),
+                          width: 60,
+                          height: 35,
                         ),
-                        margin: EdgeInsets.only(top: 20),
-                        width: 60,
-                        height: 35,
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Container(
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            shape: MaterialStateProperty.all(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(50))),
-                            backgroundColor:
-                                MaterialStateProperty.all(Color(0xFFFFFFFF)),
-                          ),
-                          onPressed: () {},
-                          child: Image.asset(
-                            "assets/img/🦆 icon _share boxed_.png",
-                            width: 20,
-                            height: 20,
-                          ),
+                        SizedBox(
+                          width: 10,
                         ),
-                        margin: EdgeInsets.only(top: 20),
-                        width: 60,
-                        height: 35,
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Container(
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            shape: MaterialStateProperty.all(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(50))),
-                            backgroundColor:
-                                MaterialStateProperty.all(Color(0xFFFFFFFF)),
-                          ),
-                          onPressed: () {},
-                          child: Text(
-                            "Done",
-                            style: TextStyle(
-                                color: Colors.green,
-                                fontSize: 20,
-                                fontFamily: "myfont"),
-                          ),
+                        Container(
+                          child: ElevatedButton(
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(50))),
+                                backgroundColor: MaterialStateProperty.all(
+                                    Color(0xFFFFFFFF)),
+                              ),
+                              onPressed: () {},
+                              child: Icon(Icons.share_rounded, size: 16.0)),
+                          margin: EdgeInsets.only(top: 20),
+                          width: 60,
+                          height: 35,
                         ),
-                        margin: EdgeInsets.only(top: 20),
-                        width: 160,
-                        height: 35,
-                      )
-                    ],
-                  ),
-                )
-              ],
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Container(
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(50))),
+                              backgroundColor:
+                                  MaterialStateProperty.all(Color(0xFFFFFFFF)),
+                            ),
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/home');
+                            },
+                            child: Text(
+                              "Done",
+                              style: TextStyle(
+                                  color: Colors.green,
+                                  fontSize: 20,
+                                  fontFamily: "eras-itc-demi"),
+                            ),
+                          ),
+                          margin: EdgeInsets.only(top: 20),
+                          width: 160,
+                          height: 35,
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
           //check

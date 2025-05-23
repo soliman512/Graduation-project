@@ -1,4 +1,4 @@
-import 'dart:io';
+// import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -65,7 +65,6 @@ class _HomeState extends State<Home> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => Stadium_info_playerPG(
-                      
                           stadiumName: stadiums[index]['name'],
                           stadiumtitle: stadiums[index]['name'],
                           stadiumPrice: stadiums[index]['price'].toString(),
@@ -82,14 +81,17 @@ class _HomeState extends State<Home> {
           location: stadium['location'],
           price: stadium['price'].toString(),
           rating: 5,
-          selectedImages: List<String>.from(stadium['images'] ?? ['assets/cards_home_player/imgs/test.jpg']),
+          selectedImages: List<String>.from(
+              stadium['images'] ?? ['assets/cards_home_player/imgs/test.jpg']),
         );
       },
     );
   }
 
   /// Builds empty state message when no stadiums are found
-  Widget _buildEmptyMessage([String messageEn = "No stadiums found or shown", String messageAr = "لم يتم العثور على أي ملاعب أو عرضها"]) {
+  Widget _buildEmptyMessage(
+      [String messageEn = "No stadiums found or shown",
+      String messageAr = "لم يتم العثور على أي ملاعب أو عرضها"]) {
     final bool isArabic = Provider.of<LanguageProvider>(context).isArabic;
     final String message = isArabic ? messageAr : messageEn;
     return Center(
@@ -102,7 +104,8 @@ class _HomeState extends State<Home> {
             SizedBox(height: 16),
             Text(
               message,
-              style: TextStyle(fontSize: 20, color: Color.fromARGB(38, 0, 0, 0)),
+              style:
+                  TextStyle(fontSize: 20, color: Color.fromARGB(38, 0, 0, 0)),
               textAlign: isArabic ? TextAlign.right : TextAlign.left,
             ),
           ],
@@ -118,15 +121,22 @@ class _HomeState extends State<Home> {
   String daysBefore(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
-    
-    final bool isArabic = Provider.of<LanguageProvider>(context, listen: false).isArabic;
+
+    final bool isArabic =
+        Provider.of<LanguageProvider>(context, listen: false).isArabic;
 
     if (difference.inDays > 0) {
-      return isArabic ? 'منذ ${difference.inDays} أيام' : '${difference.inDays} days ago';
+      return isArabic
+          ? 'منذ ${difference.inDays} أيام'
+          : '${difference.inDays} days ago';
     } else if (difference.inHours > 0) {
-      return isArabic ? 'منذ ${difference.inHours} ساعات' : '${difference.inHours} hours ago';
+      return isArabic
+          ? 'منذ ${difference.inHours} ساعات'
+          : '${difference.inHours} hours ago';
     } else if (difference.inMinutes > 0) {
-      return isArabic ? 'منذ ${difference.inMinutes} دقائق' : '${difference.inMinutes} minutes ago';
+      return isArabic
+          ? 'منذ ${difference.inMinutes} دقائق'
+          : '${difference.inMinutes} minutes ago';
     } else {
       return '';
     }
@@ -136,47 +146,64 @@ class _HomeState extends State<Home> {
     {
       'stadiumName': 'Al Ahly Stadium',
       'price': 500,
-      'isEnd': false,
-      'date': DateTime.now(), // Current notification
+      'isEnd': true,
+      'date': DateTime.now().subtract(Duration(days: 2)), // Past booking
+      'state': 'completed'
     },
     {
       'stadiumName': 'Cairo Stadium',
       'price': 600,
-      'isEnd': true,
-      'date': DateTime(2024, 1, 15, 14, 30), // Jan 15, 2024 2:30 PM
+      'isEnd': false,
+      'date': DateTime.now().add(Duration(days: 2)), // Upcoming booking
+      'state': 'coming_soon'
     },
     {
       'stadiumName': 'Alexandria Stadium',
       'price': 450,
       'isEnd': false,
-      'date': DateTime(2024, 1, 10, 9, 15), // Jan 10, 2024 9:15 AM
-    },
-    {
-      'stadiumName': 'Olympic Stadium',
-      'price': 800,
-      'isEnd': true,
-      'date': DateTime(2024, 1, 5, 16, 45), // Jan 5, 2024 4:45 PM
-    },
-    {
-      'stadiumName': 'Borg El Arab Stadium',
-      'price': 700,
-      'isEnd': false,
-      'date': DateTime(2023, 12, 28, 11, 20), // Dec 28, 2023 11:20 AM
-    },
+      'date': DateTime.now().add(Duration(days: 5)), // Future booking
+      'state': 'coming_soon'
+    }
   ];
+
+  // Get current user's email username
+  String getCurrentUsername() {
+    final email = FirebaseAuth.instance.currentUser?.email ?? '';
+    return email.split('@')[0];
+  }
 
   // Add notification data to Firestore collection
   Future<void> addNotificationsToFirestore() async {
+    final prefs = await SharedPreferences.getInstance();
     final CollectionReference notificationsCollection =
         FirebaseFirestore.instance.collection('players_notifications');
 
-    for (var notification in notifications) {
-      await notificationsCollection.add({
-        'stadiumName': notification['stadiumName'],
-        'price': notification['price'],
-        'isEnd': notification['isEnd'],
-        'date': notification['date'],
-      });
+    // Get the current user's email username
+    final String username = getCurrentUsername();
+    final bool alreadyAdded =
+        prefs.getBool('notificationsAdded_$username') ?? false;
+
+    if (alreadyAdded) return;
+
+    // Check if notifications already exist for this user
+    final existingNotifications = await notificationsCollection
+        .where('username', isEqualTo: username)
+        .get();
+
+    // Only add notifications if they don't already exist
+    if (existingNotifications.docs.isEmpty) {
+      for (var notification in notifications) {
+        await notificationsCollection.add({
+          'username': username,
+          'stadiumName': notification['stadiumName'],
+          'price': notification['price'],
+          'isEnd': notification['isEnd'],
+          'date': Timestamp.fromDate(notification['date']),
+          'createdAt': FieldValue.serverTimestamp(),
+          'state': notification['state'],
+        });
+      }
+      await prefs.setBool('notificationsAdded_$username', true);
     }
   }
 
@@ -195,7 +222,8 @@ class _HomeState extends State<Home> {
     await prefs.setInt('openCount', openCount);
 
     // Get first stadium id from Firestore
-    final stadiumsSnapshot = await FirebaseFirestore.instance.collection('stadiums').limit(1).get();
+    final stadiumsSnapshot =
+        await FirebaseFirestore.instance.collection('stadiums').limit(1).get();
     if (stadiumsSnapshot.docs.isNotEmpty) {
       testStadiumId = stadiumsSnapshot.docs.first.id;
     }
@@ -284,7 +312,8 @@ class _HomeState extends State<Home> {
               RatingBar.builder(
                 minRating: 1,
                 itemSize: 30,
-                itemBuilder: (context, _) => Icon(Icons.star, color: Colors.amber),
+                itemBuilder: (context, _) =>
+                    Icon(Icons.star, color: Colors.amber),
                 onRatingUpdate: (newRating) {
                   rating = newRating;
                 },
@@ -292,7 +321,8 @@ class _HomeState extends State<Home> {
               SizedBox(height: 16),
               TextField(
                 controller: commentController,
-                decoration: InputDecoration(hintText: "Write your comment here"),
+                decoration:
+                    InputDecoration(hintText: "Write your comment here"),
               ),
             ],
           ),
@@ -304,11 +334,15 @@ class _HomeState extends State<Home> {
             TextButton(
               onPressed: () async {
                 if (rating == 0 || commentController.text.isEmpty) {
-                  showSnackBar(context, "Please select rating and write a comment");
+                  showSnackBar(
+                      context, "Please select rating and write a comment");
                   return;
                 }
                 final user = FirebaseAuth.instance.currentUser;
-                final userDoc = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
+                final userDoc = await FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(user!.uid)
+                    .get();
                 await FirebaseFirestore.instance
                     .collection('stadiums')
                     .doc(stadiumId)
@@ -334,8 +368,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-     final bool isArabic =
-                        Provider.of<LanguageProvider>(context).isArabic;
+    final bool isArabic = Provider.of<LanguageProvider>(context).isArabic;
     return SafeArea(
       child: Scaffold(
         backgroundColor: Color(0xFFFFFFFF),
@@ -346,7 +379,6 @@ class _HomeState extends State<Home> {
                   barrierColor: const Color.fromARGB(237, 0, 0, 0),
                   context: context,
                   builder: (BuildContext context) {
-                   
                     return Dialog(
                       backgroundColor: Colors.transparent,
                       alignment: Alignment.topCenter,
@@ -358,7 +390,12 @@ class _HomeState extends State<Home> {
                         padding: EdgeInsets.symmetric(
                             horizontal: 10.0, vertical: 20.0),
                         child: StreamBuilder<QuerySnapshot>(
-                            stream: itemsCollection.snapshots(),
+                            stream: FirebaseFirestore.instance
+                                .collection('players_notifications')
+                                .where('username',
+                                    isEqualTo: getCurrentUsername())
+                                .orderBy('date', descending: true)
+                                .snapshots(),
                             builder: (context,
                                 AsyncSnapshot<QuerySnapshot> snapshot) {
                               if (snapshot.connectionState ==
@@ -373,7 +410,46 @@ class _HomeState extends State<Home> {
                                 );
                               }
                               if (snapshot.hasError) {
-                                return Text(isArabic ? 'حدث خطأ: ${snapshot.error}' : 'Error: ${snapshot.error}');
+                                // Show Firestore index error in a user-friendly way
+                                final errorMsg = snapshot.error.toString();
+                                if (errorMsg.contains('FAILED_PRECONDITION') &&
+                                    errorMsg.contains('index')) {
+                                  return Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.error, color: Colors.red, size: 60),
+                                          SizedBox(height: 16),
+                                          Text(
+                                            isArabic
+                                                ? 'حدث خطأ في قاعدة البيانات. يتطلب الاستعلام فهرسًا في Firestore.'
+                                                : 'A database error occurred. The query requires an index in Firestore.',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 18.0,
+                                                fontWeight: FontWeight.w600),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          SizedBox(height: 12),
+                                          Text(
+                                            isArabic
+                                                ? 'يرجى التواصل مع الدعم الفني أو مسؤول التطبيق لإصلاح المشكلة.'
+                                                : 'Please contact support or the app admin to fix this issue.',
+                                            style: TextStyle(
+                                                color: Colors.white70,
+                                                fontSize: 14.0),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }
+                                return Text(isArabic
+                                    ? 'حدث خطأ: ${snapshot.error}'
+                                    : 'Error: ${snapshot.error}');
                               }
                               if (!snapshot.hasData ||
                                   snapshot.data!.docs.isEmpty) {
@@ -382,7 +458,10 @@ class _HomeState extends State<Home> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                      Text(isArabic ? 'لا توجد إشعارات' : 'No notifications',
+                                      Text(
+                                          isArabic
+                                              ? 'لا توجد إشعارات'
+                                              : 'No notifications',
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 20.0,
@@ -407,45 +486,19 @@ class _HomeState extends State<Home> {
                                     final String dayName =
                                         DateFormat('EEEE').format(date);
                                     final TimeOfDay time =
-                                        TimeOfDay.fromDateTime(
-                                            (data['date'] as Timestamp)
-                                                .toDate());
-                                    return Dismissible(
-                                      // Wrap in Dismissible for swipe actions
-                                      key: Key(documents[index].id),
-                                      background: Container(
-                                        // Left swipe background
-                                        color: Colors.transparent,
-                                        alignment: Alignment.centerLeft,
-                                        // padding: EdgeInsets.only(left: 20),
-                                        child: Icon(Icons.delete,
-                                            color: Colors.red),
-                                      ),
-                                      secondaryBackground: Container(
-                                        // Right swipe background
-                                        color: Colors.transparent,
-                                        alignment: Alignment.centerRight,
-                                        // padding: EdgeInsets.only(left: 20),
-                                        child: Icon(Icons.delete,
-                                            color: Colors.red),
-                                      ),
-                                      onDismissed: (deleteNotification) {
-                                        itemsCollection
-                                            .doc(documents[index].id)
-                                            .delete();
-                                      },
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(top: 30.0),
-                                        child: TicketCard(
-                                            stadiumName: data['stadiumName'],
-                                            price: data['price'].toString(),
-                                            date: date.toString() +
-                                                ' - ' +
-                                                dayName,
-                                            time: time.format(context),
-                                            isEnd: data['isEnd'],
-                                            daysBefore: daysBefore(date)),
+                                        TimeOfDay.fromDateTime(date);
+                                    final bool isComingSoon =
+                                        data['state'] == 'coming_soon';
+
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 30.0),
+                                      child: TicketCard(
+                                        stadiumName: data['stadiumName'],
+                                        price: data['price'].toString(),
+                                        date: date.toString() + ' - ' + dayName,
+                                        time: time.format(context),
+                                        isEnd: data['isEnd'],
+                                        daysBefore: daysBefore(date),
                                       ),
                                     );
                                   });
@@ -483,10 +536,13 @@ class _HomeState extends State<Home> {
                 backgroundColor: Colors.white12,
                 radius: 6.0,
               ),
-              Image.asset(
-                "assets/home_loves_tickets_top/imgs/home_active.png",
-                width: 40.0,
-                height: 40.0,
+              IconButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/');
+                },
+                icon: Image.asset(
+                    "assets/home_loves_tickets_top/imgs/home_active.png"),
+                iconSize: 40.0,
               ),
               CircleAvatar(
                 backgroundColor: Colors.white12,
@@ -548,9 +604,7 @@ class _HomeState extends State<Home> {
                               bottom: BorderSide(color: mainColor, width: 0.5),
                             ),
                           ),
-
                           child: TextField(
-
                             controller: searchController,
                             onChanged: (value) {
                               setState(() {
@@ -567,8 +621,9 @@ class _HomeState extends State<Home> {
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText:
-                                  isArabic ? "ما الذي تبحث عنه؟ ..." : "What the stadiums you looking for ? ...",
+                              hintText: isArabic
+                                  ? "ما الذي تبحث عنه؟ ..."
+                                  : "What the stadiums you looking for ? ...",
                               hintStyle: TextStyle(
                                 color: Color(0x73000000),
                                 fontSize: 12.0,
@@ -642,11 +697,17 @@ class _HomeState extends State<Home> {
                               ),
                               pickerTextStyle: TextStyle(
                                   fontSize: 20.0, color: Colors.black),
-                              pickerTitle: Text(isArabic ? 'اختار المحافظه' : 'Select Governorate',
+                              pickerTitle: Text(
+                                  isArabic
+                                      ? 'اختار المحافظه'
+                                      : 'Select Governorate',
                                   style: TextStyle(
                                       fontWeight: FontWeight.w800,
                                       fontSize: 24.0)),
-                              pickerDescription: Text(isArabic ?  ' اختار المحافظه التي فيها الملعب'  : 'Choose the governorate where the stadium is located',
+                              pickerDescription: Text(
+                                  isArabic
+                                      ? ' اختار المحافظه التي فيها الملعب'
+                                      : 'Choose the governorate where the stadium is located',
                                   style:
                                       TextStyle(fontWeight: FontWeight.w400)),
                               onSubmit: (selectedIndex) {
@@ -688,11 +749,17 @@ class _HomeState extends State<Home> {
                                     ),
                                     pickerTextStyle: TextStyle(
                                         fontSize: 20.0, color: Colors.black),
-                                    pickerTitle: Text(isArabic ? 'اختار المكان' : 'Select Place',
+                                    pickerTitle: Text(
+                                        isArabic
+                                            ? 'اختار المكان'
+                                            : 'Select Place',
                                         style: TextStyle(
                                             fontWeight: FontWeight.w800,
                                             fontSize: 24.0)),
-                                    pickerDescription: Text(isArabic ? 'اختر المكان الذي يقع فيه الملعب' : 'Choose the place where the stadium is located',
+                                    pickerDescription: Text(
+                                        isArabic
+                                            ? 'اختر المكان الذي يقع فيه الملعب'
+                                            : 'Choose the place where the stadium is located',
                                         style: TextStyle(
                                             fontWeight: FontWeight.w400)),
                                     onSubmit: (selectedPlaceIndex) {
@@ -790,7 +857,7 @@ class _HomeState extends State<Home> {
                                           'assets/home_loves_tickets_top/imgs/city_Vector.png'),
                                       SizedBox(width: 10.0),
                                       Text(
-                                        isArabic ? "المدينة" :   "City",
+                                        isArabic ? "المدينة" : "City",
                                         style: TextStyle(
                                           fontSize: 18.0,
                                           color: mainColor,
@@ -876,7 +943,7 @@ class _HomeState extends State<Home> {
                                         ]),
                                     child: Image.asset(
                                         'assets/home_loves_tickets_top/imgs/price_Vector.png')),
-                         )),
+                          )),
 
                       // Rating filter
                       Expanded(

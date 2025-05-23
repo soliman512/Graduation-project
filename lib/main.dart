@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:graduation_project_main/payment/payment.dart';
+// import 'package:graduation_project_main/payment/payment.dart';
 // import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:graduation_project_main/shared/aboutApp.dart';
 import 'package:graduation_project_main/stripe_payment/stripe_keys.dart';
