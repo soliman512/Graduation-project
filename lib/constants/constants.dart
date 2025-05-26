@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:graduation_project_main/provider/language_provider.dart';
 
-const Color mainColor = Color(0xff00B92E);
+const Color mainColor = Color.fromARGB(255, 0, 185, 46);
 const LinearGradient greenGradientColor = LinearGradient(
   begin: Alignment.centerLeft,
   end: Alignment.centerRight,
