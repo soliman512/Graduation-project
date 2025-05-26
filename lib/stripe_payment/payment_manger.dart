@@ -3,14 +3,15 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:graduation_project_main/stripe_payment/stripe_keys.dart';
 
 abstract class PaymentManger {
-  static Future<void> makePayment(int amount, String currency) async {
+  static Future<bool> makePayment(int amount, String currency) async {
     try {
       String clientSecret = await _getClientSecret((amount * 100).toString(), currency);
       await _initializePaymentSheet(clientSecret);
       await Stripe.instance.presentPaymentSheet();
+      return true; // تم الدفع بنجاح
     } on StripeException catch (e) {
       if (e.error.code == FailureCode.Canceled) {
-        return;
+        return false; // المستخدم عمل Cancel
       }
       throw Exception(e.error.localizedMessage);
     } catch (error) {
