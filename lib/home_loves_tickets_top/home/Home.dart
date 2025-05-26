@@ -218,7 +218,6 @@ class _HomeState extends State<Home> {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    // جيب كل الحجوزات الخاصة باللاعب
     final bookingsSnapshot = await FirebaseFirestore.instance
         .collection('bookings')
         .where('playerID', isEqualTo: user.uid)
@@ -228,25 +227,22 @@ class _HomeState extends State<Home> {
       final data = doc.data();
       final matchDate = data['matchDate'];
       final matchTime = data['matchTime'];
+      final matchDuration = data['matchDuration'] ?? "1h  -  0m";
       final isRated = data['isRated'] ?? false;
 
-      // حول التاريخ والوقت لـ DateTime
-      final bookingDateTime = parseBookingDateTime(matchDate, matchTime);
+      final bookingEndDateTime = parseBookingEndDateTime(matchDate, matchTime, matchDuration);
 
-      // لو الحجز انتهى ولسه متقيمش
-      if (bookingDateTime.isBefore(DateTime.now()) && !isRated) {
-        // جيب اسم الملعب
+      if (bookingEndDateTime.isBefore(DateTime.now()) && !isRated) {
         final stadiumDoc = await FirebaseFirestore.instance
             .collection('stadiums')
             .doc(data['stadiumID'])
             .get();
         final stadiumName = stadiumDoc.data()?['name'] ?? '';
 
-        // اعرض popup التقييم
         WidgetsBinding.instance.addPostFrameCallback((_) {
           showStadiumReviewPopup(context, data['stadiumID'], doc.id, stadiumName);
         });
-        break; // اعرض واحد بس في كل مرة
+        break;
       }
     }
   }
@@ -269,6 +265,38 @@ class _HomeState extends State<Home> {
       hour,
       minute,
     );
+  }
+
+  DateTime parseBookingEndDateTime(
+      String matchDate, String matchTime, String matchDuration) {
+    // matchDate: "23/5/2025", matchTime: "10:30 AM", matchDuration: "1h  -  30m"
+    final dateParts = matchDate.split('/');
+    final timeParts = matchTime.split(' ');
+    final hourMinute = timeParts[0].split(':');
+    int hour = int.parse(hourMinute[0]);
+    int minute = int.parse(hourMinute[1]);
+    final isPM = timeParts[1].toUpperCase() == 'PM';
+    if (isPM && hour != 12) hour += 12;
+    if (!isPM && hour == 12) hour = 0;
+
+    // Parse duration
+    final durationParts =
+        RegExp(r'(\d+)h\s*-\s*(\d+)m').firstMatch(matchDuration);
+    int durationHours = 0;
+    int durationMinutes = 0;
+    if (durationParts != null) {
+      durationHours = int.parse(durationParts.group(1)!);
+      durationMinutes = int.parse(durationParts.group(2)!);
+    }
+
+    final start = DateTime(
+      int.parse(dateParts[2]),
+      int.parse(dateParts[1]),
+      int.parse(dateParts[0]),
+      hour,
+      minute,
+    );
+    return start.add(Duration(hours: durationHours, minutes: durationMinutes));
   }
 
   void _showRatingPopup() {
@@ -330,7 +358,8 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void showStadiumReviewPopup(BuildContext context, String stadiumId, String bookingId, String stadiumName) {
+  void showStadiumReviewPopup(BuildContext context, String stadiumId,
+      String bookingId, String stadiumName) {
     double rating = 0;
     TextEditingController commentController = TextEditingController();
 
@@ -356,7 +385,8 @@ class _HomeState extends State<Home> {
               SizedBox(height: 16),
               TextField(
                 controller: commentController,
-                decoration: InputDecoration(hintText: "Write your comment here"),
+                decoration:
+                    InputDecoration(hintText: "Write your comment here"),
               ),
             ],
           ),
@@ -457,9 +487,11 @@ class _HomeState extends State<Home> {
                                     child: Padding(
                                       padding: const EdgeInsets.all(16.0),
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
-                                          Icon(Icons.error, color: Colors.red, size: 60),
+                                          Icon(Icons.error,
+                                              color: Colors.red, size: 60),
                                           SizedBox(height: 16),
                                           Text(
                                             isArabic

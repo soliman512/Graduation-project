@@ -810,17 +810,16 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                           FirebaseAuth.instance.currentUser?.email ?? '';
                       final username = email.split('@')[0];
 
-                      await FirebaseFirestore.instance
+                      final bookingDoc = await FirebaseFirestore.instance
                           .collection("bookings")
-                          .doc(username)
-                          .set({
+                          .add({
                         "stadiumID": widget.stadiumID,
                         "playerID": FirebaseAuth.instance.currentUser?.uid,
                         "matchDate": matchDate,
                         "matchTime": matchTime,
                         "matchDuration": matchDuration,
                         "matchCost": matchCost,
-                        "isRated": false, // أضف هذا السطر
+                        "isRated": false,
                       });
                       setState(() {
                         creditCard = true;
@@ -830,25 +829,31 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                       });
                       // استدعاء دالة الدفع
                       try {
-                        await PaymentManger.makePayment(
-                            100, "EGP");
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => Done(
-                              bookID: FirebaseFirestore.instance
-                                  .collection("bookings")
-                                  .doc(username)
-                                  .id,
-                              matchTime: matchTime,
-                              matchDate: matchDate,
-                              stadiumID: widget.stadiumID,
-                              matchCost: matchCost.toString(),
-                              matchDuration: matchDuration,
-                            ),
-                          ),
+                        bool paymentSuccess = await PaymentManger.makePayment(
+                          double.parse(stadiumData!['price'].toString()).toInt(),
+                          "EGP",
                         );
+                        if (paymentSuccess) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => Done(
+                                bookID: bookingDoc.id,
+                                matchTime: matchTime,
+                                matchDate: matchDate,
+                                stadiumID: widget.stadiumID,
+                                matchCost: matchCost.toString(),
+                                matchDuration: matchDuration,
+                              ),
+                            ),
+                          );
+                        } else {
+                          // المستخدم عمل Cancel أو قفل شاشة الدفع
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Payment cancelled by user.')),
+                          );
+                        }
                       } catch (e) {
-                        // يمكنك هنا إظهار رسالة خطأ
+                        // لو حصل Error حقيقي في الدفع
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Payment failed: $e')),
                         );
