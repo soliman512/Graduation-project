@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -296,6 +297,10 @@ Widget _buildEmptyMessage(String message) {
 //     ),
 //   );
 // }
+=======
+import '../../constants/constants.dart';
+import '../../reusable_widgets//reusable_widgets.dart';
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 
 class Favourites extends StatefulWidget {
   @override
@@ -303,6 +308,7 @@ class Favourites extends StatefulWidget {
 }
 
 class _FavouritesState extends State<Favourites> {
+<<<<<<< HEAD
   void _removeFromFavorites(String stadiumId) async {
     final userId = FirebaseAuth.instance.currentUser!.uid;
 
@@ -341,36 +347,61 @@ class _FavouritesState extends State<Favourites> {
   @override
   Widget build(BuildContext context) {
     final bool isArabic = Provider.of<LanguageProvider>(context).isArabic;
+=======
+  @override
+  Widget build(BuildContext context) {
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
     return SafeArea(
         child: Scaffold(
       backgroundColor: Color(0xFFFFFFFF),
       extendBodyBehindAppBar: false,
       appBar: Create_AppBar(
+<<<<<<< HEAD
         notificationState: () {},
+=======
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
         title: RichText(
           textAlign: TextAlign.center,
           text: TextSpan(
               style: TextStyle(
+<<<<<<< HEAD
                   fontFamily: isArabic ? "Cairo" : "eras-itc-bold",
+=======
+                  fontFamily: "eras-itc-bold",
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                   fontWeight: FontWeight.w900,
                   color: Color(0xff000000),
                   fontSize: 24.0),
               children: [
+<<<<<<< HEAD
                 TextSpan(text: isArabic ? "الم" : "Fa"),
                 TextSpan(
                     text: isArabic ? "فض" : "v",
                     style: TextStyle(color: Color(0xff00B92E))),
                 TextSpan(text: isArabic ? "لات" : "ourites"),
+=======
+                TextSpan(text: "Fa"),
+                TextSpan(text: "v", style: TextStyle(color: Color(0xff00B92E))),
+                TextSpan(text: "ourites"),
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
               ]),
         ),
       ),
       floatingActionButton: Container(
         width: double.infinity,
+<<<<<<< HEAD
         height: 60.0,
         margin: EdgeInsets.symmetric(horizontal: 16.0),
         decoration: BoxDecoration(
             color: Color(0xff000000),
             borderRadius: BorderRadius.circular(30.0)),
+=======
+        height: 50.0,
+        margin: EdgeInsets.symmetric(horizontal: 12.0),
+        decoration: BoxDecoration(
+            color: Color(0xff000000),
+            borderRadius: BorderRadius.circular(10.0)),
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -382,14 +413,18 @@ class _FavouritesState extends State<Favourites> {
                   "assets/home_loves_tickets_top/imgs/favourite_active.png"),
               iconSize: 40.0,
             ),
+<<<<<<< HEAD
             CircleAvatar(
               backgroundColor: Colors.white12,
               radius: 6.0,
             ),
+=======
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
             IconButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/home');
               },
+<<<<<<< HEAD
               icon: Image.asset("assets/home_loves_tickets_top/imgs/home.png"),
               iconSize: 40.0,
             ),
@@ -397,16 +432,28 @@ class _FavouritesState extends State<Favourites> {
               backgroundColor: Colors.white12,
               radius: 6.0,
             ),
+=======
+              icon: Image.asset(
+                  "assets/home_loves_tickets_top/imgs/home.png"),
+              iconSize: 40.0,
+            ),
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
             IconButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/tickets');
               },
+<<<<<<< HEAD
               icon:
                   Image.asset("assets/home_loves_tickets_top/imgs/ticket.png"),
+=======
+              icon: Image.asset(
+                  "assets/home_loves_tickets_top/imgs/ticket.png"),
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
               iconSize: 40.0,
             ),
           ],
         ),
+<<<<<<< HEAD
         alignment: Alignment.center,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -458,6 +505,20 @@ class _FavouritesState extends State<Favourites> {
           );
         },
       ),
+=======
+
+        // margin: EdgeInsets.only(left: 16),
+        // alignment: Alignment.center,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      body: Stack(children: [
+        backgroundImage_balls,
+        SingleChildScrollView(
+          child: Column(children: [],),
+        )
+      ],),
+    
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
     ));
   }
 }

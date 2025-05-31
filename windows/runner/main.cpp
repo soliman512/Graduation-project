@@ -27,7 +27,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   FlutterWindow window(project);
   Win32Window::Point origin(10, 10);
   Win32Window::Size size(1280, 720);
+<<<<<<< HEAD
   if (!window.Create(L"graduation_project_main", origin, size)) {
+=======
+  if (!window.CreateAndShow(L"welcome_signup_login", origin, size)) {
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
     return EXIT_FAILURE;
   }
   window.SetQuitOnClose(true);

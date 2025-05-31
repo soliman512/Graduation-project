@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Project-level configuration.
 cmake_minimum_required(VERSION 3.14)
 project(graduation_project_main LANGUAGES CXX)
@@ -11,6 +12,18 @@ set(BINARY_NAME "graduation_project_main")
 cmake_policy(VERSION 3.14...3.25)
 
 # Define build configuration option.
+=======
+cmake_minimum_required(VERSION 3.14)
+project(welcome_signup_login LANGUAGES CXX)
+
+set(BINARY_NAME "welcome_signup_login")
+
+cmake_policy(SET CMP0063 NEW)
+
+set(CMAKE_INSTALL_RPATH "$ORIGIN/lib")
+
+# Configure build options.
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 get_property(IS_MULTICONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 if(IS_MULTICONFIG)
   set(CMAKE_CONFIGURATION_TYPES "Debug;Profile;Release"
@@ -23,7 +36,11 @@ else()
       "Debug" "Profile" "Release")
   endif()
 endif()
+<<<<<<< HEAD
 # Define settings for the Profile build mode.
+=======
+
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 set(CMAKE_EXE_LINKER_FLAGS_PROFILE "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
 set(CMAKE_SHARED_LINKER_FLAGS_PROFILE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE}")
 set(CMAKE_C_FLAGS_PROFILE "${CMAKE_C_FLAGS_RELEASE}")
@@ -33,10 +50,13 @@ set(CMAKE_CXX_FLAGS_PROFILE "${CMAKE_CXX_FLAGS_RELEASE}")
 add_definitions(-DUNICODE -D_UNICODE)
 
 # Compilation settings that should be applied to most targets.
+<<<<<<< HEAD
 #
 # Be cautious about adding new options here, as plugins use this function by
 # default. In most cases, you should add new options to specific targets instead
 # of modifying this function.
+=======
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 function(APPLY_STANDARD_SETTINGS TARGET)
   target_compile_features(${TARGET} PUBLIC cxx_std_17)
   target_compile_options(${TARGET} PRIVATE /W4 /WX /wd"4100")
@@ -45,6 +65,7 @@ function(APPLY_STANDARD_SETTINGS TARGET)
   target_compile_definitions(${TARGET} PRIVATE "$<$<CONFIG:Debug>:_DEBUG>")
 endfunction()
 
+<<<<<<< HEAD
 # Flutter library and tool build rules.
 set(FLUTTER_MANAGED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/flutter")
 add_subdirectory(${FLUTTER_MANAGED_DIR})
@@ -53,6 +74,16 @@ add_subdirectory(${FLUTTER_MANAGED_DIR})
 add_subdirectory("runner")
 
 
+=======
+set(FLUTTER_MANAGED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/flutter")
+
+# Flutter library and tool build rules.
+add_subdirectory(${FLUTTER_MANAGED_DIR})
+
+# Application build
+add_subdirectory("runner")
+
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 # Generated plugin build rules, which manage building the plugins and adding
 # them to the application.
 include(flutter/generated_plugins.cmake)
@@ -87,12 +118,15 @@ if(PLUGIN_BUNDLED_LIBRARIES)
     COMPONENT Runtime)
 endif()
 
+<<<<<<< HEAD
 # Copy the native assets provided by the build.dart from all packages.
 set(NATIVE_ASSETS_DIR "${PROJECT_BUILD_DIR}native_assets/windows/")
 install(DIRECTORY "${NATIVE_ASSETS_DIR}"
    DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
    COMPONENT Runtime)
 
+=======
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 # Fully re-copy the assets directory on each build to avoid having stale files
 # from a previous install.
 set(FLUTTER_ASSET_DIR_NAME "flutter_assets")

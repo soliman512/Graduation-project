@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
+=======
+import 'package:welcome_signup_login/main.dart';
+import '../../constants/constants.dart';
+import '../../reusable_widgets/reusable_widgets.dart';
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 
 class Login_Signup_stdOwner extends StatelessWidget {
   @override
@@ -68,7 +74,11 @@ class Login_Signup_stdOwner extends StatelessWidget {
 
                     //login
                     Create_GradiantGreenButton(
+<<<<<<< HEAD
                       content: Text('login', style: TextStyle(color:Colors.white),),
+=======
+                      title: 'Login',
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                       onButtonPressed: () {
                         Navigator.pushNamed(context, '/login_stadium');
                       },

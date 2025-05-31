@@ -5,7 +5,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
+<<<<<<< HEAD
 	<string>Graduation Project Main</string>
+=======
+	<string>Welcome Signup Login</string>
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -13,7 +17,11 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
+<<<<<<< HEAD
 	<string>graduation_project_main</string>
+=======
+	<string>welcome_signup_login</string>
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -41,9 +49,13 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+<<<<<<< HEAD
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
+=======
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 	<true/>
 </dict>
 </plist>

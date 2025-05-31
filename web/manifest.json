@@ -1,6 +1,11 @@
 {
+<<<<<<< HEAD
     "name": "graduation_project_main",
     "short_name": "graduation_project_main",
+=======
+    "name": "welcome_signup_login",
+    "short_name": "welcome_signup_login",
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

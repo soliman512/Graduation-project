@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:provider/provider.dart';
 import 'package:graduation_project_main/provider/language_provider.dart';
+=======
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 
 const Color mainColor = Color(0xff00B92E);
 const LinearGradient greenGradientColor = LinearGradient(
@@ -14,6 +17,7 @@ const LinearGradient greenGradientColor = LinearGradient(
   ],
 );
 //logo
+<<<<<<< HEAD
 Image logo = Image.asset('assets/welcome_signup_login/imgs/logo.png',
     fit: BoxFit.cover, width: 90.0, height: 90.0);
 
@@ -48,21 +52,41 @@ Map<String, List<String>> getGovernoratesCenters(BuildContext context) {
 
 Image add_logo(double logoSize) {
   return Image.asset('assets/welcome_signup_login/imgs/logo.png',
+=======
+Image logo = Image.asset('../../assets/welcome_signup_login/imgs/logo.png',
+    fit: BoxFit.cover, width: 90.0, height: 90.0);
+
+Image big_logo = Image.asset('../../assets/welcome_signup_login/imgs/logo.png',
+    fit: BoxFit.cover, width: 158.0, height: 158.0);
+
+Image add_logo(double logoSize) {
+  return Image.asset('../../assets/welcome_signup_login/imgs/logo.png',
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
       fit: BoxFit.cover, width: logoSize, height: logoSize);
 }
 
 //background image
 Image backgroundImage = Image.asset(
+<<<<<<< HEAD
     'assets/welcome_signup_login/imgs/Welcome.jpg',
+=======
+    '../../assets/welcome_signup_login/imgs/welcome.jpg',
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
     fit: BoxFit.cover,
     width: 90.0,
     height: 90.0);
 
 //background image balls
 Opacity backgroundImage_balls = Opacity(
+<<<<<<< HEAD
     opacity: 0.02,
     child: Image.asset(
       'assets/sharedBackground.png',
+=======
+    opacity: 0.08,
+    child: Image.asset(
+      '../../../assets/sharedBackground.png',
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
       fit: BoxFit.fill,
     ));
 
@@ -72,6 +96,7 @@ Container blackBackground = Container(
   width: double.infinity,
   decoration: BoxDecoration(
       gradient: LinearGradient(colors: [
+<<<<<<< HEAD
     Color.fromARGB(22, 27, 27, 27),
     Color(0xD3111111),
     Color.fromARGB(255, 0, 0, 0),
@@ -146,11 +171,30 @@ List drawerOptions = [
         textAlign: isArabic ? TextAlign.right : TextAlign.left,
       );
     }),
+=======
+    Color(0x00000000),
+    Color(0x86000000),
+    Color(0xBE000000),
+  ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+);
+
+//drawer options
+List drawerOptions = [
+  // 0 : Home
+  {
+    'icon': Image.asset(
+        '../../../assets/home_loves_tickets_top/imgs/Vector_drawerHome.png'),
+    'title': Text(
+      'Home',
+      style: TextStyle(color: Colors.black, fontSize: 18.0),
+    ),
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
     'widtOfOption': 80.0
   },
   // 1 : Profile
   {
     'icon': Image.asset(
+<<<<<<< HEAD
         'assets/home_loves_tickets_top/imgs/Vector_drawerProfile.png'),
     'title': Builder(builder: (context) {
       final bool isArabic = Provider.of<LanguageProvider>(context).isArabic;
@@ -160,11 +204,19 @@ List drawerOptions = [
         textAlign: isArabic ? TextAlign.right : TextAlign.left,
       );
     }),
+=======
+        '../../../assets/home_loves_tickets_top/imgs/Vector_drawerProfile.png'),
+    'title': Text(
+      'Profile',
+      style: TextStyle(color: Colors.black, fontSize: 18.0),
+    ),
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
     'widtOfOption': 10.0
   },
   // 2 : Settings
   {
     'icon': Image.asset(
+<<<<<<< HEAD
         'assets/home_loves_tickets_top/imgs/vector_drawerSettings.png'),
     'title': Builder(builder: (context) {
       final bool isArabic = Provider.of<LanguageProvider>(context).isArabic;
@@ -174,11 +226,19 @@ List drawerOptions = [
         textAlign: isArabic ? TextAlign.right : TextAlign.left,
       );
     }),
+=======
+        '../../../assets/home_loves_tickets_top/imgs/vector_drawerSettings.png'),
+    'title': Text(
+      'Settings',
+      style: TextStyle(color: Colors.black, fontSize: 18.0),
+    ),
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
     'widtOfOption': 10.0
   },
   // 3 : Log out
   {
     'icon': Image.asset(
+<<<<<<< HEAD
         'assets/home_loves_tickets_top/imgs/vector_drawerLog_out.png'),
     'title': Builder(builder: (context) {
       final bool isArabic = Provider.of<LanguageProvider>(context).isArabic;
@@ -188,6 +248,13 @@ List drawerOptions = [
         textAlign: isArabic ? TextAlign.right : TextAlign.left,
       );
     }),
+=======
+        '../../../assets/home_loves_tickets_top/imgs/vector_drawerLog_out.png'),
+    'title': Text(
+      'Log out',
+      style: TextStyle(color: Colors.black, fontSize: 18.0),
+    ),
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
     'widtOfOption': 10.0
   },
 ];
@@ -197,6 +264,7 @@ double widthOfDrawer_SelectedOption = 80.0;
 
 // location/cities
 
+<<<<<<< HEAD
 // Function to get localized governorates list based on context - uses LanguageProvider directly
 List<String> getEgyptGovernorates(BuildContext context) {
   final bool isArabic = Provider.of<LanguageProvider>(context, listen: false).isArabic;
@@ -267,6 +335,8 @@ List<String> getEgyptGovernorates(BuildContext context) {
 }
 
 // For backward compatibility, keeping a static list
+=======
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 List<String> egyptGovernorates = [
   'Cairo',
   'Alexandria',
@@ -295,6 +365,7 @@ List<String> egyptGovernorates = [
   'Sohag',
   'South Sinai',
   'Suez',
+<<<<<<< HEAD
   'another'
 ];
 
@@ -305,12 +376,24 @@ Map<String, List<String>> egyptGovernoratesAndCenters = {
   'Port Said': ['Port Fouad', 'El Arab', 'El Manakh', 'El Dawahy', 'another'],
   'Luxor': ['Luxor', 'Armant', 'Esna', 'Tiba', 'another'],
   'Aswan': ['Aswan', 'Edfu', 'Kom Ombo', 'Nasr El Nuba', 'another'],
+=======
+];
+
+Map<String, List<String>> egyptGovernoratesAndCenters = {
+  'Cairo': ['Nasr City', 'Heliopolis', 'Maadi', 'Zamalek'],
+  'Alexandria': ['Montaza', 'Raml', 'Amreya', 'Attarin'],
+  'Giza': ['Dokki', 'Mohandessin', 'Haram', '6th of October'],
+  'Port Said': ['Port Fouad', 'El Arab', 'El Manakh', 'El Dawahy'],
+  'Luxor': ['Luxor', 'Armant', 'Esna', 'Tiba'],
+  'Aswan': ['Aswan', 'Edfu', 'Kom Ombo', 'Nasr El Nuba'],
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
   'Asyut': [
     'Asyut',
     'Dairut',
     'Manfalut',
     'Abnub',
     'New Assiut City',
+<<<<<<< HEAD
     'Abo Teej',
     'another'
   ],
@@ -349,11 +432,36 @@ Map<String, List<String>> egyptGovernoratesAndCenters = {
   'another': [
     'another',
   ]
+=======
+    'Abo Teej'
+  ],
+  'Beheira': ['Damanhour', 'Kafr El Dawwar', 'Rashid', 'Edku'],
+  'Beni Suef': ['Beni Suef', 'Nasser', 'Ihnasia', 'Biba'],
+  'Dakahlia': ['Mansoura', 'Talkha', 'Mit Ghamr', 'Dekernes'],
+  'Damietta': ['Damietta', 'Faraskur', 'Kafr Saad', 'Zarqa'],
+  'Faiyum': ['Faiyum', 'Sinnuris', 'Tamiya', 'Ibsheway'],
+  'Gharbia': ['Tanta', 'El Mahalla El Kubra', 'Kafr El Zayat', 'Zifta'],
+  'Ismailia': ['Ismailia', 'Qantara East', 'Qantara West', 'Fayed'],
+  'Kafr El Sheikh': ['Kafr El Sheikh', 'Desouk', 'Baltim', 'Sidi Salem'],
+  'Matruh': ['Marsa Matruh', 'El Alamein', 'Sallum', 'Siwa'],
+  'Minya': ['Minya', 'Beni Mazar', 'Maghagha', 'Mallawi'],
+  'Monufia': ['Shibin El Kom', 'Menouf', 'Ashmoun', 'Sadat City'],
+  'New Valley': ['Kharga', 'Dakhla', 'Farafra', 'Balat'],
+  'North Sinai': ['Arish', 'Sheikh Zuweid', 'Rafah', 'Bir al-Abed'],
+  'Qalyubia': ['Banha', 'Qalyub', 'Shubra El Kheima', 'Tukh'],
+  'Qena': ['Qena', 'Nag Hammadi', 'Qus', 'Abu Tesht'],
+  'Red Sea': ['Hurghada', 'Safaga', 'Quseer', 'Marsa Alam'],
+  'Sharqia': ['Zagazig', 'Belbeis', 'Minya El Qamh', 'Abu Hammad'],
+  'Sohag': ['Sohag', 'Akhmim', 'Girga', 'Tahta'],
+  'South Sinai': ['Sharm El Sheikh', 'Dahab', 'Nuweiba', 'Taba'],
+  'Suez': ['Arbaeen', 'Ganayen', 'Attaka', 'Faisal'],
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 };
 List<String>? placesOfCityOnSelected;
 String? citySelected;
 String? placeSelected;
 TextEditingController neighborhoodEnterd = TextEditingController();
+<<<<<<< HEAD
 
 
 // Function to get localized governorate widgets - uses LanguageProvider directly
@@ -456,3 +564,5 @@ List<Widget> gevornmentPlacesWidgets = egyptGovernoratesAndCenters
         );
       }).toList()
     : []; // Return an empty list if the selected city doesn't exist in the map
+=======
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958

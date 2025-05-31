@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import 'package:bottom_picker/bottom_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
@@ -42,10 +43,22 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
     return SafeArea(
       child: Scaffold(
           backgroundColor: Colors.white,
+=======
+import 'package:flutter/material.dart';
+import '../../constants/constants.dart';
+import '../../reusable_widgets/reusable_widgets.dart';
+
+class Signup_pg1_StdOwner extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
           extendBodyBehindAppBar: false,
           //app bar language
           appBar: AppBar(
             centerTitle: true,
+<<<<<<< HEAD
             title: Text(
               isArabic ? "إنشاء حساب" : "Sign Up",
               style: TextStyle(
@@ -58,6 +71,18 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
             leading: IconButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/Welcome');
+=======
+            title: Text("sign up",
+                style: TextStyle(
+                  color: Color(0xFF000000),
+                  // fontFamily: "eras-itc-bold",
+                  fontWeight: FontWeight.w400,
+                  fontSize: 20.0,
+                )),
+            leading: IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/login_signup_stdOwner');
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
               },
               icon: Image.asset(
                 "assets/welcome_signup_login/imgs/back.png",
@@ -71,6 +96,7 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
             backgroundColor: Color(0x00),
             actions: [
               IconButton(
+<<<<<<< HEAD
                 onPressed: () {
                   final languageProvider =
                       Provider.of<LanguageProvider>(context, listen: false);
@@ -90,6 +116,13 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                 },
                 icon: Icon(Icons.language, color: Color.fromARGB(255, 0, 0, 0)),
               ),
+=======
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.language,
+                    color: Color(0xFF000000),
+                  )),
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
             ],
           ),
           body: Stack(
@@ -98,17 +131,21 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
               SingleChildScrollView(
                 child: Column(
                   children: [
+<<<<<<< HEAD
                     SizedBox(
                       height: 44.0,
                     ),
                     //logo
                     add_logo(80.0),
+=======
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                     // title
                     Add_AppName(
                         font_size: 34.0,
                         align: TextAlign.center,
                         color: Colors.black),
                     //specific user
+<<<<<<< HEAD
                     Text(isArabic ? "مالك الملعب" : "stadium owner",
                         style: TextStyle(
                             color: Color.fromARGB(111, 0, 0, 0),
@@ -118,12 +155,31 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                     //just for space
                     SizedBox(
                       height: 60.0,
+=======
+                    Text("Stadium owner",
+                        style: TextStyle(
+                          color: Color(0xFF000000),
+                          // fontFamily: "eras-itc-bold",
+                          fontWeight: FontWeight.w200,
+                          fontSize: 20.0,
+                        )),
+
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    //logo
+                    logo,
+                    //just for spacing
+                    SizedBox(
+                      height: 70.0,
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                     ),
 
                     //inputs:
 
                     //username
                     Create_Input(
+<<<<<<< HEAD
                         onChange: (username) {
                           usernameController.text = username;
                         },
@@ -131,11 +187,18 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                         keyboardType: TextInputType.text,
                         textInputAction: TextInputAction.none,
                         hintText: isArabic ? "اسم المستخدم" : "Username",
+=======
+                        isPassword: false,
+                        keyboardType: TextInputType.text,
+                        textInputAction: TextInputAction.none,
+                        hintText: "Username",
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                         addPrefixIcon: Icon(
                           Icons.account_circle_outlined,
                           color: mainColor,
                         )),
                     SizedBox(
+<<<<<<< HEAD
                       height: 30.0,
                     ),
 
@@ -473,6 +536,43 @@ class _Signup_pg1_StdOwnerState extends State<Signup_pg1_StdOwner> {
                                 )))
                       ],
                     ),
+=======
+                      height: 20.0,
+                    ),
+                    //phone
+                    Create_Input(
+                        isPassword: false,
+                        keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.next,
+                        hintText: "Phone Number",
+                        addPrefixIcon: Icon(Icons.phone, color: mainColor)),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    //date birh
+                    GestureDetector(
+                      onTap: () {},
+                      child: Create_Input(
+                          isReadOnly: true,
+                          isPassword: false,
+                          keyboardType: TextInputType.text,
+                          textInputAction: TextInputAction.done,
+                          hintText: "Date of birth",
+                          addPrefixIcon:
+                              Icon(Icons.calendar_today, color: mainColor)),
+                    ),
+                    SizedBox(
+                      height: 55.0,
+                    ),
+
+                    //next
+                    Create_GradiantGreenButton(
+                        title: 'Next',
+                        onButtonPressed: () {
+                          Navigator.pushNamed(
+                              context, '/signup_pg3_stdowner_stdinfo');
+                        })
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                   ],
                 ),
               ),

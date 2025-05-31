@@ -1,3 +1,7 @@
 {
+<<<<<<< HEAD
   "cmake.sourceDirectory": "D:/graduation_project-main/graduation_project_main/windows"
+=======
+    "git.ignoreLimitWarning": true
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 }

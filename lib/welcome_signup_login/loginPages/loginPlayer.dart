@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,11 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:graduation_project_main/provider/language_provider.dart';
 
+=======
+import 'package:flutter/material.dart';
+import 'package:welcome_signup_login/constants/constants.dart';
+import '../../reusable_widgets/reusable_widgets.dart';
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 
 class Login_player extends StatefulWidget {
   @override
@@ -16,6 +22,7 @@ class Login_player extends StatefulWidget {
 }
 
 class _Login_playerState extends State<Login_player> {
+<<<<<<< HEAD
   // Sign in with email and password
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -91,10 +98,21 @@ class _Login_playerState extends State<Login_player> {
     return SafeArea(
       child: Scaffold(
           backgroundColor: Colors.white,
+=======
+  bool visiblePassword = true;
+  Icon unShowPassword = Icon(Icons.visibility);
+  Icon showPassword = Icon(Icons.visibility_off);
+  Icon showPasswordState = Icon(Icons.visibility);
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
           extendBodyBehindAppBar: false,
           //app bar
           appBar: AppBar(
             centerTitle: true,
+<<<<<<< HEAD
             title: Consumer<LanguageProvider>(
               builder: (context, languageProvider, child) {
               return Text(
@@ -113,6 +131,21 @@ class _Login_playerState extends State<Login_player> {
                 Navigator.pushNamed(context, '/Welcome');
               },
               icon: Image.asset("assets/welcome_signup_login/imgs/back.png"),
+=======
+            title: Text("login",
+                style: TextStyle(
+                  color: Color(0xFF000000),
+                  // fontFamily: "eras-itc-bold",
+                  fontWeight: FontWeight.w400,
+                  fontSize: 20.0,
+                )),
+            leading: IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/login_signup_player');
+              },
+              icon: Image.asset(
+                  "assets/welcome_signup_login/imgs/back.png"),
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
               color: Color(0xff000000),
             ),
             // icon: Image.asset("aassets/welcome_signup_login/imgs/ligh back.png"),
@@ -121,6 +154,7 @@ class _Login_playerState extends State<Login_player> {
             elevation: 0,
             backgroundColor: Colors.transparent,
             actions: [
+<<<<<<< HEAD
             IconButton(
               onPressed: () {
                 // Toggle between English and Arabic
@@ -142,6 +176,15 @@ class _Login_playerState extends State<Login_player> {
               icon: Icon(Icons.language, color: Color.fromARGB(255, 0, 0, 0)),
             ),
           ],
+=======
+              IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.language,
+                    color: Color(0xFF000000),
+                  )),
+            ],
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
           ),
           body: Stack(
             children: [
@@ -149,14 +192,18 @@ class _Login_playerState extends State<Login_player> {
               SingleChildScrollView(
                 child: Column(
                   children: [
+<<<<<<< HEAD
                     //logo
                     add_logo(80.0),
+=======
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                     // title
                     Add_AppName(
                         font_size: 34.0,
                         align: TextAlign.center,
                         color: Colors.black),
                     //specific user
+<<<<<<< HEAD
                     Consumer<LanguageProvider>(
                       builder: (context, languageProvider, child) {
                       return Text(
@@ -273,18 +320,79 @@ class _Login_playerState extends State<Login_player> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
+=======
+                    Text("player",
+                        style: TextStyle(
+                          color: Color(0xB6000000),
+                          // fontFamily: "eras-itc-bold",
+                          fontWeight: FontWeight.w200,
+                          fontSize: 20.0,
+                        )),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    //logo
+                    logo,
+                    //just for space
+                    SizedBox(
+                      height: 52.0,
+                    ),
+
+                    //email address
+                    Create_Input(
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      hintText: "Email Address",
+                      addPrefixIcon: Icon(
+                        Icons.account_circle_outlined,
+                        color: mainColor,
+                      ),
+                      isPassword: false,
+                    ),
+                    //just for space
+                    SizedBox(
+                      height: 30.0,
+                    ),
+                    //password
+                    Create_Input(
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.done,
+                      hintText: "Password",
+                      addPrefixIcon: Icon(
+                        Icons.password_rounded,
+                        color: mainColor,
+                      ),
+                      isPassword: visiblePassword,
+                      addSuffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            visiblePassword = !visiblePassword;
+                            showPasswordState =
+                                showPasswordState == showPassword
+                                    ? unShowPassword
+                                    : showPassword;
+                          });
+                        },
+                        icon: showPasswordState,
+                        color: mainColor,
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                       ),
                     ),
 
                     //forgot
                     Container(
                       alignment: Alignment.centerLeft,
+<<<<<<< HEAD
                       margin: EdgeInsets.fromLTRB(20, 20, 0, 0),
+=======
+                      margin: EdgeInsets.fromLTRB(23, 20, 0, 0),
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.pushNamed(context, '/Recorve_account');
                         },
                         style: ButtonStyle(
+<<<<<<< HEAD
                             elevation: WidgetStateProperty.all(0),
                             backgroundColor:
                                 WidgetStateProperty.all(Colors.transparent),
@@ -294,6 +402,14 @@ class _Login_playerState extends State<Login_player> {
                           Provider.of<LanguageProvider>(context).isArabic
                             ? "هل نسيت كلمة المرور؟"
                             : "Forgot your password ?",
+=======
+                            elevation: MaterialStateProperty.all(0),
+                            backgroundColor:
+                                MaterialStateProperty.all(Colors.transparent),
+                            foregroundColor:
+                                MaterialStateProperty.all(Color(0xffffffff))),
+                        child: Text("Forgot your password ?",
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                             style: TextStyle(
                                 color: Color(0xff004FFB),
                                 fontFamily: "eras-itc-demi",
@@ -304,6 +420,7 @@ class _Login_playerState extends State<Login_player> {
                     ),
 
                     SizedBox(
+<<<<<<< HEAD
                       height: 54,
                     ),
 //login
@@ -333,6 +450,19 @@ class _Login_playerState extends State<Login_player> {
 
                     SizedBox(
                       height: 26.0,
+=======
+                      height: 56,
+                    ),
+                    //login
+                    Create_GradiantGreenButton(
+                      title: "Login",
+                      onButtonPressed: () {
+                        Navigator.pushNamed(context, '/home');
+                      },
+                    ),
+                    SizedBox(
+                      height: 40.0,
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                     ),
                     // or line
                     Row(
@@ -349,7 +479,11 @@ class _Login_playerState extends State<Login_player> {
                         Container(
                           margin: EdgeInsets.symmetric(horizontal: 10.0),
                           child: Text(
+<<<<<<< HEAD
                             Provider.of<LanguageProvider>(context).isArabic ? 'أو' : 'OR',
+=======
+                            'OR',
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                             style: TextStyle(
                                 color: Color(0xff00B92E),
                                 fontFamily: 'eras-itc-demi'),
@@ -372,6 +506,7 @@ class _Login_playerState extends State<Login_player> {
 
                     //another ways to login
                     Container(
+<<<<<<< HEAD
                       margin: EdgeInsets.symmetric(horizontal: 34.0),
                       width: double.infinity,
                       // alignment: Alignment.center,
@@ -457,10 +592,93 @@ class _Login_playerState extends State<Login_player> {
                                   ),
                                 ),
                               ),
+=======
+                      margin: EdgeInsets.symmetric(horizontal: 30.0),
+                      width: double.infinity,
+                      alignment: Alignment.center,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        // spacing: ,
+                        children: [
+                          //google
+                          Container(
+                            width: 100.0,
+                            // margin: EdgeInsets.only(left: 20.0),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Color(0xFFFF0000),
+                                width: 2,
+                              ),
+                            ),
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              child: Image.asset(
+                                "assets/welcome_signup_login/imgs/google.png",
+                              ),
+                              style: ButtonStyle(
+                                  elevation: MaterialStateProperty.all(0),
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Colors.transparent),
+                                  foregroundColor: MaterialStateProperty.all(
+                                      Color(0xffffffff))),
+                            ),
+                          ),
+
+                          //twitter
+                          Container(
+                            width: 80.0,
+                            // margin: EdgeInsets.only(left: 20.0),
+                            padding: EdgeInsets.all(5.0),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Color(0xFF000000),
+                                width: 2,
+                              ),
+                            ),
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              child: Image.asset(
+                                "assets/welcome_signup_login/imgs/icons8-twitter-100.png",
+                              ),
+                              style: ButtonStyle(
+                                  elevation: MaterialStateProperty.all(0),
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Colors.transparent),
+                                  foregroundColor: MaterialStateProperty.all(
+                                      Color(0xffffffff))),
+                            ),
+                          ),
+
+                          //facebook
+                          Container(
+                            width: 100.0,
+                            // margin: EdgeInsets.only(left: 20.0),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Color(0xFF0077FF),
+                                width: 2,
+                              ),
+                            ),
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              child: Image.asset(
+                                "assets/welcome_signup_login/imgs/facebook.png",
+                              ),
+                              style: ButtonStyle(
+                                  elevation: MaterialStateProperty.all(0),
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Colors.transparent),
+                                  foregroundColor: MaterialStateProperty.all(
+                                      Color(0xffffffff))),
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                             ),
                           ),
                         ],
                       ),
+<<<<<<< HEAD
                     ),
                     SizedBox(height: 60.0),
                     //don't have account
@@ -491,6 +709,8 @@ class _Login_playerState extends State<Login_player> {
                               ),
                             ),),
                       ],
+=======
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                     )
                   ],
                 ),

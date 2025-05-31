@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/provider/language_provider.dart';
 import 'package:provider/provider.dart';
 
+=======
+import 'package:welcome_signup_login/constants/constants.dart';
+import 'package:welcome_signup_login/reusable_widgets/reusable_widgets.dart';
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 
 class NoInternetConnection extends StatefulWidget {
   const NoInternetConnection({Key? key}) : super(key: key);
@@ -14,7 +19,10 @@ class NoInternetConnection extends StatefulWidget {
 class _NoInternetConnectionState extends State<NoInternetConnection> {
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final isArabic = Provider.of<LanguageProvider>(context).isArabic;
+=======
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -44,14 +52,22 @@ class _NoInternetConnectionState extends State<NoInternetConnection> {
             // SizedBox(height: 20.0),
             Column(
               children: [
+<<<<<<< HEAD
                 Text(isArabic ? "لا يوجد اتصال بالإنترنت" : "No Internet Connection",
+=======
+                Text('No Internet Connection',
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                     style: TextStyle(
                         color: Colors.black,
                         fontSize: 28.0,
                         fontFamily: 'eras-itc-bold')),
                 SizedBox(height: 20.0),
                 Text(
+<<<<<<< HEAD
                   isArabic ? "يرجى التحقق من اتصالك بالإنترنت \n و الضغط على إعادة التحميل لعرض بياناتك \n و جميع البيانات الجديدة" : "please check your internet connection \nand press reload to show your \nData and all the new",
+=======
+                  'please check your internet connection \nand press reload to show your \nData and all the new',
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                   style: TextStyle(
                     color: Colors.black54,
                     fontSize: 18.0,
@@ -73,7 +89,11 @@ class _NoInternetConnectionState extends State<NoInternetConnection> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
+<<<<<<< HEAD
                       Text(isArabic ? "إعادة التحميل" : "Reconnect",
+=======
+                      Text('Reconnect',
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                           style: TextStyle(
                               color: Colors.white,
                               fontFamily: 'eras-itc-bold',

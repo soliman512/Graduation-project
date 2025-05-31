@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,11 @@ import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:graduation_project_main/provider/language_provider.dart';
+=======
+import 'package:flutter/material.dart';
+import 'package:welcome_signup_login/constants/constants.dart';
+import 'package:welcome_signup_login/reusable_widgets/reusable_widgets.dart';
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 
 class Login_Stadiumonwer extends StatefulWidget {
   @override
@@ -15,6 +21,7 @@ class Login_Stadiumonwer extends StatefulWidget {
 
 class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
   bool visiblePassword = true;
+<<<<<<< HEAD
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -98,20 +105,49 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
     return SafeArea(
       child: Scaffold(
           backgroundColor: Colors.white,
+=======
+  Icon unShowPassword = Icon(
+    Icons.visibility,
+    color: mainColor,
+  );
+  Icon showPassword = Icon(
+    Icons.visibility_off,
+    color: mainColor,
+  );
+  Icon showPasswordState = Icon(
+    Icons.visibility,
+    color: mainColor,
+  );
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
           extendBodyBehindAppBar: false,
           //app bar
           appBar: AppBar(
             centerTitle: true,
+<<<<<<< HEAD
             title: Text( languageProvider.isArabic ? "تسجيل الدخول" : "login",
                 style: TextStyle(
                   color: Color(0xFF000000),
                   fontFamily: languageProvider.isArabic ? "Cairo" : "eras-itc-bold",
+=======
+            title: Text("login",
+                style: TextStyle(
+                  color: Color(0xFF000000),
+                  // fontFamily: "eras-itc-bold",
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                   fontWeight: FontWeight.w400,
                   fontSize: 20.0,
                 )),
             leading: IconButton(
               onPressed: () {
+<<<<<<< HEAD
                 Navigator.pushNamed(context, '/Welcome');
+=======
+                Navigator.pushNamed(context, '/login_signup_stdOwner');
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
               },
               icon: Image.asset("assets/welcome_signup_login/imgs/back.png"),
               color: Color(0xff000000),
@@ -122,6 +158,7 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
             elevation: 0,
             backgroundColor: Colors.transparent,
             actions: [
+<<<<<<< HEAD
             IconButton(
               onPressed: () {
                 // Toggle between English and Arabic
@@ -143,6 +180,15 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
               icon: Icon(Icons.language, color: Color.fromARGB(255, 0, 0, 0)),
             ),
           ],
+=======
+              IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.language,
+                    color: Color(0xFF000000),
+                  )),
+            ],
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
           ),
           body: Stack(
             children: [
@@ -150,14 +196,18 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
               SingleChildScrollView(
                 child: Column(
                   children: [
+<<<<<<< HEAD
                     //logo
                     add_logo(80.0),
+=======
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                     // title
                     Add_AppName(
                         font_size: 34.0,
                         align: TextAlign.center,
                         color: Colors.black),
                     //specific user
+<<<<<<< HEAD
                     Consumer<LanguageProvider>(
                       builder: (context, languageProvider, child) {
                       return Text(
@@ -216,10 +266,40 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
+=======
+                    Text("stadium owner",
+                        style: TextStyle(
+                          color: Color(0xB6000000),
+                          // fontFamily: "eras-itc-bold",
+                          fontWeight: FontWeight.w200,
+                          fontSize: 20.0,
+                        )),
+                    //just for space
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    //logo
+                    logo,
+                    //just for space
+                    SizedBox(
+                      height: 52.0,
+                    ),
+
+                    //email address
+                    Create_Input(
+                      isPassword: false,
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      hintText: "Email Address",
+                      addPrefixIcon: Icon(
+                        Icons.account_circle_outlined,
+                        color: mainColor,
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                       ),
                     ),
                     //just for space
                     SizedBox(
+<<<<<<< HEAD
                       height: 26.0,
                     ),
 
@@ -295,6 +375,46 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                         child: Text(Provider.of<LanguageProvider>(context).isArabic
                             ? "هل نسيت كلمة المرور؟"
                             : "Forgot your password ?",
+=======
+                      height: 30.0,
+                    ),
+
+                    //password
+                    Create_Input(
+                      isPassword: visiblePassword,
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.done,
+                      hintText: "Password",
+                      addPrefixIcon: Icon(Icons.lock_outline, color: mainColor),
+                      addSuffixIcon: IconButton(
+                        icon: showPasswordState,
+                        onPressed: () {
+                          setState(() {
+                            visiblePassword = !visiblePassword;
+                            showPasswordState =
+                                showPasswordState == showPassword
+                                    ? unShowPassword
+                                    : showPassword;
+                          });
+                        },
+                      ),
+                    ),
+                    //forgot
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      margin: EdgeInsets.fromLTRB(23, 20, 0, 0),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/Recorve_account');
+                        },
+                        style: ButtonStyle(
+                            elevation: MaterialStateProperty.all(0),
+                            backgroundColor:
+                                MaterialStateProperty.all(Colors.transparent),
+                            foregroundColor:
+                                MaterialStateProperty.all(Color(0xffffffff))),
+                        child: Text("Forgot your password ?",
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                             style: TextStyle(
                                 color: Color(0xff004FFB),
                                 fontFamily: "eras-itc-demi",
@@ -305,6 +425,7 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                     ),
 
                     SizedBox(
+<<<<<<< HEAD
                       height: 40,
                     ),
 
@@ -327,6 +448,19 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                     ),
                     SizedBox(
                       height: 26.0,
+=======
+                      height: 56,
+                    ),
+
+                    //login
+                    Create_GradiantGreenButton(
+                        title: 'Login',
+                        onButtonPressed: () {
+                          Navigator.pushNamed(context, '/stdWon_addNewStadium');
+                        }),
+                    SizedBox(
+                      height: 40.0,
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                     ),
 
                     // or line
@@ -344,7 +478,11 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                         Container(
                           margin: EdgeInsets.symmetric(horizontal: 10.0),
                           child: Text(
+<<<<<<< HEAD
                             Provider.of<LanguageProvider>(context).isArabic ? 'أو' : 'OR',
+=======
+                            'OR',
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                             style: TextStyle(
                                 color: Color(0xff00B92E),
                                 fontFamily: 'eras-itc-demi'),
@@ -352,6 +490,12 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                         ),
                         Container(
                           color: Color(0xD7000000),
+<<<<<<< HEAD
+=======
+                          // thickness: 1,
+                          // indent: 16.0,
+                          // endIndent: 30.0,
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                           height: 1.0,
                           width: 145.0,
                         ),
@@ -359,11 +503,16 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                     ),
 
                     SizedBox(
+<<<<<<< HEAD
                       height: 20.0,
+=======
+                      height: 30.0,
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                     ),
 
                     //another ways to login
                     Container(
+<<<<<<< HEAD
                       margin: EdgeInsets.symmetric(horizontal: 34.0),
                       width: double.infinity,
                       // alignment: Alignment.center,
@@ -442,10 +591,93 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                                   ),
                                 ),
                               ),
+=======
+                      margin: EdgeInsets.symmetric(horizontal: 30.0),
+                      width: double.infinity,
+                      alignment: Alignment.center,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        // spacing: ,
+                        children: [
+                          //google
+                          Container(
+                            width: 100.0,
+                            // margin: EdgeInsets.only(left: 20.0),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Color(0xFFFF0000),
+                                width: 2,
+                              ),
+                            ),
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              child: Image.asset(
+                                "assets/welcome_signup_login/imgs/google.png",
+                              ),
+                              style: ButtonStyle(
+                                  elevation: MaterialStateProperty.all(0),
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Colors.transparent),
+                                  foregroundColor: MaterialStateProperty.all(
+                                      Color(0xffffffff))),
+                            ),
+                          ),
+
+                          //twitter
+                          Container(
+                            width: 80.0,
+                            // margin: EdgeInsets.only(left: 20.0),
+                            padding: EdgeInsets.all(5.0),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Color(0xFF000000),
+                                width: 2,
+                              ),
+                            ),
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              child: Image.asset(
+                                "assets/welcome_signup_login/imgs/icons8-twitter-100.png",
+                              ),
+                              style: ButtonStyle(
+                                  elevation: MaterialStateProperty.all(0),
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Colors.transparent),
+                                  foregroundColor: MaterialStateProperty.all(
+                                      Color(0xffffffff))),
+                            ),
+                          ),
+
+                          //facebook
+                          Container(
+                            width: 100.0,
+                            // margin: EdgeInsets.only(left: 20.0),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Color(0xFF0077FF),
+                                width: 2,
+                              ),
+                            ),
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              child: Image.asset(
+                                "assets/welcome_signup_login/imgs/facebook.png",
+                              ),
+                              style: ButtonStyle(
+                                  elevation: MaterialStateProperty.all(0),
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Colors.transparent),
+                                  foregroundColor: MaterialStateProperty.all(
+                                      Color(0xffffffff))),
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                             ),
                           ),
                         ],
                       ),
+<<<<<<< HEAD
                     ),
                     SizedBox(height: 60.0),
                     //don't have account
@@ -472,6 +704,8 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                                   fontSize: 16.0,
                                 )))
                       ],
+=======
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                     )
                   ],
                 ),

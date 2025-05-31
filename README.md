@@ -1,6 +1,23 @@
+<<<<<<< HEAD
 # graduation_project_main
 
 A new Flutter project.
+=======
+<<<<<<< HEAD
+# welcome_signup_login
+
+A new Flutter project.
+=======
+<<<<<<< HEAD
+# Graduation-project
+Graduation project , app for link football players with stadiums owners ( vamonos )
+=======
+# welcome_signup_login
+
+A new Flutter project.
+thanx for update
+>>>>>>> soliman
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 
 ## Getting Started
 
@@ -8,9 +25,22 @@ This project is a starting point for a Flutter application.
 
 A few resources to get you started if this is your first Flutter project:
 
+<<<<<<< HEAD
 - [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
 - [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+=======
+- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+
+For help getting started with Flutter, view our
+[online documentation](https://flutter.dev/docs), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
+<<<<<<< HEAD
+=======
+>>>>>>> 1ed6d63 (first push, push main copy)
+>>>>>>> soliman
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958

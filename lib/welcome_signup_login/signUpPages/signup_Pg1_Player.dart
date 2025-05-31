@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import 'package:bottom_picker/bottom_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
@@ -11,6 +12,11 @@ import 'package:graduation_project_main/provider/language_provider.dart';
 // import 'dart:io';
 // import 'dart:typed_data';
 // import 'package:supabase_flutter/supabase_flutter.dart';
+=======
+import 'package:flutter/material.dart';
+import '../../../constants/constants.dart';
+import '../../../reusable_widgets/reusable_widgets.dart';
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 
 class Signup_pg1_player extends StatefulWidget {
   @override
@@ -18,6 +24,7 @@ class Signup_pg1_player extends StatefulWidget {
 }
 
 class _Signup_pg1_playerState extends State<Signup_pg1_player> {
+<<<<<<< HEAD
 
 
   //text editing controllers
@@ -34,10 +41,33 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
     await prefs.setString('phoneNumber', phoneNumberController.text);
     await prefs.setString('dateOfBirth', dateOfBirth.toString());
     await prefs.setString('location', location ?? '');
+=======
+  // location visiblity and visibl of items on location
+  bool visibleOfLocation = false;
+  bool visibleOfPlace = false;
+  bool visibleOfNeighborhood = false;
+  bool visibleOfButton = false;
+  bool checkInputs() {
+    if (visibleOfPlace == true && visibleOfNeighborhood == true) {
+      visibleOfButton = true;
+      return true;
+    }
+    return false;
+  }
+
+  String? Location;
+  void initValueOfLocation() {
+    if (citySelected == null) {
+      Location = "";
+    } else {
+      Location = "$citySelected-$placeSelected-${neighborhoodEnterd.text}";
+    }
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
   }
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final languageProvider = Provider.of<LanguageProvider>(context);
     bool isArabic = languageProvider.isArabic;
     return SafeArea(
@@ -57,17 +87,41 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
             leading: IconButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/Welcome');
+=======
+    return SafeArea(
+      child: Scaffold(
+          extendBodyBehindAppBar: false,
+          //app bar language
+          appBar: AppBar(
+            centerTitle: true,
+            title: Text("sign up",
+                style: TextStyle(
+                  color: Color(0xFF000000),
+                  // fontFamily: "eras-itc-bold",
+                  fontWeight: FontWeight.w400,
+                  fontSize: 20.0,
+                )),
+            leading: IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/login_signup_player');
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
               },
               icon: Image.asset(
                 "assets/welcome_signup_login/imgs/back.png",
                 color: Color(0xFF000000),
               ),
+<<<<<<< HEAD
+=======
+              // ic
+              // icon: Image.asset("assets/welcome_signup_login/imgs/ligh back.png"),
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
             ),
             toolbarHeight: 80.0,
             elevation: 0,
             backgroundColor: Color(0x00),
             actions: [
               IconButton(
+<<<<<<< HEAD
                 onPressed: () {
                   final languageProvider =
                       Provider.of<LanguageProvider>(context, listen: false);
@@ -87,6 +141,13 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                 },
                 icon: Icon(Icons.language, color: Color.fromARGB(255, 0, 0, 0)),
               ),
+=======
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.language,
+                    color: Color(0xFF000000),
+                  )),
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
             ],
           ),
           body: Stack(
@@ -94,17 +155,21 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
               backgroundImage_balls,
               SingleChildScrollView(
                 child: Column(children: [
+<<<<<<< HEAD
                   SizedBox(
                     height: 44.0,
                   ),
                   //logo
                   add_logo(80.0),
+=======
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                   // title
                   Add_AppName(
                       font_size: 34.0,
                       align: TextAlign.center,
                       color: Colors.black),
                   //specific user
+<<<<<<< HEAD
                   Text(isArabic ?"لاعب":"player",
                       style: TextStyle(
                           color: Color.fromARGB(111, 0, 0, 0),
@@ -116,37 +181,73 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                     height: 60.0,
                   ),
 
+=======
+                  Text("Player",
+                      style: TextStyle(
+                        color: Color(0xFF000000),
+                        // fontFamily: "eras-itc-bold",
+                        fontWeight: FontWeight.w200,
+                        fontSize: 20.0,
+                      )),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  //logo
+                  logo,
+                  SizedBox(
+                    height: 70.0,
+                  ),
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                   //inputs:
 
                   //username
                   Create_Input(
+<<<<<<< HEAD
                     controller: usernameController,
                     isPassword: false,
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.next,
                         hintText: isArabic ? "اسم المستخدم" : "Username",
+=======
+                    isPassword: false,
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.next,
+                    hintText: "Username",
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                     addPrefixIcon: Icon(
                       Icons.account_circle_outlined,
                       color: mainColor,
                     ),
                   ),
                   SizedBox(
+<<<<<<< HEAD
                     height: 30.0,
+=======
+                    height: 20.0,
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                   ),
 
                   //phone
                   Create_Input(
+<<<<<<< HEAD
                     controller: phoneNumberController,
                     isPassword: false,
                     keyboardType: TextInputType.phone,
                     textInputAction: TextInputAction.next,
                         hintText: isArabic ? "رقم الهاتف" : "Phone Number",
+=======
+                    isPassword: false,
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.next,
+                    hintText: "Phone Number",
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                     addPrefixIcon: Icon(
                       Icons.phone,
                       color: mainColor,
                     ),
                   ),
                   SizedBox(
+<<<<<<< HEAD
                     height: 30.0,
                   ),
                   //location
@@ -321,12 +422,30 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                     textInputAction: TextInputAction.done,
                     isReadOnly: true,
                         hintText: isArabic ? "موقعك" : "your location",
+=======
+                    height: 20.0,
+                  ),
+                  //location
+                  Create_Input(
+                    initValue: Location,
+                    on_tap: () {
+                      setState(() {
+                        visibleOfLocation = true;
+                      });
+                    },
+                    isReadOnly: true,
+                    isPassword: false,
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.next,
+                    hintText: "Location",
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                     addPrefixIcon: Icon(
                       Icons.location_on_outlined,
                       color: mainColor,
                     ),
                   ),
                   SizedBox(
+<<<<<<< HEAD
                     height: 30.0,
                   ),
                   //date birth
@@ -397,11 +516,21 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                     //     });
                     //   }
                     // },
+=======
+                    height: 20.0,
+                  ),
+                  //date birh
+                  Create_Input(
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                     isReadOnly: true,
                     isPassword: false,
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.next,
+<<<<<<< HEAD
                         hintText: isArabic ? "تاريخ الميلاد" : "Date of birth",
+=======
+                    hintText: "Date of Birth",
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
                     addPrefixIcon: Icon(
                       Icons.date_range_rounded,
                       color: mainColor,
@@ -412,6 +541,7 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                   ),
 
                   //next
+<<<<<<< HEAD
                   SizedBox(
                     height: 50.0,
                     child: Create_GradiantGreenButton(
@@ -491,6 +621,295 @@ class _Signup_pg1_playerState extends State<Signup_pg1_player> {
                   )
                 ]),
               ),
+=======
+                  Create_GradiantGreenButton(
+                      title: 'Next',
+                      onButtonPressed: () {
+                        Navigator.pushNamed(context, '/sign_up_pg2_player');
+                      })
+                ]),
+              ),
+
+              //location
+              Visibility(
+                visible: visibleOfLocation,
+                child: Center(
+                  child: Stack(
+                    children: [
+                      Container(
+                        height: null,
+                        padding: EdgeInsets.only(bottom: 20.0),
+                        width: double.infinity,
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 150.0),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30.0),
+                            boxShadow: [
+                              BoxShadow(color: Colors.black, blurRadius: 100.0)
+                            ],
+                            color: Colors.white
+                            // color: Colors.red
+                            ),
+                        child: SingleChildScrollView(
+                          child: Stack(
+                            children: [
+                              //close location
+                              Positioned(
+                                // padding: EdgeInsets.only(right: 10.0, top: 10.0),
+                                top: 10.0,
+                                right: 10.0,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      visibleOfLocation = false;
+                                    });
+                                  },
+                                  child: Icon(Icons.close_rounded,
+                                      color: Colors.black, size: 30.0),
+                                ),
+                              ),
+                              //inputs
+                              Column(
+                                // crossAxisAlignment: CrossAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  SizedBox(
+                                    height: 60.0,
+                                  ),
+                                  //city
+                                  ListTile(
+                                    leading: Container(
+                                      padding: EdgeInsets.all(8.0),
+                                      width: 40.0,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white,
+                                        boxShadow: [
+                                          BoxShadow(
+                                              color: Color(0x7C000000),
+                                              blurRadius: 10.0)
+                                        ],
+                                      ),
+                                      child: Image.asset(
+                                        'assets/home_loves_tickets_top/imgs/city_Vector.png',
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                    title: Container(
+                                      width: double.infinity,
+                                      margin: EdgeInsets.symmetric(
+                                          horizontal: 20.0),
+                                      height: 40.0,
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          boxShadow: [
+                                            BoxShadow(
+                                                color: Color(0x7C000000),
+                                                blurRadius: 10.0)
+                                          ],
+                                          borderRadius:
+                                              BorderRadius.circular(10.0)),
+                                      child: Center(
+                                        child: DropdownButton<String>(
+                                          onChanged: (String? cityValue) {
+                                            setState(() {
+                                              visibleOfPlace = true;
+                                              citySelected = cityValue;
+                                              placesOfCityOnSelected = null;
+                                              placeSelected = null;
+                                            });
+                                            placesOfCityOnSelected =
+                                                egyptGovernoratesAndCenters[
+                                                    cityValue];
+                                          },
+                                          items: egyptGovernorates.map((city) {
+                                            return DropdownMenuItem<String>(
+                                              value: city,
+                                              child: Text(city),
+                                            );
+                                          }).toList(),
+                                          menuMaxHeight: 300.0,
+                                          value: citySelected,
+                                          hint: Text('select City'),
+                                          icon: Icon(
+                                              Icons
+                                                  .arrow_drop_down_circle_outlined,
+                                              size: 30.0,
+                                              color: mainColor),
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 18.0,
+                                          ),
+                                          alignment: Alignment.center,
+                                          underline: null,
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              
+                                  //place
+                                  Visibility(
+                                    visible: visibleOfPlace,
+                                    child: Padding(
+                                      padding: EdgeInsets.only(top: 20.0),
+                                      child: ListTile(
+                                        leading: Container(
+                                          padding: EdgeInsets.all(8.0),
+                                          width: 40.0,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.white,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                  color: Color(0x7C000000),
+                                                  blurRadius: 10.0)
+                                            ],
+                                          ),
+                                          child: Image.asset(
+                                            'assets/home_loves_tickets_top/imgs/stash_pin-place.png',
+                                            fit: BoxFit.contain,
+                                          ),
+                                        ),
+                                        title: Container(
+                                          width: double.infinity,
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 20.0),
+                                          height: 40.0,
+                                          decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                    color: Color(0x7C000000),
+                                                    blurRadius: 10.0)
+                                              ],
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0)),
+                                          child: Center(
+                                            child: DropdownButton<String>(
+                                              items: placesOfCityOnSelected
+                                                  ?.map((String place) {
+                                                return DropdownMenuItem<String>(
+                                                  child: Text(place),
+                                                  value: place,
+                                                );
+                                              }).toList(),
+                                              onChanged: (String? placeValue) {
+                                                setState(() {
+                                                  visibleOfNeighborhood = true;
+                                                  placeSelected = placeValue;
+                                                });
+                                              },
+                                              menuMaxHeight: 300.0,
+                                              value: placeSelected,
+                                              hint: Text('select place'),
+                                              icon: Icon(
+                                                  Icons
+                                                      .arrow_drop_down_circle_outlined,
+                                                  size: 30.0,
+                                                  color: mainColor),
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 18.0,
+                                              ),
+                                              alignment: Alignment.center,
+                                              underline: null,
+                                              borderRadius:
+                                                  BorderRadius.circular(20.0),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              
+                                  // //neighborhood
+                                  Visibility(
+                                    visible: visibleOfNeighborhood,
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 20.0,
+                                      ),
+                                      child: ListTile(
+                                        leading: Container(
+                                          padding: EdgeInsets.all(8.0),
+                                          width: 40.0,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.white,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                  color: Color(0x7C000000),
+                                                  blurRadius: 10.0)
+                                            ],
+                                          ),
+                                          child: Image.asset(
+                                            'assets/home_loves_tickets_top/imgs/nighborhood.png',
+                                            fit: BoxFit.contain,
+                                          ),
+                                        ),
+                                        title: Container(
+                                            width: double.infinity,
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: 20.0),
+                                            height: 40.0,
+                                            decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                      color: Color(0x7C000000),
+                                                      blurRadius: 10.0)
+                                                ],
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0)),
+                                            child: TextField(
+                                              controller: neighborhoodEnterd,
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 18.0,
+                                              ),
+                                              keyboardType: TextInputType.text,
+                                              textInputAction:
+                                                  TextInputAction.done,
+                                              decoration: InputDecoration(
+                                                  border: InputBorder.none,
+                                                  contentPadding: EdgeInsets.only(
+                                                      bottom: 10.0),
+                                                  hintText: 'neighborhood'),
+                                            )),
+                                      ),
+                                    ),
+                                  ),
+                              
+                                  SizedBox(
+                                    height: 20.0,
+                                  ),
+                                  // //button
+                                  Visibility(
+                                    visible: checkInputs(),
+                                    child: Create_GradiantGreenButton(
+                                        title: 'Done',
+                                        onButtonPressed: () {
+                                          setState(() {
+                                            visibleOfLocation = false;
+                                            initValueOfLocation();
+                                          });
+                                        }),
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
             ],
           )),
     );

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
+<<<<<<< HEAD
    LastUpgradeVersion = "1510"
+=======
+   LastUpgradeVersion = "1300"
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -37,6 +41,7 @@
          </BuildableReference>
       </MacroExpansion>
       <Testables>
+<<<<<<< HEAD
          <TestableReference
             skipped = "NO"
             parallelizable = "YES">
@@ -48,6 +53,8 @@
                ReferencedContainer = "container:Runner.xcodeproj">
             </BuildableReference>
          </TestableReference>
+=======
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
       </Testables>
    </TestAction>
    <LaunchAction

@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 3.14)
 project(runner LANGUAGES CXX)
 
+<<<<<<< HEAD
 # Define the application target. To change its name, change BINARY_NAME in the
 # top-level CMakeLists.txt, not the value here, or `flutter run` will no longer
 # work.
 #
 # Any new source files that you add to the application should be added here.
+=======
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 add_executable(${BINARY_NAME} WIN32
   "flutter_window.cpp"
   "main.cpp"
@@ -15,6 +18,7 @@ add_executable(${BINARY_NAME} WIN32
   "Runner.rc"
   "runner.exe.manifest"
 )
+<<<<<<< HEAD
 
 # Apply the standard set of build settings. This can be removed for applications
 # that need different build settings.
@@ -37,4 +41,10 @@ target_link_libraries(${BINARY_NAME} PRIVATE "dwmapi.lib")
 target_include_directories(${BINARY_NAME} PRIVATE "${CMAKE_SOURCE_DIR}")
 
 # Run the Flutter tool portions of the build. This must not be removed.
+=======
+apply_standard_settings(${BINARY_NAME})
+target_compile_definitions(${BINARY_NAME} PRIVATE "NOMINMAX")
+target_link_libraries(${BINARY_NAME} PRIVATE flutter flutter_wrapper_app)
+target_include_directories(${BINARY_NAME} PRIVATE "${CMAKE_SOURCE_DIR}")
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 add_dependencies(${BINARY_NAME} flutter_assemble)

@@ -5,12 +5,18 @@
 *.swp
 .DS_Store
 .atom/
+<<<<<<< HEAD
 .build/
 .buildlog/
 .history
 .svn/
 .swiftpm/
 migrate_working_dir/
+=======
+.buildlog/
+.history
+.svn/
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 
 # IntelliJ related
 *.iml
@@ -29,10 +35,20 @@ migrate_working_dir/
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
+<<<<<<< HEAD
+=======
+.packages
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 .pub-cache/
 .pub/
 /build/
 
+<<<<<<< HEAD
+=======
+# Web related
+lib/generated_plugin_registrant.dart
+
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
 # Symbolication related
 app.*.symbols
 
@@ -43,4 +59,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+<<<<<<< HEAD
 android/app/.cxx/
+=======
+>>>>>>> 8f7a51607a3d57faccecdb29623811b92fbba958
