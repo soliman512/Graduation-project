@@ -20,20 +20,20 @@ class Home_Owner extends StatefulWidget {
   State<Home_Owner> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home_Owner> {
+class _HomeState extends State<Home_Owner> with SingleTickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
 
   @override
   void initState() {
     super.initState();
     _showRatingPopupOnSecondOpen();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _showRatingPopupOnSecondOpen() async {
@@ -85,11 +85,13 @@ class _HomeState extends State<Home_Owner> {
                 if (rating == 0) {
                   showSnackBar(context, "Please select rate.");
                 } else {
-                  await FirebaseFirestore.instance.collection('app_ratings').add({
+                  await FirebaseFirestore.instance
+                      .collection('app_ratings')
+                      .add({
                     'rating': rating,
                     'timestamp': FieldValue.serverTimestamp(),
                     'userId': FirebaseAuth.instance.currentUser?.uid,
-                    'type': 'owner', 
+                    'type': 'owner',
                   });
                   Navigator.of(context).pop();
                   showSnackBar(context, "Thank you for your rating!");
@@ -251,7 +253,9 @@ class _HomeState extends State<Home_Owner> {
               ),
               decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: isArabic ? "ما الذي تبحث عنه؟ ..." : "What the stadiums you looking for ? ...",
+                hintText: isArabic
+                    ? "ما الذي تبحث عنه؟ ..."
+                    : "What the stadiums you looking for ? ...",
                 hintStyle: const TextStyle(
                   color: Color(0x73000000),
                   fontSize: 12.0,
@@ -299,10 +303,10 @@ class _HomeState extends State<Home_Owner> {
     }
     // Only show stadiums owned by the current user
     final userStadiums = _filterUserStadiums(filtered);
-    final isArabic = Provider.of<LanguageProvider>(context).isArabic;
     if (userStadiums.isEmpty) {
-      
-      return  Center(child: Text(isArabic ? 'لا يوجد ملاعب' : 'No Stadiums are fount'));
+      return Center(
+        child: Image.asset('assets/home_loves_tickets_top/imgs/noStadiums.png'),
+      );
     }
     return _buildStadiumListView(userStadiums);
   }
@@ -310,18 +314,12 @@ class _HomeState extends State<Home_Owner> {
   /// Builds the stadium list view for the given stadiums.
   /// Ensures that the image list is not accessed out of range to avoid RangeError.
   Widget _buildStadiumListView(List<DocumentSnapshot> stadiums) {
-    final userStadiums = _filterUserStadiums(stadiums);
-    if (userStadiums.isEmpty) {
-      return Center(
-        child: Image.asset('assets/home_loves_tickets_top/imgs/noStadium.png'),
-      );
-    }
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: userStadiums.length,
+      itemCount: stadiums.length,
       itemBuilder: (context, index) {
-        final stadium = userStadiums[index];
+        final stadium = stadiums[index];
         // Only use one image for StadiumCard to avoid RangeError.
         return StadiumCard(
           onTap: () => _navigateToStadiumDetails(stadium),
@@ -329,7 +327,8 @@ class _HomeState extends State<Home_Owner> {
           location: stadium['location'],
           price: stadium['price'].toString(),
           rating: 5,
-          selectedImages: List<String>.from(stadium['images'] ?? ['assets/cards_home_player/imgs/test.jpg']),
+          selectedImages: List<String>.from(
+              stadium['images'] ?? ['assets/cards_home_player/imgs/test.jpg']),
         );
       },
     );
@@ -338,95 +337,121 @@ class _HomeState extends State<Home_Owner> {
   /// Builds the floating action button for adding a new stadium and deleting all stadiums.
   Widget _buildFloatingActionButton() {
     final isArabic = Provider.of<LanguageProvider>(context).isArabic;
-    return Wrap(
-      crossAxisAlignment: WrapCrossAlignment.end,
-      direction: Axis.vertical,
+    return Column(
+      // alignment: Alignment.bottomRight,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        GestureDetector(
-          onTap: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text(isArabic ? 'حذف جميع الملاعب' : 'Delete All Stadiums'),
-                  content: Text(
-                      isArabic ? 'هل أنت متأكد من حذف جميع الملاعب؟ هذه الخطوة لا يمكن التراجع عنها.' : 'Are you sure you want to delete all stadiums? This action cannot be undone.'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Text(isArabic ? 'إلغاء' : 'Cancel'),
+        // Delete All Button
+        Container(
+          margin: const EdgeInsets.only(bottom: 16, right: 16),
+          child: FloatingActionButton(
+            heroTag: 'deleteAll',
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    TextButton(
-                      onPressed: () async {
-                        try {
-                          final stadiumsCollection =
-                              FirebaseFirestore.instance.collection('stadiums');
-                          final snapshot = await stadiumsCollection.get();
-                          for (var doc in snapshot.docs) {
-                            await doc.reference.delete();
+                    title: Text(
+                      isArabic ? 'حذف جميع الملاعب' : 'Delete All Stadiums',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    content: Text(
+                      isArabic
+                          ? 'هل أنت متأكد من حذف جميع الملاعب؟ هذه الخطوة لا يمكن التراجع عنها.'
+                          : 'Are you sure you want to delete all stadiums? This action cannot be undone.',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: Text(
+                          isArabic ? 'إلغاء' : 'Cancel',
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          try {
+                            final stadiumsCollection = FirebaseFirestore
+                                .instance
+                                .collection('stadiums');
+                            final snapshot = await stadiumsCollection.get();
+                            for (var doc in snapshot.docs) {
+                              await doc.reference.delete();
+                            }
+                            Navigator.of(context).pop();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  isArabic
+                                      ? 'تم حذف جميع الملاعب'
+                                      : 'All stadiums deleted successfully',
+                                ),
+                                backgroundColor: Colors.green,
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            );
+                          } catch (e) {
+                            Navigator.of(context).pop();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  isArabic
+                                      ? 'Error deleting stadiums: $e'
+                                      : 'Error deleting stadiums: $e',
+                                ),
+                                backgroundColor: Colors.red,
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            );
                           }
-                          Navigator.of(context).pop();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content:
-                                  Text(isArabic ? 'تم حذف جميع الملاعب' : 'All stadiums deleted successfully'),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-                        } catch (e) {
-                          Navigator.of(context).pop();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(isArabic ? 'Error deleting stadiums: $e' : 'Error deleting stadiums: $e'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        }
-                      },
-                      child: Text('Delete All',
-                          style: TextStyle(color: Colors.red)),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-          child: Container(
-            width: 50.0,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.black,
+                        },
+                        child: const Text(
+                          'Delete All',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            backgroundColor: Colors.black,
+            elevation: 4,
+            child: Image.asset(
+              "assets/home_loves_tickets_top/imgs/Group 204.png",
+              width: 24,
+              height: 24,
             ),
-            child:
-                Image.asset("assets/home_loves_tickets_top/imgs/Group 204.png"),
           ),
         ),
-        const SizedBox(height: 8.0),
-        GestureDetector(
-          onTap: _navigateToAddNewStadium,
-          child: Container(
-            width: 222.0,
-            height: 66.0,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(100),
-              gradient: greenGradientColor,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Image.asset(
-                  "assets/home_loves_tickets_top/imgs/ic_twotone-stadium.png",
-                  width: 44.00,
-                ),
-                Text(
-                  isArabic ? "إضافة ملعب جديد" : "New Stadium",
-                  style: TextStyle(
-                    color: Color(0xffffffff),
-                    fontSize: 18,
-                    fontFamily: "eras-itc-demi",
-                  ),
-                ),
-              ],
+        // New Stadium Button
+        FloatingActionButton.extended(
+          heroTag: 'newStadium',
+          onPressed: _navigateToAddNewStadium,
+          backgroundColor: mainColor,
+          elevation: 4,
+          icon: Image.asset(
+            "assets/home_loves_tickets_top/imgs/ic_twotone-stadium.png",
+            width: 24.00,
+          ),
+          label: Text(
+            isArabic ? "إضافة ملعب جديد" : "New Stadium",
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontFamily: "eras-itc-demi",
             ),
           ),
         ),

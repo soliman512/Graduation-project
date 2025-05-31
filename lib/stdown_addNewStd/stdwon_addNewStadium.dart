@@ -13,6 +13,8 @@ import 'package:bottom_picker/bottom_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class AddNewStadium extends StatefulWidget {
   const AddNewStadium({Key? key}) : super(key: key);
@@ -113,7 +115,8 @@ class _AddNewStadiumState extends State<AddNewStadium> {
     }
     return false;
   }
-bool isLoading = false;
+
+  bool isLoading = false;
 // generate final location
   void initValueOflocation() {
     if (citySelected == null) {
@@ -148,10 +151,15 @@ bool isLoading = false;
     if (_isFormIncomplete()) {
       _showIncompleteDataDialog();
     } else {
-      // ارفع الصور الأول
-      selectedImagesUrl = await uploadImagesToSupabase(selectedImages);
+      setState(() {
+        isLoading = true;
+      });
 
-      await addStadiumToFirestore(
+      try {
+        // Upload images first
+        selectedImagesUrl = await uploadImagesToSupabase(selectedImages);
+
+        await addStadiumToFirestore(
           name: stadiumNameController.text,
           location: location,
           hasWater: isWaterAvailable,
@@ -165,9 +173,37 @@ bool isLoading = false;
           workingDays: daysSelected,
           imagesUrl: selectedImagesUrl,
           rating: 0,
-          userID: FirebaseAuth.instance.currentUser?.uid ?? 'No User ID');
+          userID: FirebaseAuth.instance.currentUser?.uid ?? 'No User ID',
+        );
 
-      Navigator.pushNamed(context, '/home_owner');
+        if (context.mounted) {
+          Navigator.pushNamed(context, '/home_owner');
+        }
+      } catch (e) {
+        if (context.mounted) {
+          showTopSnackBar(
+            Overlay.of(context),
+            CustomSnackBar.error(
+              message:
+                  Provider.of<LanguageProvider>(context, listen: false).isArabic
+                      ? 'حدث خطأ أثناء إضافة الملعب: $e'
+                      : 'Error adding stadium: $e',
+              backgroundColor: Colors.red,
+              textStyle: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontFamily: 'eras-itc-bold',
+              ),
+            ),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+          });
+        }
+      }
     }
   }
 
@@ -208,25 +244,41 @@ bool isLoading = false;
 
     try {
       await FirebaseFirestore.instance.collection("stadiums").add(stadiumData);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(Provider.of<LanguageProvider>(context).isArabic
-              ? 'تم إضافة الملعب بنجاح'
-              : 'Stadium added successfully'),
-          backgroundColor: Colors.green,
-          duration: Duration(seconds: 2),
-        ),
-      );
+      if (context.mounted) {
+        showTopSnackBar(
+          Overlay.of(context),
+          CustomSnackBar.success(
+            message:
+                Provider.of<LanguageProvider>(context, listen: false).isArabic
+                    ? 'تم إضافة الملعب بنجاح'
+                    : 'Stadium added successfully',
+            backgroundColor: Colors.white,
+            textStyle: TextStyle(
+              color: mainColor,
+              fontSize: 16,
+              fontFamily: 'eras-itc-demi',
+            ),
+          ),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(Provider.of<LanguageProvider>(context).isArabic
-              ? ':حدث خطأ $e'
-              : 'Error: $e'),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 2),
-        ),
-      );
+      if (context.mounted) {
+        showTopSnackBar(
+          Overlay.of(context),
+          CustomSnackBar.error(
+            message:
+                Provider.of<LanguageProvider>(context, listen: false).isArabic
+                    ? 'حدث خطأ: $e'
+                    : 'Error: $e',
+            backgroundColor: Colors.red,
+            textStyle: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontFamily: 'eras-itc-bold',
+            ),
+          ),
+        );
+      }
     }
   }
 
@@ -248,11 +300,13 @@ bool isLoading = false;
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        final languageProvider =
+            Provider.of<LanguageProvider>(context, listen: false);
         return AlertDialog(
-          title: Text(Provider.of<LanguageProvider>(context).isArabic
+          title: Text(languageProvider.isArabic
               ? 'بيانات غير كاملة'
               : 'Incomplete Data'),
-          content: Text(Provider.of<LanguageProvider>(context).isArabic
+          content: Text(languageProvider.isArabic
               ? 'الرجاء ملء جميع الحقول المطلوبة.'
               : 'Please fill all the required fields.'),
           actions: [
@@ -289,7 +343,58 @@ bool isLoading = false;
   }
 
   @override
+  void initState() {
+    super.initState();
+    // Add listeners to numeric controllers
+    stadiumPriceController.addListener(_validatePrice);
+    stadiumCapacityController.addListener(_validateCapacity);
+  }
+
+  @override
+  void dispose() {
+    // Clean up controllers
+    stadiumPriceController.removeListener(_validatePrice);
+    stadiumCapacityController.removeListener(_validateCapacity);
+    stadiumNameController.dispose();
+    stadiumPriceController.dispose();
+    stadiumDescriptionController.dispose();
+    stadiumCapacityController.dispose();
+    neighborhoodEnterd.dispose();
+    super.dispose();
+  }
+
+  void _validatePrice() {
+    String text = stadiumPriceController.text;
+    if (text.isNotEmpty) {
+      // Remove any non-numeric characters
+      text = text.replaceAll(RegExp(r'[^0-9]'), '');
+      if (text != stadiumPriceController.text) {
+        stadiumPriceController.value = TextEditingValue(
+          text: text,
+          selection: TextSelection.collapsed(offset: text.length),
+        );
+      }
+    }
+  }
+
+  void _validateCapacity() {
+    String text = stadiumCapacityController.text;
+    if (text.isNotEmpty) {
+      // Remove any non-numeric characters
+      text = text.replaceAll(RegExp(r'[^0-9]'), '');
+      if (text != stadiumCapacityController.text) {
+        stadiumCapacityController.value = TextEditingValue(
+          text: text,
+          selection: TextSelection.collapsed(offset: text.length),
+        );
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final languageProvider =
+        Provider.of<LanguageProvider>(context, listen: false);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -304,13 +409,12 @@ bool isLoading = false;
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text(Provider.of<LanguageProvider>(context).isArabic
+                    title: Text(languageProvider.isArabic
                         ? 'إلغاء البيانات؟'
                         : 'Discard data?'),
-                    content: Text(
-                        Provider.of<LanguageProvider>(context).isArabic
-                            ? 'هل أنت متأكد أنك تريد إلغاء البيانات؟'
-                            : 'Are you sure you want to discard?'),
+                    content: Text(languageProvider.isArabic
+                        ? 'هل أنت متأكد أنك تريد إلغاء البيانات؟'
+                        : 'Are you sure you want to discard?'),
                     actions: [
                       TextButton(
                         onPressed: () {
@@ -321,7 +425,6 @@ bool isLoading = false;
                       ),
                       TextButton(
                         onPressed: () {
-                          // Handle the first button press
                           Navigator.of(context).pop();
                         },
                         child: const Text("return"),
@@ -358,9 +461,8 @@ bool isLoading = false;
                     stadiumNameController.text = value;
                   },
                   initValue: stadiumNameController.text,
-                  lableText: Provider.of<LanguageProvider>(context).isArabic
-                      ? 'اسم الملعب'
-                      : 'Stadium Name',
+                  lableText:
+                      languageProvider.isArabic ? 'اسم الملعب' : 'Stadium Name',
                   textInputType: TextInputType.text,
                   add_prefix: Image.asset(
                     'assets/stdowner_addNewStadium/imgs/sign.png',
@@ -374,7 +476,7 @@ bool isLoading = false;
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        Provider.of<LanguageProvider>(context).isArabic
+                        languageProvider.isArabic
                             ? 'بيانات الملعب'
                             : 'Stadium data',
                         style: TextStyle(
@@ -418,8 +520,7 @@ bool isLoading = false;
                                 ),
                                 child: Center(
                                   child: Text(
-                                    Provider.of<LanguageProvider>(context)
-                                            .isArabic
+                                    languageProvider.isArabic
                                         ? 'إضافة صورة'
                                         : 'Add Image',
                                     style: TextStyle(
@@ -435,7 +536,7 @@ bool isLoading = false;
                               ),
                             ),
                             Text(
-                              Provider.of<LanguageProvider>(context).isArabic
+                              languageProvider.isArabic
                                   ? '5MB حجم الملف الأقصى المقبول \nفي التوقيعات التالية:  .jpg   .jpeg,   .png '
                                   : '5MB maximum file size accepted \nin the following formats:  .jpg   .jpeg,   .png ',
                               textAlign: TextAlign.center,
@@ -450,8 +551,8 @@ bool isLoading = false;
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 3,
-                            crossAxisSpacing: 4.0,
-                            mainAxisSpacing: 4.0,
+                            crossAxisSpacing: 8.0,
+                            mainAxisSpacing: 8.0,
                             childAspectRatio: 1.0,
                           ),
                           itemBuilder: (BuildContext context, int index) {
@@ -459,13 +560,44 @@ bool isLoading = false;
                               children: [
                                 Container(
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(
-                                      10.0,
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    border: Border.all(
+                                      color: mainColor.withOpacity(0.3),
+                                      width: 1.0,
                                     ),
                                   ),
-                                  child: Image.file(
-                                    selectedImages[index],
-                                    fit: BoxFit.contain,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    child: Image.file(
+                                      selectedImages[index],
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 4,
+                                  right: 4,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedImages.removeAt(index);
+                                        selectedImagesUrl.removeAt(index);
+                                      });
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.all(4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red.withOpacity(0.8),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                        size: 16,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ],
@@ -493,15 +625,13 @@ bool isLoading = false;
                       pickerTextStyle:
                           TextStyle(fontSize: 20.0, color: Colors.black),
                       pickerTitle: Text(
-                          Provider.of<LanguageProvider>(context, listen: false)
-                                  .isArabic
+                          languageProvider.isArabic
                               ? 'اختر المحافظة'
                               : 'Select Governorate',
                           style: TextStyle(
                               fontWeight: FontWeight.w800, fontSize: 24.0)),
                       pickerDescription: Text(
-                          Provider.of<LanguageProvider>(context, listen: false)
-                                  .isArabic
+                          languageProvider.isArabic
                               ? 'اختر المحافظة حيث يوجد الملعب'
                               : 'Choose the governorate where the stadium is located',
                           style: TextStyle(fontWeight: FontWeight.w400)),
@@ -541,18 +671,14 @@ bool isLoading = false;
                             pickerTextStyle:
                                 TextStyle(fontSize: 20.0, color: Colors.black),
                             pickerTitle: Text(
-                                Provider.of<LanguageProvider>(context,
-                                            listen: false)
-                                        .isArabic
+                                languageProvider.isArabic
                                     ? 'اختر المكان'
                                     : 'Select Place',
                                 style: TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 24.0)),
                             pickerDescription: Text(
-                                Provider.of<LanguageProvider>(context,
-                                            listen: false)
-                                        .isArabic
+                                languageProvider.isArabic
                                     ? 'اختر المكان حيث يوجد الملعب'
                                     : 'Choose the place where the stadium is located',
                                 style: TextStyle(fontWeight: FontWeight.w400)),
@@ -585,10 +711,7 @@ bool isLoading = false;
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Text(
-                                              Provider.of<LanguageProvider>(
-                                                          context,
-                                                          listen: false)
-                                                      .isArabic
+                                              languageProvider.isArabic
                                                   ? 'أدخل الحي'
                                                   : 'Enter Neighborhood',
                                               style: TextStyle(
@@ -598,10 +721,7 @@ bool isLoading = false;
                                           TextField(
                                             controller: neighborhoodEnterd,
                                             decoration: InputDecoration(
-                                              hintText: Provider.of<
-                                                              LanguageProvider>(
-                                                          context,
-                                                          listen: false)
+                                              hintText: languageProvider
                                                       .isArabic
                                                   ? 'أدخل الحي'
                                                   : 'Enter your neighborhood',
@@ -618,10 +738,7 @@ bool isLoading = false;
                                               Navigator.pop(context);
                                             },
                                             child: Text(
-                                                Provider.of<LanguageProvider>(
-                                                            context,
-                                                            listen: false)
-                                                        .isArabic
+                                                languageProvider.isArabic
                                                     ? 'حفظ'
                                                     : 'Save'),
                                           ),
@@ -637,11 +754,9 @@ bool isLoading = false;
                       },
                     ).show(context);
                   },
-                  lableText:
-                      Provider.of<LanguageProvider>(context, listen: false)
-                              .isArabic
-                          ? 'موقع الملعب'
-                          : 'Stadium location',
+                  lableText: languageProvider.isArabic
+                      ? 'موقع الملعب'
+                      : 'Stadium location',
                   initValue: location,
                   isReadOnly: true,
                   textInputType: TextInputType.text,
@@ -657,9 +772,7 @@ bool isLoading = false;
                     stadiumPriceController.text = value;
                   },
                   initValue: stadiumPriceController.text,
-                  lableText: Provider.of<LanguageProvider>(context).isArabic
-                      ? 'السعر'
-                      : 'Set Price',
+                  lableText: languageProvider.isArabic ? 'السعر' : 'Set Price',
                   textInputType: TextInputType.number,
                   add_prefix: Image.asset(
                     'assets/stdowner_addNewStadium/imgs/price.png',
@@ -685,9 +798,8 @@ bool isLoading = false;
                     stadiumDescriptionController.text = value;
                   },
                   initValue: stadiumDescriptionController.text,
-                  lableText: Provider.of<LanguageProvider>(context).isArabic
-                      ? 'الوصف'
-                      : 'Description',
+                  lableText:
+                      languageProvider.isArabic ? 'الوصف' : 'Description',
                   textInputType: TextInputType.text,
                   add_prefix: Image.asset(
                     'assets/stdowner_addNewStadium/imgs/desc.png',
@@ -701,9 +813,7 @@ bool isLoading = false;
                     stadiumCapacityController.text = value;
                   },
                   initValue: stadiumCapacityController.text,
-                  lableText: Provider.of<LanguageProvider>(context).isArabic
-                      ? 'الكميه'
-                      : 'Capacity',
+                  lableText: languageProvider.isArabic ? 'الكميه' : 'Capacity',
                   textInputType: TextInputType.number,
                   add_prefix: Icon(
                     Icons.group,
@@ -718,9 +828,7 @@ bool isLoading = false;
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        Provider.of<LanguageProvider>(context).isArabic
-                            ? 'المميزات'
-                            : 'features',
+                        languageProvider.isArabic ? 'المميزات' : 'features',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -796,8 +904,7 @@ bool isLoading = false;
                           textBuilder: (value) => value
                               ? Center(
                                   child: Text(
-                                    Provider.of<LanguageProvider>(context)
-                                            .isArabic
+                                    languageProvider.isArabic
                                         ? ' متوفر ماء'
                                         : 'Water is Available',
                                     style: TextStyle(
@@ -809,8 +916,7 @@ bool isLoading = false;
                                 )
                               : Center(
                                   child: Text(
-                                    Provider.of<LanguageProvider>(context)
-                                            .isArabic
+                                    languageProvider.isArabic
                                         ? 'غير متوفر ماء'
                                         : 'Water not available',
                                     style: TextStyle(
@@ -888,8 +994,7 @@ bool isLoading = false;
                           textBuilder: (value) => value
                               ? Center(
                                   child: Text(
-                                    Provider.of<LanguageProvider>(context)
-                                            .isArabic
+                                    languageProvider.isArabic
                                         ? 'متوفر مسار'
                                         : 'Available Track',
                                     style: TextStyle(
@@ -901,8 +1006,7 @@ bool isLoading = false;
                                 )
                               : Center(
                                   child: Text(
-                                    Provider.of<LanguageProvider>(context)
-                                            .isArabic
+                                    languageProvider.isArabic
                                         ? 'غير متوفر مسار'
                                         : 'Unavailable Track',
                                     style: TextStyle(
@@ -977,8 +1081,7 @@ bool isLoading = false;
                           textBuilder: (value) => value
                               ? Center(
                                   child: Text(
-                                    Provider.of<LanguageProvider>(context)
-                                            .isArabic
+                                    languageProvider.isArabic
                                         ? 'عشب صناعي'
                                         : 'Industry Grass',
                                     style: TextStyle(
@@ -995,8 +1098,7 @@ bool isLoading = false;
                                 )
                               : Center(
                                   child: Text(
-                                    Provider.of<LanguageProvider>(context)
-                                            .isArabic
+                                    languageProvider.isArabic
                                         ? 'عشب طبيعي'
                                         : 'Normal Grass',
                                     style: TextStyle(
@@ -1024,11 +1126,7 @@ bool isLoading = false;
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        Provider.of<LanguageProvider>(context,
-                                    listen: false)
-                                .isArabic
-                            ? 'وقت العمل'
-                            : 'time work',
+                        languageProvider.isArabic ? 'وقت العمل' : 'time work',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -1082,9 +1180,7 @@ bool isLoading = false;
                             showTimeSeparator: true,
                             pickerTextStyle:
                                 TextStyle(fontSize: 20.0, color: Colors.black),
-                            pickerTitle: Text(Provider.of<LanguageProvider>(
-                                        context, listen: false)
-                                    .isArabic
+                            pickerTitle: Text(languageProvider.isArabic
                                 ? 'متى تريد فتح الملعب في اليوم؟'
                                 : 'when you will open stadium in each day ?'),
                             initialTime: Time(hours: 7, minutes: 30),
@@ -1106,12 +1202,9 @@ bool isLoading = false;
                         readOnly: true,
                         textAlign: TextAlign.center,
                         decoration: InputDecoration(
-                          hintText:
-                              Provider.of<LanguageProvider>(context,
-                                          listen: false)
-                                      .isArabic
-                                  ? 'بداية من'
-                                  : 'start from',
+                          hintText: languageProvider.isArabic
+                              ? 'بداية من'
+                              : 'start from',
                           hintStyle: TextStyle(fontSize: 16.0),
                           fillColor: Colors.white60,
                           filled: true,
@@ -1173,9 +1266,7 @@ bool isLoading = false;
                             showTimeSeparator: true,
                             pickerTextStyle:
                                 TextStyle(fontSize: 20.0, color: Colors.black),
-                            pickerTitle: Text(Provider.of<LanguageProvider>(
-                                        context, listen: false)
-                                    .isArabic
+                            pickerTitle: Text(languageProvider.isArabic
                                 ? 'متى تريد فتح الملعب في اليوم؟'
                                 : 'when you will open stadium in each day ?'),
                             initialTime: Time(hours: 7, minutes: 30),
@@ -1197,11 +1288,7 @@ bool isLoading = false;
                         textAlign: TextAlign.center,
                         decoration: InputDecoration(
                           hintText:
-                              Provider.of<LanguageProvider>(context,
-                                          listen: false)
-                                      .isArabic
-                                  ? 'ينتهي في'
-                                  : 'End on',
+                              languageProvider.isArabic ? 'ينتهي في' : 'End on',
                           hintStyle: TextStyle(fontSize: 16.0),
                           fillColor: Colors.white60,
                           filled: true,
@@ -1232,9 +1319,7 @@ bool isLoading = false;
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        Provider.of<LanguageProvider>(context).isArabic
-                            ? ' أيام العمل'
-                            : 'work days',
+                        languageProvider.isArabic ? ' أيام العمل' : 'work days',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -1336,7 +1421,7 @@ bool isLoading = false;
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
-                        Provider.of<LanguageProvider>(context).isArabic
+                        languageProvider.isArabic
                             ? 'انشر ملعبك'
                             : 'Post your stadium',
                         style: TextStyle(
@@ -1355,32 +1440,15 @@ bool isLoading = false;
                   height: 50.0,
                   child: Create_GradiantGreenButton(
                     onButtonPressed: () async {
-                      setState(() {
-                        isLoading = true;
-                      });
                       await _handlePostButtonPressed();
-                      setState(() {
-                        isLoading = false;
-                      });
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            Provider.of<LanguageProvider>(context, listen: false).isArabic
-                                ? 'تم إضافة الملعب بنجاح'
-                                : 'Stadium added successfully',
-                          ),
-                        ),
-                      );
-                      Navigator.pushNamed(context, '/home_owner');
                     },
                     content: isLoading
                         ? CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
                           )
                         : Text(
-                            Provider.of<LanguageProvider>(context, listen: false).isArabic
-                                ? 'انشر'
-                                : 'Post',
+                            languageProvider.isArabic ? 'انشر' : 'Post',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontFamily: 'eras-itc-bold',
@@ -1393,8 +1461,6 @@ bool isLoading = false;
             ),
           ),
         ),
-
-    
       ]),
     );
   }

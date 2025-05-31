@@ -53,6 +53,7 @@ import 'stdown_addNewStd/stdwon_addNewStadium.dart';
 // Other screens
 // import 'stadium_information_player_pg/stadium_information_player_pg.dart';
 import 'no_internetConnection/no_internetConnection.dart';
+import 'package:graduation_project_main/settings/settings_page.dart';
 
 /// Main function that initializes the application
 /// Initializes Firebase and Supabase before running the app
@@ -129,11 +130,9 @@ class MyApp extends StatelessWidget {
               '/profilepage': (context) => ProfilePlayer(),
               '/edit_profile': (context) => EditProfile(),
               '/stdWon_addNewStadium': (context) => AddNewStadium(),
-              // '/payment': (context) => Payment(
-              //       stadiumID: ,
-              //     ),
               '/no_internetConnection': (context) => NoInternetConnection(),
               '/aboutApp': (context) => AboutApp(),
+              '/settings': (context) => SettingsPage(),
             },
           );
         },
