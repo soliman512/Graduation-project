@@ -183,7 +183,7 @@ class _StadiumCardState extends State<StadiumCard> {
                   Padding(
                     padding: const EdgeInsets.only(right: 22.0),
                     child: Text(
-                      "${widget.price}.00 .LE",
+                      "${widget.price} LE",
                       style: TextStyle(
                         fontSize: 13,
                         color: mainColor,
@@ -510,34 +510,40 @@ class _Create_DrawerState extends State<Create_Drawer> {
   Widget _buildSettingsButton(BuildContext context, bool isArabic) {
     return Expanded(
       child: LayoutBuilder(
-        builder: (context, constraints) => Container(
-          margin: EdgeInsets.symmetric(horizontal: constraints.maxWidth * 0.11),
-          height: constraints.maxHeight * 0.15,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: [
-              BoxShadow(
-                  color: mainColor.withOpacity(0.5),
-                  spreadRadius: 2,
-                  blurRadius: 5)
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                  "assets/home_loves_tickets_top/imgs/Vector_drawerSettings.png",
-                  width: 30),
-              SizedBox(width: constraints.maxWidth * 0.05),
-              Text(
-                isArabic ? "الإعدادات" : "Settings",
-                style: TextStyle(
-                    fontSize: constraints.maxWidth * 0.025,
-                    fontFamily: "eras-itc-demi",
-                    color: Colors.black),
-              ),
-            ],
+        builder: (context, constraints) => GestureDetector(
+          onTap: () => Navigator.pushNamed(context, '/settings'),
+          child: Container(
+            margin:
+                EdgeInsets.symmetric(horizontal: constraints.maxWidth * 0.11),
+            height: constraints.maxHeight * 0.15,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: [
+                BoxShadow(
+                    color: mainColor.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5)
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.settings,
+                  size: 30,
+                  color: mainColor,
+                ),
+                SizedBox(width: constraints.maxWidth * 0.05),
+                Text(
+                  isArabic ? "الإعدادات" : "Settings",
+                  style: TextStyle(
+                      fontSize: constraints.maxWidth * 0.025,
+                      fontFamily: "eras-itc-demi",
+                      color: Colors.black),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -733,7 +739,7 @@ class Create_Input extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 32.0),
+      margin: EdgeInsets.symmetric(horizontal: 18.0),
       color: Color(0xC7FFFFFF),
       width: double.infinity,
       height: 50.0,

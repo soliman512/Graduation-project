@@ -440,7 +440,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                 // Add image
                 Container(
                   height: 250.0,
-                  padding: EdgeInsets.all(8.0),
+                  padding: EdgeInsets.all(4.0),
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.8),
@@ -453,8 +453,8 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                         : selectedImagesUrl.length + 1,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
-                      crossAxisSpacing: 4.0,
-                      mainAxisSpacing: 4.0,
+                      crossAxisSpacing: 8.0,
+                      mainAxisSpacing: 8.0,
                       childAspectRatio: 1.0,
                     ),
                     itemBuilder: (BuildContext context, int index) {
@@ -489,39 +489,46 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                         );
                       } else {
                         int adjustedIndex = index - 1;
-                        return Stack(
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  isImageOpend = true;
-                                });
-                                openImage = selectedImages.isNotEmpty
-                                    ? Image.file(
-                                        selectedImages[adjustedIndex],
-                                        fit: BoxFit.contain,
-                                      )
-                                    : Image.network(
-                                        selectedImagesUrl[adjustedIndex],
-                                        fit: BoxFit.contain,
-                                      );
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                child: selectedImages.isNotEmpty
-                                    ? Image.file(
-                                        selectedImages[adjustedIndex],
-                                        fit: BoxFit.contain,
-                                      )
-                                    : Image.network(
-                                        selectedImagesUrl[adjustedIndex],
-                                        fit: BoxFit.contain,
-                                      ),
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              isImageOpend = true;
+                            });
+                            openImage = selectedImages.isNotEmpty
+                                ? Image.file(
+                                    selectedImages[adjustedIndex],
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.network(
+                                    selectedImagesUrl[adjustedIndex],
+                                    fit: BoxFit.cover,
+                                  );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.0),
+                              border: Border.all(
+                                color: mainColor.withOpacity(0.3),
+                                width: 1.0,
                               ),
                             ),
-                          ],
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10.0),
+                              child: selectedImages.isNotEmpty
+                                  ? Image.file(
+                                      selectedImages[adjustedIndex],
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                    )
+                                  : Image.network(
+                                      selectedImagesUrl[adjustedIndex],
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                    ),
+                            ),
+                          ),
                         );
                       }
                     },
@@ -1237,6 +1244,32 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                     ),
                     itemCount: selectDays.length,
                     itemBuilder: (BuildContext context, int i) {
+                      String dayText = selectDays[i]['day'];
+                      if (Provider.of<LanguageProvider>(context).isArabic) {
+                        switch (dayText) {
+                          case 'Saturday':
+                            dayText = 'السبت';
+                            break;
+                          case 'Sunday':
+                            dayText = 'الأحد';
+                            break;
+                          case 'Monday':
+                            dayText = 'الإثنين';
+                            break;
+                          case 'Tuesday':
+                            dayText = 'الثلاثاء';
+                            break;
+                          case 'Wednesday':
+                            dayText = 'الأربعاء';
+                            break;
+                          case 'Thursday':
+                            dayText = 'الخميس';
+                            break;
+                          case 'Friday':
+                            dayText = 'الجمعة';
+                            break;
+                        }
+                      }
                       return GestureDetector(
                         onTap: () {
                           setState(() {
@@ -1279,7 +1312,7 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                selectDays[i]['day'],
+                                dayText,
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
@@ -1315,34 +1348,41 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                     Expanded(child: Divider()),
                   ],
                 ),
-                SizedBox(height: 60.0),
-                // Update button
+                SizedBox(height: 40.0),
+                // Update and Delete buttons
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Expanded(
                       flex: 2,
                       child: SizedBox(
-                        height: 50.0,
+                        height: 55.0,
                         child: Create_GradiantGreenButton(
                           onButtonPressed: _handleUpdateButtonPressed,
-                          content: Text(
-                            Provider.of<LanguageProvider>(context).isArabic
-                                ? 'تحديث'
-                                : 'Update',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'eras-itc-demi',
-                                fontSize: 20.0),
+                          content: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.update, color: Colors.white, size: 24),
+                              SizedBox(width: 8),
+                              Text(
+                                Provider.of<LanguageProvider>(context).isArabic
+                                    ? 'تحديث'
+                                    : 'Update',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'eras-itc-demi',
+                                    fontSize: 20.0),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(width: 10.0),
+                    SizedBox(width: 16.0),
                     Expanded(
                       flex: 1,
                       child: SizedBox(
-                        height: 50.0,
+                        height: 55.0,
                         child: GestureDetector(
                           onTap: () {
                             showDialog(
@@ -1350,10 +1390,13 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                               builder: (BuildContext context) {
                                 return AlertDialog(
                                   title: Text(
-                                      Provider.of<LanguageProvider>(context)
-                                              .isArabic
-                                          ? 'حذف الملعب'
-                                          : 'Delete Stadium', style: TextStyle(fontSize: 18.0, color: Colors.red),),
+                                    Provider.of<LanguageProvider>(context)
+                                            .isArabic
+                                        ? 'حذف الملعب'
+                                        : 'Delete Stadium',
+                                    style: TextStyle(
+                                        fontSize: 18.0, color: Colors.red),
+                                  ),
                                   content: Text(Provider.of<LanguageProvider>(
                                               context)
                                           .isArabic
@@ -1431,14 +1474,27 @@ class _EditSelectedStadiumState extends State<EditSelectedStadium> {
                               ),
                               color: Colors.white,
                             ),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 20.0,
-                              vertical: 10.0,
-                            ),
-                            child: Icon(
-                              Icons.delete,
-                              color: Colors.red,
-                              size: 30.0,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                  size: 24.0,
+                                ),
+                                SizedBox(width: 4),
+                                Text(
+                                  Provider.of<LanguageProvider>(context)
+                                          .isArabic
+                                      ? 'حذف'
+                                      : 'Delete',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
