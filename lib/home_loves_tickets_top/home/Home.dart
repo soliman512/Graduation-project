@@ -230,7 +230,8 @@ class _HomeState extends State<Home> {
       final matchDuration = data['matchDuration'] ?? "1h  -  0m";
       final isRated = data['isRated'] ?? false;
 
-      final bookingEndDateTime = parseBookingEndDateTime(matchDate, matchTime, matchDuration);
+      final bookingEndDateTime =
+          parseBookingEndDateTime(matchDate, matchTime, matchDuration);
 
       if (bookingEndDateTime.isBefore(DateTime.now()) && !isRated) {
         final stadiumDoc = await FirebaseFirestore.instance
@@ -240,7 +241,8 @@ class _HomeState extends State<Home> {
         final stadiumName = stadiumDoc.data()?['name'] ?? '';
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          showStadiumReviewPopup(context, data['stadiumID'], doc.id, stadiumName);
+          showStadiumReviewPopup(
+              context, data['stadiumID'], doc.id, stadiumName);
         });
         break;
       }
@@ -435,6 +437,564 @@ class _HomeState extends State<Home> {
     );
   }
 
+  void _showLocationFilterDialog() {
+    final bool isArabic =
+        Provider.of<LanguageProvider>(context, listen: false).isArabic;
+    String? selectedGovernorate;
+    String? selectedPlace;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: Text(
+                isArabic ? "اختر الموقع" : "Select Location",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: mainColor,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              content: Container(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Governorate Selection
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: mainColor.withOpacity(0.5)),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          isExpanded: true,
+                          hint: Text(
+                            isArabic ? "اختر المحافظة" : "Select Governorate",
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                          value: selectedGovernorate,
+                          items: egyptGovernorates.map((String governorate) {
+                            return DropdownMenuItem<String>(
+                              value: governorate,
+                              child: Text(
+                                governorate,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setDialogState(() {
+                              selectedGovernorate = newValue;
+                              selectedPlace =
+                                  null; // Reset place when governorate changes
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+
+                    // Place Selection (only shown if governorate is selected)
+                    if (selectedGovernorate != null)
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: mainColor.withOpacity(0.5)),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            isExpanded: true,
+                            hint: Text(
+                              isArabic
+                                  ? "اختر المكان (اختياري)"
+                                  : "Select Place (Optional)",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                            value: selectedPlace,
+                            items: [
+                              DropdownMenuItem<String>(
+                                value: null,
+                                child: Text(
+                                  isArabic ? "جميع الأماكن" : "All Places",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ),
+                              ...(egyptGovernoratesAndCenters[
+                                          selectedGovernorate] ??
+                                      [])
+                                  .map((String place) {
+                                return DropdownMenuItem<String>(
+                                  value: place,
+                                  child: Text(
+                                    place,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ],
+                            onChanged: (String? newValue) {
+                              setDialogState(() {
+                                selectedPlace = newValue;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    isArabic ? "إلغاء" : "Cancel",
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: mainColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  onPressed: () {
+                    if (selectedGovernorate != null) {
+                      // Update the parent widget's state
+                      this.setState(() {
+                        filterLocation_city = selectedGovernorate!;
+                        filterLocation_place = selectedPlace ?? '';
+                        filterLocation_location = selectedPlace != null
+                            ? '$selectedGovernorate - $selectedPlace'
+                            : selectedGovernorate!;
+                        isFilterLocationTurnOn = true;
+                      });
+                      Navigator.of(context).pop();
+                    }
+                  },
+                  child: Text(
+                    isArabic ? "تطبيق" : "Apply",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // Enhanced notification data structure
+  Future<List<Map<String, dynamic>>> _getUserNotifications() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      print('No user logged in for notifications');
+      return [];
+    }
+
+    print('Fetching notifications for user: ${user.uid}');
+
+    try {
+      // Get notifications from players_notifications collection
+      final notificationsSnapshot = await FirebaseFirestore.instance
+          .collection('players_notifications')
+          .where('playerId', isEqualTo: user.uid)
+          .orderBy('date', descending: true)
+          .get();
+
+      print('Found ${notificationsSnapshot.docs.length} notifications');
+
+      List<Map<String, dynamic>> notifications = [];
+
+      for (var notification in notificationsSnapshot.docs) {
+        final notificationData = notification.data();
+        print('Processing notification: ${notification.id}');
+        print('Notification data: $notificationData');
+
+        final matchDate = notificationData['matchDate'];
+        final matchTime = notificationData['matchTime'];
+        final matchDuration = notificationData['matchDuration'] ?? "1h  -  0m";
+        final isRated = notificationData['isRated'] ?? false;
+        final bookingEndDateTime =
+            parseBookingEndDateTime(matchDate, matchTime, matchDuration);
+        final now = DateTime.now();
+
+        // Determine notification state
+        String state;
+        if (bookingEndDateTime.isBefore(now)) {
+          state = isRated ? 'completed' : 'needs_review';
+        } else if (bookingEndDateTime.difference(now).inDays <= 1) {
+          state = 'coming_soon';
+        } else {
+          state = 'upcoming';
+        }
+
+        print('Notification state: $state');
+
+        notifications.add({
+          'id': notification.id,
+          'bookingId': notificationData['bookingId'],
+          'stadiumName': notificationData['stadiumName'],
+          'stadiumId': notificationData['stadiumId'],
+          'price': notificationData['price'],
+          'matchDate': matchDate,
+          'matchTime': matchTime,
+          'matchDuration': matchDuration,
+          'date': bookingEndDateTime,
+          'state': state,
+          'isRated': isRated,
+          'stadiumImage': notificationData['stadiumImage'],
+        });
+      }
+
+      print('Processed ${notifications.length} notifications');
+      return notifications;
+    } catch (e) {
+      print('Error fetching notifications: $e');
+      return [];
+    }
+  }
+
+  void _showNotificationsDialog() {
+    final bool isArabic =
+        Provider.of<LanguageProvider>(context, listen: false).isArabic;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    showDialog(
+      context: context,
+      barrierColor: const Color.fromARGB(237, 0, 0, 0),
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          alignment: Alignment.topCenter,
+          insetPadding: EdgeInsets.symmetric(horizontal: 20.0),
+          child: Container(
+            margin: EdgeInsets.only(top: 30.0),
+            width: double.infinity,
+            height: MediaQuery.of(context).size.height * 0.7,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                // Header
+                Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: mainColor,
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(20)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        isArabic ? "الإشعارات" : "Notifications",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.close, color: Colors.white),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Notifications List
+                Expanded(
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('notifications')
+                        .where('playerId', isEqualTo: user.uid)
+                        .where('type', isEqualTo: 'booking')
+                        .orderBy('date', descending: true)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      print('StreamBuilder state: ${snapshot.connectionState}');
+                      print('StreamBuilder hasError: ${snapshot.hasError}');
+                      if (snapshot.hasError) {
+                        print('StreamBuilder error: ${snapshot.error}');
+                      }
+                      print('StreamBuilder hasData: ${snapshot.hasData}');
+                      if (snapshot.hasData) {
+                        print(
+                            'Number of notifications: ${snapshot.data?.docs.length}');
+                        snapshot.data?.docs.forEach((doc) {
+                          print('Notification ${doc.id}: ${doc.data()}');
+                        });
+                      }
+
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: mainColor,
+                          ),
+                        );
+                      }
+
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.error_outline,
+                                  color: Colors.red, size: 48),
+                              SizedBox(height: 16),
+                              Text(
+                                isArabic
+                                    ? "حدث خطأ في تحميل الإشعارات"
+                                    : "Error loading notifications",
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      final notifications = snapshot.data?.docs ?? [];
+
+                      if (notifications.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.notifications_none_rounded,
+                                color: Colors.grey,
+                                size: 64,
+                              ),
+                              SizedBox(height: 16),
+                              Text(
+                                isArabic
+                                    ? "لا توجد إشعارات"
+                                    : "No notifications",
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      return ListView.builder(
+                        padding: EdgeInsets.all(16),
+                        itemCount: notifications.length,
+                        itemBuilder: (context, index) {
+                          final notification = notifications[index].data()
+                              as Map<String, dynamic>;
+                          final matchDate = notification['matchDate'];
+                          final matchTime = notification['matchTime'];
+                          final matchDuration =
+                              notification['matchDuration'] ?? "1h  -  0m";
+                          final isRated = notification['isRated'] ?? false;
+                          final bookingEndDateTime = parseBookingEndDateTime(
+                              matchDate, matchTime, matchDuration);
+                          final now = DateTime.now();
+
+                          // Determine notification state
+                          String state;
+                          if (bookingEndDateTime.isBefore(now)) {
+                            state = isRated ? 'completed' : 'needs_review';
+                          } else if (bookingEndDateTime
+                                  .difference(now)
+                                  .inDays <=
+                              1) {
+                            state = 'coming_soon';
+                          } else {
+                            state = 'upcoming';
+                          }
+
+                          // Get appropriate icon and color based on state
+                          IconData stateIcon;
+                          Color stateColor;
+                          String stateText;
+
+                          switch (state) {
+                            case 'needs_review':
+                              stateIcon = Icons.rate_review;
+                              stateColor = Colors.orange;
+                              stateText =
+                                  isArabic ? "يحتاج تقييم" : "Needs Review";
+                              break;
+                            case 'coming_soon':
+                              stateIcon = Icons.event_available;
+                              stateColor = Colors.green;
+                              stateText = isArabic ? "قريباً" : "Coming Soon";
+                              break;
+                            case 'completed':
+                              stateIcon = Icons.check_circle;
+                              stateColor = Colors.blue;
+                              stateText = isArabic ? "مكتمل" : "Completed";
+                              break;
+                            default:
+                              stateIcon = Icons.event;
+                              stateColor = Colors.grey;
+                              stateText = isArabic ? "قادم" : "Upcoming";
+                          }
+
+                          return Card(
+                            margin: EdgeInsets.only(bottom: 12),
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: InkWell(
+                              onTap: () {
+                                if (state == 'needs_review') {
+                                  Navigator.of(context).pop();
+                                  showStadiumReviewPopup(
+                                    context,
+                                    notification['stadiumId'],
+                                    notification['bookingId'],
+                                    notification['stadiumName'],
+                                  );
+                                }
+                              },
+                              borderRadius: BorderRadius.circular(12),
+                              child: Padding(
+                                padding: EdgeInsets.all(12),
+                                child: Row(
+                                  children: [
+                                    // Stadium Image
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.asset(
+                                        notification['stadiumImage'],
+                                        width: 60,
+                                        height: 60,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    SizedBox(width: 12),
+                                    // Notification Details
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            notification['stadiumName'],
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.calendar_today,
+                                                size: 14,
+                                                color: Colors.grey,
+                                              ),
+                                              SizedBox(width: 4),
+                                              Text(
+                                                '${notification['matchDate']} - ${notification['matchTime']}',
+                                                style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                stateIcon,
+                                                size: 14,
+                                                color: stateColor,
+                                              ),
+                                              SizedBox(width: 4),
+                                              Text(
+                                                stateText,
+                                                style: TextStyle(
+                                                  color: stateColor,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    // Price
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: mainColor.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        '${notification['price']} EGP',
+                                        style: TextStyle(
+                                          color: mainColor,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isArabic = Provider.of<LanguageProvider>(context).isArabic;
@@ -444,145 +1004,13 @@ class _HomeState extends State<Home> {
         extendBodyBehindAppBar: false,
         drawer: Create_Drawer(refreshData: true),
         appBar: Create_AppBar(
-            notificationState: () => showDialog(
-                  barrierColor: const Color.fromARGB(237, 0, 0, 0),
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Dialog(
-                      backgroundColor: Colors.transparent,
-                      alignment: Alignment.topCenter,
-                      insetPadding: EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Container(
-                        margin: EdgeInsets.only(top: 30.0),
-                        width: double.infinity,
-                        height: MediaQuery.of(context).size.height * 0.7,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 10.0, vertical: 20.0),
-                        child: StreamBuilder<QuerySnapshot>(
-                            stream: FirebaseFirestore.instance
-                                .collection('players_notifications')
-                                .where('username',
-                                    isEqualTo: getCurrentUsername())
-                                .orderBy('date', descending: true)
-                                .snapshots(),
-                            builder: (context,
-                                AsyncSnapshot<QuerySnapshot> snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Center(
-                                  child: SizedBox(
-                                    child: CircularProgressIndicator(
-                                        color: Colors.white30),
-                                    height: 100,
-                                    width: 100.0,
-                                  ),
-                                );
-                              }
-                              if (snapshot.hasError) {
-                                // Show Firestore index error in a user-friendly way
-                                final errorMsg = snapshot.error.toString();
-                                if (errorMsg.contains('FAILED_PRECONDITION') &&
-                                    errorMsg.contains('index')) {
-                                  return Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(Icons.error,
-                                              color: Colors.red, size: 60),
-                                          SizedBox(height: 16),
-                                          Text(
-                                            isArabic
-                                                ? 'حدث خطأ في قاعدة البيانات. يتطلب الاستعلام فهرسًا في Firestore.'
-                                                : 'A database error occurred. The query requires an index in Firestore.',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 18.0,
-                                                fontWeight: FontWeight.w600),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                          SizedBox(height: 12),
-                                          Text(
-                                            isArabic
-                                                ? 'يرجى التواصل مع الدعم الفني أو مسؤول التطبيق لإصلاح المشكلة.'
-                                                : 'Please contact support or the app admin to fix this issue.',
-                                            style: TextStyle(
-                                                color: Colors.white70,
-                                                fontSize: 14.0),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                }
-                                return Text(isArabic
-                                    ? 'حدث خطأ: ${snapshot.error}'
-                                    : 'Error: ${snapshot.error}');
-                              }
-                              if (!snapshot.hasData ||
-                                  snapshot.data!.docs.isEmpty) {
-                                return Center(
-                                    child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                      Text(
-                                          isArabic
-                                              ? 'لا توجد إشعارات'
-                                              : 'No notifications',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 20.0,
-                                              fontWeight: FontWeight.w600)),
-                                      SizedBox(height: 20.0),
-                                      Icon(
-                                        Icons.notifications_paused_rounded,
-                                        color: Colors.white,
-                                        size: 100.0,
-                                      ),
-                                    ]));
-                              }
-                              final documents = snapshot.data!.docs;
-
-                              return ListView.builder(
-                                  itemCount: documents.length,
-                                  itemBuilder: (context, index) {
-                                    final data = documents[index].data()
-                                        as Map<String, dynamic>;
-                                    final DateTime date =
-                                        (data['date'] as Timestamp).toDate();
-                                    final String dayName =
-                                        DateFormat('EEEE').format(date);
-                                    final TimeOfDay time =
-                                        TimeOfDay.fromDateTime(date);
-                                    final bool isComingSoon =
-                                        data['state'] == 'coming_soon';
-
-                                    return Padding(
-                                      padding: const EdgeInsets.only(top: 30.0),
-                                      child: TicketCard(
-                                        stadiumName: data['stadiumName'],
-                                        price: data['price'].toString(),
-                                        date: date.toString() + ' - ' + dayName,
-                                        time: time.format(context),
-                                        isEnd: data['isEnd'],
-                                        daysBefore: daysBefore(date),
-                                      ),
-                                    );
-                                  });
-                            }),
-                      ),
-                    );
-                  },
-                ),
-            title: Add_AppName(
-              align: TextAlign.center,
-              font_size: 24.0,
-              color: Colors.black,
-            )),
+          notificationState: () => _showNotificationsDialog(),
+          title: Add_AppName(
+            align: TextAlign.center,
+            font_size: 24.0,
+            color: Colors.black,
+          ),
+        ),
 
         // Bottom navigation bar
         floatingActionButton: Container(
@@ -751,105 +1179,7 @@ class _HomeState extends State<Home> {
                       Expanded(
                         flex: 2,
                         child: GestureDetector(
-                          onTap: () {
-                            BottomPicker(
-                              items: isArabic
-                                  ? getEgyptGovernoratesWidgets(context)
-                                  : egyptGovernoratesWidgets,
-                              height: 600.0,
-                              titlePadding:
-                                  EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
-                              buttonContent: Icon(Icons.navigate_next_rounded,
-                                  color: Colors.white, size: 22.0),
-                              buttonPadding: 10.0,
-                              buttonStyle: BoxDecoration(
-                                gradient: greenGradientColor,
-                                borderRadius: BorderRadius.circular(15.0),
-                              ),
-                              pickerTextStyle: TextStyle(
-                                  fontSize: 20.0, color: Colors.black),
-                              pickerTitle: Text(
-                                  isArabic
-                                      ? 'اختار المحافظه'
-                                      : 'Select Governorate',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w800,
-                                      fontSize: 24.0)),
-                              pickerDescription: Text(
-                                  isArabic
-                                      ? ' اختار المحافظه التي فيها الملعب'
-                                      : 'Choose the governorate where the stadium is located',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.w400)),
-                              onSubmit: (selectedIndex) {
-                                String governorate =
-                                    egyptGovernorates[selectedIndex];
-                                setState(() {
-                                  filterLocation_city = governorate;
-                                });
-
-                                Future.delayed(Duration(milliseconds: 10), () {
-                                  // Show place picker after governorate selection
-                                  List<Widget> placeWidgets =
-                                      egyptGovernoratesAndCenters[
-                                              filterLocation_city]!
-                                          .map((place) => Center(
-                                                child: Text(
-                                                  place,
-                                                  style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.w600),
-                                                ),
-                                              ))
-                                          .toList();
-
-                                  BottomPicker(
-                                    items: placeWidgets,
-                                    height: 600.0,
-                                    titlePadding: EdgeInsets.fromLTRB(
-                                        0.0, 20.0, 0.0, 0.0),
-                                    buttonContent: Icon(
-                                        Icons.navigate_next_rounded,
-                                        color: Colors.white,
-                                        size: 22.0),
-                                    buttonPadding: 10.0,
-                                    buttonStyle: BoxDecoration(
-                                      gradient: greenGradientColor,
-                                      borderRadius: BorderRadius.circular(15.0),
-                                    ),
-                                    pickerTextStyle: TextStyle(
-                                        fontSize: 20.0, color: Colors.black),
-                                    pickerTitle: Text(
-                                        isArabic
-                                            ? 'اختار المكان'
-                                            : 'Select Place',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w800,
-                                            fontSize: 24.0)),
-                                    pickerDescription: Text(
-                                        isArabic
-                                            ? 'اختر المكان الذي يقع فيه الملعب'
-                                            : 'Choose the place where the stadium is located',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w400)),
-                                    onSubmit: (selectedPlaceIndex) {
-                                      String place =
-                                          egyptGovernoratesAndCenters[
-                                                  filterLocation_city]![
-                                              selectedPlaceIndex];
-                                      setState(() {
-                                        filterLocation_place = place;
-                                        filterLocation_location =
-                                            '$filterLocation_city - $place';
-                                        isFilterLocationTurnOn = true;
-                                      });
-                                    },
-                                  ).show(context);
-                                });
-                              },
-                            ).show(context);
-                          },
+                          onTap: _showLocationFilterDialog,
                           child: isFilterLocationTurnOn
                               ? Container(
                                   margin: EdgeInsets.only(right: 14.0),
@@ -1118,22 +1448,48 @@ class _HomeState extends State<Home> {
                                 .toLowerCase()
                                 .contains(searchQuery.toLowerCase()))
                             .toList();
-                        return stadiums.isEmpty
-                            ? _buildEmptyMessage()
-                            : _buildStadiumList(stadiums);
+                        if (stadiums.isEmpty) {
+                          return _buildEmptyMessage();
+                        }
                       }
 
                       // Apply location filter
                       if (isFilterLocationTurnOn) {
-                        stadiums = stadiums
-                            .where((s) => s['location']
-                                .toLowerCase()
-                                .startsWith(
-                                    filterLocation_location.toLowerCase()))
-                            .toList();
-                        return stadiums.isEmpty
-                            ? _buildEmptyMessage()
-                            : _buildStadiumList(stadiums);
+                        print(
+                            'Applying location filter: City: $filterLocation_city, Place: $filterLocation_place'); // Debug print
+                        stadiums = stadiums.where((s) {
+                          final location =
+                              s['location'].toString().toLowerCase();
+                          print(
+                              'Checking stadium location: $location'); // Debug print
+
+                          if (filterLocation_place.isNotEmpty) {
+                            // If a specific place is selected, filter by both governorate and place
+                            final matches = location.contains(
+                                    filterLocation_city.toLowerCase()) &&
+                                location.contains(
+                                    filterLocation_place.toLowerCase());
+                            print(
+                                'Filtering by place: $matches'); // Debug print
+                            return matches;
+                          } else {
+                            // If only governorate is selected, filter by governorate only
+                            final matches = location
+                                .contains(filterLocation_city.toLowerCase());
+                            print(
+                                'Filtering by governorate only: $matches'); // Debug print
+                            return matches;
+                          }
+                        }).toList();
+
+                        print(
+                            'Filtered stadiums count: ${stadiums.length}'); // Debug print
+
+                        if (stadiums.isEmpty) {
+                          return _buildEmptyMessage(isArabic
+                              ? "لم يتم العثور على ملاعب في ${filterLocation_location}"
+                              : "No stadiums found in ${filterLocation_location}");
+                        }
                       }
 
                       // Apply price filter

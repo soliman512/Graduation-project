@@ -9,6 +9,7 @@ import 'package:graduation_project_main/provider/language_provider.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/stadium_information_player_pg/stadiumInfo_stadiumOwner.dart';
 import 'package:graduation_project_main/stdown_addNewStd/stdwon_addNewStadium.dart';
+import 'package:graduation_project_main/Home_stadium_owner/stadium_statistics.dart';
 import 'package:provider/provider.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -158,7 +159,6 @@ class _HomeState extends State<Home_Owner> with SingleTickerProviderStateMixin {
   }
 
   PreferredSizeWidget _buildAppBar() {
-    // ignore: unused_local_variable
     final isArabic = Provider.of<LanguageProvider>(context).isArabic;
     return AppBar(
       toolbarHeight: 80.0,
@@ -181,7 +181,7 @@ class _HomeState extends State<Home_Owner> with SingleTickerProviderStateMixin {
         Container(
           margin: const EdgeInsets.only(right: 10.0),
           child: IconButton(
-            onPressed: () => Navigator.pushNamed(context, '/Welcome'),
+            onPressed: _showNotificationsDialog,
             icon: Image.asset(
               "assets/home_loves_tickets_top/imgs/notifications.png",
               width: 22.0,
@@ -342,97 +342,25 @@ class _HomeState extends State<Home_Owner> with SingleTickerProviderStateMixin {
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        // Delete All Button
+        // Statistics Button
         Container(
           margin: const EdgeInsets.only(bottom: 16, right: 16),
           child: FloatingActionButton(
-            heroTag: 'deleteAll',
+            heroTag: 'statistics',
             onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    title: Text(
-                      isArabic ? 'حذف جميع الملاعب' : 'Delete All Stadiums',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    content: Text(
-                      isArabic
-                          ? 'هل أنت متأكد من حذف جميع الملاعب؟ هذه الخطوة لا يمكن التراجع عنها.'
-                          : 'Are you sure you want to delete all stadiums? This action cannot be undone.',
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: Text(
-                          isArabic ? 'إلغاء' : 'Cancel',
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          try {
-                            final stadiumsCollection = FirebaseFirestore
-                                .instance
-                                .collection('stadiums');
-                            final snapshot = await stadiumsCollection.get();
-                            for (var doc in snapshot.docs) {
-                              await doc.reference.delete();
-                            }
-                            Navigator.of(context).pop();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  isArabic
-                                      ? 'تم حذف جميع الملاعب'
-                                      : 'All stadiums deleted successfully',
-                                ),
-                                backgroundColor: Colors.green,
-                                behavior: SnackBarBehavior.floating,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                            );
-                          } catch (e) {
-                            Navigator.of(context).pop();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  isArabic
-                                      ? 'Error deleting stadiums: $e'
-                                      : 'Error deleting stadiums: $e',
-                                ),
-                                backgroundColor: Colors.red,
-                                behavior: SnackBarBehavior.floating,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                        child: const Text(
-                          'Delete All',
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ),
-                    ],
-                  );
-                },
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const StadiumStatistics(),
+                ),
               );
             },
             backgroundColor: Colors.black,
             elevation: 4,
-            child: Image.asset(
-              "assets/home_loves_tickets_top/imgs/Group 204.png",
-              width: 24,
-              height: 24,
+            child: const Icon(
+              Icons.analytics_outlined,
+              color: Colors.white,
+              size: 24,
             ),
           ),
         ),
@@ -457,6 +385,497 @@ class _HomeState extends State<Home_Owner> with SingleTickerProviderStateMixin {
         ),
       ],
     );
+  }
+
+  void _showNotificationsDialog() {
+    final bool isArabic =
+        Provider.of<LanguageProvider>(context, listen: false).isArabic;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    showDialog(
+      context: context,
+      barrierColor: const Color.fromARGB(237, 0, 0, 0),
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          alignment: Alignment.topCenter,
+          insetPadding: EdgeInsets.symmetric(horizontal: 20.0),
+          child: Container(
+            margin: EdgeInsets.only(top: 30.0),
+            width: double.infinity,
+            height: MediaQuery.of(context).size.height * 0.7,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                // Header
+                Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: mainColor,
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(20)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        isArabic ? "الإشعارات" : "Notifications",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.close, color: Colors.white),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Notifications List
+                Expanded(
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('notifications')
+                        .where('ownerId', isEqualTo: user.uid)
+                        .where('type', isEqualTo: 'booking')
+                        .orderBy('date', descending: true)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      print(
+                          'Owner StreamBuilder state: ${snapshot.connectionState}');
+                      print(
+                          'Owner StreamBuilder hasError: ${snapshot.hasError}');
+                      if (snapshot.hasError) {
+                        print('Owner StreamBuilder error: ${snapshot.error}');
+                      }
+                      print('Owner StreamBuilder hasData: ${snapshot.hasData}');
+                      if (snapshot.hasData) {
+                        print(
+                            'Number of owner notifications: ${snapshot.data?.docs.length}');
+                        snapshot.data?.docs.forEach((doc) {
+                          print('Owner notification ${doc.id}: ${doc.data()}');
+                        });
+                      }
+
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: mainColor,
+                          ),
+                        );
+                      }
+
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.error_outline,
+                                  color: Colors.red, size: 48),
+                              SizedBox(height: 16),
+                              Text(
+                                isArabic
+                                    ? "حدث خطأ في تحميل الإشعارات"
+                                    : "Error loading notifications",
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      final notifications = snapshot.data?.docs ?? [];
+
+                      if (notifications.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.notifications_none_rounded,
+                                color: Colors.grey,
+                                size: 64,
+                              ),
+                              SizedBox(height: 16),
+                              Text(
+                                isArabic
+                                    ? "لا توجد إشعارات"
+                                    : "No notifications",
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      return ListView.builder(
+                        padding: EdgeInsets.all(16),
+                        itemCount: notifications.length,
+                        itemBuilder: (context, index) {
+                          final notification = notifications[index].data()
+                              as Map<String, dynamic>;
+                          final matchDate = notification['matchDate'];
+                          final matchTime = notification['matchTime'];
+                          final matchDuration =
+                              notification['matchDuration'] ?? "1h  -  0m";
+                          final isRated = notification['isRated'] ?? false;
+                          final bookingEndDateTime = parseBookingEndDateTime(
+                              matchDate, matchTime, matchDuration);
+                          final now = DateTime.now();
+
+                          // Determine notification state
+                          String state;
+                          if (bookingEndDateTime.isBefore(now)) {
+                            state = isRated ? 'completed' : 'needs_review';
+                          } else if (bookingEndDateTime
+                                  .difference(now)
+                                  .inDays <=
+                              1) {
+                            state = 'coming_soon';
+                          } else {
+                            state = 'upcoming';
+                          }
+
+                          // Get appropriate icon and color based on state
+                          IconData stateIcon;
+                          Color stateColor;
+                          String stateText;
+
+                          switch (state) {
+                            case 'needs_review':
+                              stateIcon = Icons.rate_review;
+                              stateColor = Colors.orange;
+                              stateText =
+                                  isArabic ? "يحتاج تقييم" : "Needs Review";
+                              break;
+                            case 'coming_soon':
+                              stateIcon = Icons.event_available;
+                              stateColor = Colors.green;
+                              stateText = isArabic ? "قريباً" : "Coming Soon";
+                              break;
+                            case 'completed':
+                              stateIcon = Icons.check_circle;
+                              stateColor = Colors.blue;
+                              stateText = isArabic ? "مكتمل" : "Completed";
+                              break;
+                            default:
+                              stateIcon = Icons.event;
+                              stateColor = Colors.grey;
+                              stateText = isArabic ? "قادم" : "Upcoming";
+                          }
+
+                          return Card(
+                            margin: EdgeInsets.only(bottom: 12),
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: InkWell(
+                              onTap: () {
+                                if (state == 'needs_review') {
+                                  Navigator.of(context).pop();
+                                  showStadiumReviewPopup(
+                                    context,
+                                    notification['stadiumId'],
+                                    notification['bookingId'],
+                                    notification['stadiumName'],
+                                    notification['playerName'],
+                                    notification['playerImage'],
+                                  );
+                                }
+                              },
+                              borderRadius: BorderRadius.circular(12),
+                              child: Padding(
+                                padding: EdgeInsets.all(12),
+                                child: Row(
+                                  children: [
+                                    // Stadium Image
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.asset(
+                                        notification['stadiumImage'],
+                                        width: 60,
+                                        height: 60,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    SizedBox(width: 12),
+                                    // Notification Details
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            notification['stadiumName'],
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Text(
+                                            '${notification['playerName']}',
+                                            style: TextStyle(
+                                              color: Colors.grey[600],
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.calendar_today,
+                                                size: 14,
+                                                color: Colors.grey,
+                                              ),
+                                              SizedBox(width: 4),
+                                              Text(
+                                                '${notification['matchDate']} - ${notification['matchTime']}',
+                                                style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                stateIcon,
+                                                size: 14,
+                                                color: stateColor,
+                                              ),
+                                              SizedBox(width: 4),
+                                              Text(
+                                                stateText,
+                                                style: TextStyle(
+                                                  color: stateColor,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    // Price
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: mainColor.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        '${notification['price']} EGP',
+                                        style: TextStyle(
+                                          color: mainColor,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void showStadiumReviewPopup(
+      BuildContext context,
+      String stadiumId,
+      String bookingId,
+      String stadiumName,
+      String playerName,
+      String? playerImage) {
+    double rating = 0;
+    TextEditingController commentController = TextEditingController();
+    final bool isArabic =
+        Provider.of<LanguageProvider>(context, listen: false).isArabic;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(isArabic ? "تقييم الحجز" : "Rate Booking"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                isArabic
+                    ? "يرجى تقييم حجز $playerName في $stadiumName"
+                    : "Please rate $playerName's booking at $stadiumName",
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 16),
+              if (playerImage != null)
+                CircleAvatar(
+                  radius: 30,
+                  backgroundImage: NetworkImage(playerImage),
+                ),
+              SizedBox(height: 16),
+              RatingBar.builder(
+                minRating: 1,
+                itemSize: 30,
+                itemBuilder: (context, _) =>
+                    Icon(Icons.star, color: Colors.amber),
+                onRatingUpdate: (newRating) {
+                  rating = newRating;
+                },
+              ),
+              SizedBox(height: 16),
+              TextField(
+                controller: commentController,
+                decoration: InputDecoration(
+                  hintText:
+                      isArabic ? "اكتب تعليقك هنا" : "Write your comment here",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                maxLines: 3,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(isArabic ? "إلغاء" : "Cancel"),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: mainColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onPressed: () async {
+                if (rating == 0 || commentController.text.isEmpty) {
+                  showSnackBar(
+                    context,
+                    isArabic
+                        ? "يرجى اختيار التقييم وكتابة تعليق"
+                        : "Please select rating and write a comment",
+                  );
+                  return;
+                }
+
+                try {
+                  final user = FirebaseAuth.instance.currentUser;
+                  if (user == null) return;
+
+                  // Add review to stadium's reviews collection
+                  await FirebaseFirestore.instance
+                      .collection('stadiums')
+                      .doc(stadiumId)
+                      .collection('reviews')
+                      .add({
+                    'userId': user.uid,
+                    'username': 'Stadium Owner',
+                    'userImage': null,
+                    'rating': rating,
+                    'comment': commentController.text,
+                    'timestamp': FieldValue.serverTimestamp(),
+                    'bookingId': bookingId,
+                    'playerName': playerName,
+                  });
+
+                  // Update booking status
+                  await FirebaseFirestore.instance
+                      .collection('bookings')
+                      .doc(bookingId)
+                      .update({'isRated': true});
+
+                  Navigator.of(context).pop();
+                  showSnackBar(
+                    context,
+                    isArabic
+                        ? "تم إرسال تقييمك بنجاح!"
+                        : "Your review has been submitted successfully!",
+                  );
+                } catch (e) {
+                  showSnackBar(
+                    context,
+                    isArabic
+                        ? "حدث خطأ أثناء إرسال التقييم"
+                        : "Error submitting review",
+                  );
+                }
+              },
+              child: Text(
+                isArabic ? "إرسال" : "Submit",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  DateTime parseBookingEndDateTime(
+      String matchDate, String matchTime, String matchDuration) {
+    final dateParts = matchDate.split('/');
+    final timeParts = matchTime.split(' ');
+    final hourMinute = timeParts[0].split(':');
+    int hour = int.parse(hourMinute[0]);
+    int minute = int.parse(hourMinute[1]);
+    final isPM = timeParts[1].toUpperCase() == 'PM';
+    if (isPM && hour != 12) hour += 12;
+    if (!isPM && hour == 12) hour = 0;
+
+    final durationParts =
+        RegExp(r'(\d+)h\s*-\s*(\d+)m').firstMatch(matchDuration);
+    int durationHours = 0;
+    int durationMinutes = 0;
+    if (durationParts != null) {
+      durationHours = int.parse(durationParts.group(1)!);
+      durationMinutes = int.parse(durationParts.group(2)!);
+    }
+
+    final start = DateTime(
+      int.parse(dateParts[2]),
+      int.parse(dateParts[1]),
+      int.parse(dateParts[0]),
+      hour,
+      minute,
+    );
+    return start.add(Duration(hours: durationHours, minutes: durationMinutes));
   }
 
   @override

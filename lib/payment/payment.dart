@@ -1396,6 +1396,83 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                         "matchCost": matchCost,
                         "isRated": false,
                       });
+
+                      print('Booking created with ID: ${bookingDoc.id}');
+
+                      // Get stadium details for the notification
+                      final stadiumDoc = await FirebaseFirestore.instance
+                          .collection('stadiums')
+                          .doc(widget.stadiumID)
+                          .get();
+
+                      if (stadiumDoc.exists) {
+                        print('Stadium found: ${stadiumDoc.data()?['name']}');
+                        final stadiumData = stadiumDoc.data()!;
+                        final ownerId = stadiumData['userID'];
+                        final playerId = FirebaseAuth.instance.currentUser?.uid;
+
+                        print('Owner ID: $ownerId, Player ID: $playerId');
+
+                        // Get player details
+                        final playerDoc = await FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(playerId)
+                            .get();
+
+                        if (playerDoc.exists) {
+                          print(
+                              'Player found: ${playerDoc.data()?['username']}');
+                          final playerData = playerDoc.data()!;
+
+                          try {
+                            // Add single notification document
+                            final notificationRef = await FirebaseFirestore
+                                .instance
+                                .collection('notifications')
+                                .add({
+                              'bookingId': bookingDoc.id,
+                              'stadiumId': widget.stadiumID,
+                              'stadiumName': stadiumData['name'],
+                              'stadiumImage': stadiumData['images']
+                                          ?.isNotEmpty ==
+                                      true
+                                  ? stadiumData['images'][0]
+                                  : 'assets/cards_home_player/imgs/test.jpg',
+                              'matchDate': matchDate,
+                              'matchTime': matchTime,
+                              'matchDuration': matchDuration,
+                              'price': matchCost,
+                              'date': FieldValue.serverTimestamp(),
+                              'state': 'upcoming',
+                              'isRated': false,
+                              'playerId': playerId,
+                              'playerName': playerData['username'],
+                              'playerImage': playerData['profileImage'],
+                              'ownerId': ownerId,
+                              'type':
+                                  'booking', // To distinguish booking notifications from other types
+                            });
+                            print(
+                                'Notification created successfully with ID: ${notificationRef.id}');
+                            print('Notification data: {');
+                            print('  bookingId: ${bookingDoc.id}');
+                            print('  stadiumId: ${widget.stadiumID}');
+                            print('  playerId: $playerId');
+                            print('  ownerId: $ownerId');
+                            print('  type: booking');
+                            print('  date: ${FieldValue.serverTimestamp()}');
+                            print('}');
+                          } catch (e) {
+                            print('Error creating notification: $e');
+                            print('Error details: ${e.toString()}');
+                          }
+                        } else {
+                          print('Player document not found');
+                        }
+                      } else {
+                        print('Stadium document not found');
+                      }
+
                       setState(() {
                         creditCard = true;
                         fawry = false;
@@ -1405,7 +1482,8 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                       // استدعاء دالة الدفع
                       try {
                         bool paymentSuccess = await PaymentManger.makePayment(
-                          double.parse(stadiumData!['price'].toString()).toInt(),
+                          double.parse(stadiumData!['price'].toString())
+                              .toInt(),
                           "EGP",
                         );
                         if (paymentSuccess) {
@@ -1424,7 +1502,8 @@ class _PaymentState extends State<Payment> with TickerProviderStateMixin {
                         } else {
                           // المستخدم عمل Cancel أو قفل شاشة الدفع
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Payment cancelled by user.')),
+                            SnackBar(
+                                content: Text('Payment cancelled by user.')),
                           );
                         }
                       } catch (e) {
