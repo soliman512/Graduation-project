@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "672497829321",
+    "firebase_url": "https://book-app-5d69f-default-rtdb.firebaseio.com",
     "project_id": "book-app-5d69f",
     "storage_bucket": "book-app-5d69f.firebasestorage.app"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "672497829321-u4hvjvrlloaomh0rf5iovt9i2ncluhsi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.graduation_project",
+            "certificate_hash": "64a413a617662da4209c884d55dc445dc3e30919"
+          }
+        },
         {
           "client_id": "672497829321-8jp0dpljdupkaofc00qal4rh4qvamjgp.apps.googleusercontent.com",
           "client_type": 3
@@ -49,6 +58,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "672497829321-4hf394lmbhfi44rnp1imhva83ve49i9q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.graduation_project_main",
+            "certificate_hash": "64a413a617662da4209c884d55dc445dc3e30919"
+          }
+        },
         {
           "client_id": "672497829321-8jp0dpljdupkaofc00qal4rh4qvamjgp.apps.googleusercontent.com",
           "client_type": 3

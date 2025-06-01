@@ -11,7 +11,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:graduation_project_main/provider/language_provider.dart';
 
-
 class ProfilePlayer extends StatefulWidget {
   ProfilePlayer({Key? key}) : super(key: key);
 
@@ -76,7 +75,7 @@ class _ProfilePageState extends State<ProfilePlayer> {
       print("Error => $e");
     }
   }
-  
+
   // Format date string to display properly
   String _formatDate(String dateString) {
     try {
@@ -90,14 +89,14 @@ class _ProfilePageState extends State<ProfilePlayer> {
         if (dateString.contains('-') || dateString.contains('/')) {
           return dateString;
         }
-        
+
         // Try to handle timestamp format (if it's stored as milliseconds)
         if (dateString.length >= 10 && int.tryParse(dateString) != null) {
           int timestamp = int.parse(dateString);
           DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
           return DateFormat('dd-MM-yyyy').format(dateTime);
         }
-        
+
         // If all else fails, return the original string
         return dateString;
       } catch (e) {
@@ -147,73 +146,70 @@ class _ProfilePageState extends State<ProfilePlayer> {
       final isArabic = context.watch<LanguageProvider>().isArabic;
       return Scaffold(
         backgroundColor: Colors.white,
-      appBar: AppBar(
-        centerTitle: true,
-        titleSpacing: 3,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              isArabic ? "الملف " : "Pro",
-              style: TextStyle(
-                fontSize: 23,
-                fontFamily: isArabic ? 'Cairo' : 'eras-itc-bold',
-                color: const Color.fromARGB(255, 0, 122, 0),
+        appBar: AppBar(
+          centerTitle: true,
+          titleSpacing: 3,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                isArabic ? "الملف " : "Pro",
+                style: TextStyle(
+                  fontSize: 23,
+                  fontFamily: isArabic ? 'Cairo' : 'eras-itc-bold',
+                  color: const Color.fromARGB(255, 0, 122, 0),
+                ),
               ),
-            ),
-            Text(
-              isArabic ? "الشخصي" : "file",
-              style: TextStyle(
-                fontSize: 23,
-                fontFamily: isArabic ? 'Cairo' : 'eras-itc-bold',
-                color: const Color.fromARGB(255, 0, 0, 0),
+              Text(
+                isArabic ? "الشخصي" : "file",
+                style: TextStyle(
+                  fontSize: 23,
+                  fontFamily: isArabic ? 'Cairo' : 'eras-itc-bold',
+                  color: const Color.fromARGB(255, 0, 0, 0),
+                ),
               ),
+            ],
+          ),
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Image.asset(
+              "assets/welcome_signup_login/imgs/back.png",
+              color: Color(0xFF000000),
             ),
+          ),
+          toolbarHeight: 80.0,
+          elevation: 0,
+          backgroundColor: Color(0x00),
+          actions: [
+            TextButton.icon(
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                if (!mounted) return;
+                Navigator.pushReplacementNamed(context, '/login_player');
+              },
+              label: Text(
+                isArabic ? "تسجيل الخروج" : "Logout",
+                style: TextStyle(
+                  fontSize: 13,
+                  fontFamily: isArabic ? 'Cairo' : 'eras-itc-bold',
+                  color: const Color.fromARGB(255, 0, 0, 0),
+                ),
+              ),
+              icon: Icon(
+                Icons.logout,
+                color: const Color.fromARGB(255, 212, 1, 1),
+              ),
+            )
           ],
         ),
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Image.asset(
-            "assets/welcome_signup_login/imgs/back.png",
-            color: Color(0xFF000000),
-           
-          ),
-        ),
-        toolbarHeight: 80.0,
-        elevation: 0,
-        backgroundColor: Color(0x00),
-        actions: [
-          TextButton.icon(
-            onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-              if (!mounted) return;
-              Navigator.pushReplacementNamed(context, '/login_player');
-            },
-            
-            label: Text(
-              isArabic ? "تسجيل الخروج" : "Logout",
-              style: TextStyle(
-                fontSize: 13,
-                fontFamily: isArabic ? 'Cairo' : 'eras-itc-bold',
-                color: const Color.fromARGB(255, 0, 0, 0),
-              ),
-            ),
-            icon: Icon(
-              Icons.logout,
-              color: const Color.fromARGB(255, 212, 1, 1),
-            ),
-          )
-        ],
-      ),
-       
       );
     }
 
-      final isArabic = context.watch<LanguageProvider>().isArabic;
+    final isArabic = context.watch<LanguageProvider>().isArabic;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -250,7 +246,6 @@ class _ProfilePageState extends State<ProfilePlayer> {
           icon: Image.asset(
             "assets/welcome_signup_login/imgs/back.png",
             color: Color(0xFF000000),
-           
           ),
         ),
         toolbarHeight: 80.0,
@@ -263,7 +258,6 @@ class _ProfilePageState extends State<ProfilePlayer> {
               if (!mounted) return;
               Navigator.pushReplacementNamed(context, '/login_player');
             },
-            
             label: Text(
               isArabic ? "تسجيل الخروج" : "Logout",
               style: TextStyle(
@@ -287,7 +281,6 @@ class _ProfilePageState extends State<ProfilePlayer> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-
                 Container(
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
@@ -367,7 +360,9 @@ class _ProfilePageState extends State<ProfilePlayer> {
                                 text: TextSpan(
                                   children: [
                                     TextSpan(
-                                      text: isArabic ? "البريد الالكتروني: " : "Email: ",
+                                      text: isArabic
+                                          ? "البريد الالكتروني: "
+                                          : "Email: ",
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontFamily: "eras-itc-bold",
@@ -377,10 +372,10 @@ class _ProfilePageState extends State<ProfilePlayer> {
                                     TextSpan(
                                       text: "${user?.email ?? 'Not available'}",
                                       style: TextStyle(
-                                        fontSize: 16,
-                                        fontFamily: "eras-itc-bold",
-                                        color: const Color.fromARGB(255, 0, 0, 0)
-                                      ),
+                                          fontSize: 16,
+                                          fontFamily: "eras-itc-bold",
+                                          color: const Color.fromARGB(
+                                              255, 0, 0, 0)),
                                     ),
                                   ],
                                 ),
@@ -391,26 +386,30 @@ class _ProfilePageState extends State<ProfilePlayer> {
                         SizedBox(height: 15),
                         Row(
                           children: [
-                            Icon(Icons.calendar_today,color: mainColor),
+                            Icon(Icons.calendar_today, color: mainColor),
                             SizedBox(width: 10),
                             Expanded(
                               child: RichText(
                                 text: TextSpan(
                                   children: [
                                     TextSpan(
-                                      text: isArabic ? "تاريخ التسجيل: " : "Created date: ",
+                                      text: isArabic
+                                          ? "تاريخ التسجيل: "
+                                          : "Created date: ",
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontFamily: "eras-itc-bold",
-                                       color: mainColor,
+                                        color: mainColor,
                                       ),
                                     ),
                                     TextSpan(
-                                      text: "${user?.metadata.creationTime != null ? DateFormat('MMMM d, y').format(user!.metadata.creationTime!.toLocal()) : 'Not available'}",
+                                      text:
+                                          "${user?.metadata.creationTime != null ? DateFormat('MMMM d, y').format(user!.metadata.creationTime!.toLocal()) : 'Not available'}",
                                       style: TextStyle(
-                                        fontSize: 16,
-                                        fontFamily: "eras-itc-bold",
-color: const Color.fromARGB(255, 0, 0, 0)                                      ),
+                                          fontSize: 16,
+                                          fontFamily: "eras-itc-bold",
+                                          color: const Color.fromARGB(
+                                              255, 0, 0, 0)),
                                     ),
                                   ],
                                 ),
@@ -428,7 +427,9 @@ color: const Color.fromARGB(255, 0, 0, 0)                                      )
                                 text: TextSpan(
                                   children: [
                                     TextSpan(
-                                      text: isArabic ? "آخر تسجيل دخول: " : "Last Signed In: ",
+                                      text: isArabic
+                                          ? "آخر تسجيل دخول: "
+                                          : "Last Signed In: ",
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontFamily: "eras-itc-bold",
@@ -436,11 +437,13 @@ color: const Color.fromARGB(255, 0, 0, 0)                                      )
                                       ),
                                     ),
                                     TextSpan(
-                                      text: "${user?.metadata.lastSignInTime != null ? DateFormat('MMMM d, y').format(user!.metadata.lastSignInTime!.toLocal()) : 'Not available'}",
+                                      text:
+                                          "${user?.metadata.lastSignInTime != null ? DateFormat('MMMM d, y').format(user!.metadata.lastSignInTime!.toLocal()) : 'Not available'}",
                                       style: TextStyle(
-                                        fontSize: 16,
-                                        fontFamily: "eras-itc-bold",
-color: const Color.fromARGB(255, 0, 0, 0)                                      ),
+                                          fontSize: 16,
+                                          fontFamily: "eras-itc-bold",
+                                          color: const Color.fromARGB(
+                                              255, 0, 0, 0)),
                                     ),
                                   ],
                                 ),
@@ -498,7 +501,9 @@ color: const Color.fromARGB(255, 0, 0, 0)                                      )
                                   text: TextSpan(
                                     children: [
                                       TextSpan(
-                                        text: isArabic ? "اسم المستخدم: " : "Username: ",
+                                        text: isArabic
+                                            ? "اسم المستخدم: "
+                                            : "Username: ",
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontFamily: "eras-itc-bold",
@@ -506,7 +511,8 @@ color: const Color.fromARGB(255, 0, 0, 0)                                      )
                                         ),
                                       ),
                                       TextSpan(
-                                        text: "${userData!['username'] ?? 'Not available'}",
+                                        text:
+                                            "${userData!['username'] ?? 'Not available'}",
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontFamily: "eras-itc-bold",
@@ -529,7 +535,9 @@ color: const Color.fromARGB(255, 0, 0, 0)                                      )
                                   text: TextSpan(
                                     children: [
                                       TextSpan(
-                                        text: isArabic ? "الموقع: " : "Location: ",
+                                        text: isArabic
+                                            ? "الموقع: "
+                                            : "Location: ",
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontFamily: "eras-itc-bold",
@@ -537,7 +545,8 @@ color: const Color.fromARGB(255, 0, 0, 0)                                      )
                                         ),
                                       ),
                                       TextSpan(
-                                        text: "${userData!['location'] ?? 'Not available'}",
+                                        text:
+                                            "${userData!['location'] ?? 'Not available'}",
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontFamily: "eras-itc-bold",
@@ -560,7 +569,9 @@ color: const Color.fromARGB(255, 0, 0, 0)                                      )
                                   text: TextSpan(
                                     children: [
                                       TextSpan(
-                                        text: isArabic ? "تاريخ الميلاد: " :  "Date of Birth: ",
+                                        text: isArabic
+                                            ? "تاريخ الميلاد: "
+                                            : "Date of Birth: ",
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontFamily: "eras-itc-bold",
@@ -568,7 +579,8 @@ color: const Color.fromARGB(255, 0, 0, 0)                                      )
                                         ),
                                       ),
                                       TextSpan(
-                                        text: "${userData!['dateOfBirth'] != null ? _formatDate(userData!['dateOfBirth']) : 'Not available'}",
+                                        text:
+                                            "${userData!['dateOfBirth'] != null ? _formatDate(userData!['dateOfBirth']) : 'Not available'}",
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontFamily: "eras-itc-bold",
@@ -591,7 +603,9 @@ color: const Color.fromARGB(255, 0, 0, 0)                                      )
                                   text: TextSpan(
                                     children: [
                                       TextSpan(
-                                        text: isArabic ? "رقم الهاتف: " : "Phone Number: ",
+                                        text: isArabic
+                                            ? "رقم الهاتف: "
+                                            : "Phone Number: ",
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontFamily: "eras-itc-bold",
@@ -599,7 +613,8 @@ color: const Color.fromARGB(255, 0, 0, 0)                                      )
                                         ),
                                       ),
                                       TextSpan(
-                                        text: "${userData!['phoneNumber'] ?? 'Not available'}",
+                                        text:
+                                            "${userData!['phoneNumber'] ?? 'Not available'}",
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontFamily: "eras-itc-bold",
@@ -650,7 +665,8 @@ color: const Color.fromARGB(255, 0, 0, 0)                                      )
                     ),
                     onButtonPressed: () async {
                       // Navigate to edit profile and wait for result
-                      final result = await Navigator.pushNamed(context, '/edit_profile');
+                      final result =
+                          await Navigator.pushNamed(context, '/edit_profile');
                       // If profile was updated (result is true), refresh the data
                       if (result == true) {
                         fetchUserData();

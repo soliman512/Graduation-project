@@ -150,7 +150,7 @@ class _EditProfileState extends State<EditProfile> {
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user!.uid)
-          .update(dataToUpdate);
+          .set(dataToUpdate, SetOptions(merge: true));
           
       // Profile has been successfully updated
 

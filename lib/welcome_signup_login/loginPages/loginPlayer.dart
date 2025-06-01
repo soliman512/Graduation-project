@@ -344,8 +344,24 @@ class _Login_playerState extends State<Login_player> {
                             child: SizedBox(
                               height: 40.0,
                               child: ElevatedButton(
-                                onPressed: () {
-                                  googleSignInProvider.googleLogin();
+                                onPressed: () async {
+                                  await googleSignInProvider.googleLogin();
+                                  final user = FirebaseAuth.instance.currentUser;
+                                  if (user != null) {
+                                    final playerDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+                                    if (!playerDoc.exists) {
+                                      // أول مرة يدخل - أنشئ بيانات اللاعب تلقائيًا
+                                      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+                                        'email': user.email,
+                                        'username': user.displayName ?? user.email?.split('@')[0] ?? '',
+                                        'profileImage': user.photoURL ?? '',
+                                        'phoneNumber': '',
+                                        'location': '',
+                                        'dateOfBirth': '',
+                                      });
+                                    }
+                                    Navigator.pushReplacementNamed(context, '/home');
+                                  }
                                 },
                                 child: Image.asset(
                                     "assets/welcome_signup_login/imgs/google.png",

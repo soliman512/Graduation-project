@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
+import 'package:graduation_project_main/provider/google_signin.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
 import 'package:provider/provider.dart';
@@ -94,6 +95,7 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
 
   @override
   Widget build(BuildContext context) {
+    final googleSignInProvider = Provider.of<GoogleSignInProvider>(context);
     final languageProvider = Provider.of<LanguageProvider>(context);
     return SafeArea(
       child: Scaffold(
@@ -374,76 +376,45 @@ class _Login_StadiumonwerState extends State<Login_Stadiumonwer> {
                           //google
                           Expanded(
                             child: SizedBox(
-                              height: 60.0,
+                              height: 40.0,
                               child: ElevatedButton(
-                                onPressed: () {},
-                                child: Wrap(
-                                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Image.asset(
-                                        "assets/welcome_signup_login/imgs/google.png",
-                                        width: 32.0),
-                                    Text( Provider.of<LanguageProvider>(context).isArabic
-                                        ? 'جوجل'
-                                        : 'google',
-                                        style: TextStyle(
-                                            color: Color(0xFFFF3D00),
-                                            fontSize: 18.0)),
-                                  ],
-                                ),
+                                onPressed: () async {
+                                  await googleSignInProvider.googleLogin();
+                                  final user = FirebaseAuth.instance.currentUser;
+                                  if (user != null) {
+                                    final ownerDoc = await FirebaseFirestore.instance.collection('owners').doc(user.uid).get();
+                                    if (!ownerDoc.exists) {
+                                      // أول مرة يدخل - أنشئ بيانات المالك تلقائيًا
+                                      await FirebaseFirestore.instance.collection('owners').doc(user.uid).set({
+                                        'email': user.email,
+                                        'username': user.displayName ?? user.email?.split('@')[0] ?? '',
+                                        'profileImage': user.photoURL ?? '',
+                                        'phoneNumber': '',
+                                        'location': '',
+                                        'dateOfBirth': '',
+                                      });
+                                    }
+                                    // ادخله على الصفحة الرئيسية للمالك
+                                    Navigator.pushReplacementNamed(context, '/home_owner');
+                                  }
+                                },
+                                child: Image.asset(
+                                    "assets/welcome_signup_login/imgs/google.png",
+                                    width: 32.0),
                                 style: ButtonStyle(
                                   elevation: WidgetStateProperty.all(2),
                                   backgroundColor: WidgetStateProperty.all(
                                       const Color.fromARGB(255, 255, 255, 255)),
                                   shape: WidgetStateProperty.all<
-                                      RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(30),
-                                          bottomLeft: Radius.circular(30)),
-                                    ),
-                                  ),
+                                          RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30))),
                                 ),
                               ),
                             ),
                           ),
                           SizedBox(width: 6.0),
-                          //facebook
-                          Expanded(
-                            child: SizedBox(
-                              height: 60.0,
-                              child: ElevatedButton(
-                                onPressed: () {},
-                                child: Wrap(
-                                  children: [
-                                    Image.asset(
-                                      "assets/welcome_signup_login/imgs/facebook.png",
-                                      width: 32.0,
-                                    ),
-                                    Text(Provider.of<LanguageProvider>(context).isArabic
-                                      ? 'فيسبوك'
-                                      : 'facebook',
-                                        style: TextStyle(
-                                            color: Color(0xFF0680DD),
-                                            fontSize: 18.0)),
-                                  ],
-                                ),
-                                style: ButtonStyle(
-                                  elevation: WidgetStateProperty.all(2),
-                                  backgroundColor: WidgetStateProperty.all(
-                                      const Color.fromARGB(255, 255, 255, 255)),
-                                  shape: WidgetStateProperty.all<
-                                      RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.only(
-                                          topRight: Radius.circular(30),
-                                          bottomRight: Radius.circular(30)),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     ),

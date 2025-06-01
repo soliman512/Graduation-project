@@ -9,11 +9,10 @@ class GoogleSignInProvider with ChangeNotifier {
 
   Future<void> googleLogin() async {
     try {
-      final googleUser  = await googleSignIn.signIn();
-      if (googleUser  == null) return;
+      final googleUser = await googleSignIn.signIn();
+      if (googleUser == null) return; // تم الإلغاء
 
-      _user = googleUser ;
-      final googleAuth = await googleUser .authentication;
+      final googleAuth = await googleUser.authentication;
 
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
@@ -21,9 +20,11 @@ class GoogleSignInProvider with ChangeNotifier {
       );
 
       await FirebaseAuth.instance.signInWithCredential(credential);
+
       notifyListeners();
     } catch (error) {
-      print("Error during Google Sign-In: $error");
+      print('Google Sign-In error: $error');
+      rethrow;
     }
   }
 }
