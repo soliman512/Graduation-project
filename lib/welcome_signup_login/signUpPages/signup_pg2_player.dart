@@ -5,6 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:graduation_project_main/constants/constants.dart';
 import 'package:graduation_project_main/reusable_widgets/reusable_widgets.dart';
 import 'package:graduation_project_main/welcome_signup_login/signUpPages/shared/snackbar.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/safe_area_values.dart';
+import 'package:top_snackbar_flutter/tap_bounce_container.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 // import 'package:email_validator/email_validator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -44,6 +48,11 @@ class _Signup_pg2_playerState extends State<Signup_pg2_player> {
 
   bool termsChecked = false;
 
+  // Add validation state variables
+  bool isEmailValid = false;
+  bool isPasswordValid = false;
+  bool isConfirmPasswordValid = false;
+
   @override
   void initState() {
     super.initState();
@@ -75,7 +84,7 @@ class _Signup_pg2_playerState extends State<Signup_pg2_player> {
 
       // Store additional user information in Firestore
       String? profileImageUrl;
-      
+
       // Check if the profileImage is already a URL (from addAccountImage_player)
       if (widget.profileImage != null && widget.profileImage!.isNotEmpty) {
         if (widget.profileImage!.startsWith('http')) {
@@ -99,7 +108,9 @@ class _Signup_pg2_playerState extends State<Signup_pg2_player> {
                 );
 
             // Get the public URL for the uploaded file
-            profileImageUrl = supabase.storage.from('photo').getPublicUrl('public/$uniqueFileName');
+            profileImageUrl = supabase.storage
+                .from('photo')
+                .getPublicUrl('public/$uniqueFileName');
             print('Uploaded image to Supabase: $profileImageUrl');
           } catch (e) {
             print('Error uploading image: $e');
@@ -115,30 +126,46 @@ class _Signup_pg2_playerState extends State<Signup_pg2_player> {
           'profileImage': profileImageUrl, // رابط الصورة
         });
       }
-final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+      final languageProvider =
+          Provider.of<LanguageProvider>(context, listen: false);
       bool isArabic = languageProvider.isArabic;
 
-      showSnackBar(context, isArabic ? "تم إنشاء الحساب..." : "Account created...");
+      showCustomTopSnackBar(context,
+          isArabic ? "تم إنشاء الحساب..." : "Account created...", false);
       if (!mounted) return;
       Navigator.pushReplacementNamed(context, '/login_player');
     } on FirebaseAuthException catch (e) {
-      final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+      final languageProvider =
+          Provider.of<LanguageProvider>(context, listen: false);
       bool isArabic = languageProvider.isArabic;
 
+      String errorMessage;
       if (e.code == 'weak-password') {
-        showSnackBar(context, isArabic ? "كلمة المرور ضعيفة جداً." : "The password provided is too weak.");
+        errorMessage = isArabic
+            ? "كلمة المرور ضعيفة جداً."
+            : "The password provided is too weak.";
       } else if (e.code == 'email-already-in-use') {
-        showSnackBar(context, isArabic ? "يوجد حساب بهذا البريد الإلكتروني بالفعل." : "The account already exists for that email.");
+        errorMessage = isArabic
+            ? "يوجد حساب بهذا البريد الإلكتروني بالفعل."
+            : "The account already exists for that email.";
       } else if (e.code == 'invalid-email') {
-        showSnackBar(context, isArabic ? "البريد الإلكتروني غير صالح." : "The email address is not valid.");
+        errorMessage = isArabic
+            ? "البريد الإلكتروني غير صالح."
+            : "The email address is not valid.";
       } else {
-        showSnackBar(context, isArabic ? "حدث خطأ. حاول مرة أخرى." : "An error occurred. Please try again.");
+        errorMessage = isArabic
+            ? "حدث خطأ. حاول مرة أخرى."
+            : "An error occurred. Please try again.";
       }
-        } catch (error) {
-      final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+
+      showCustomTopSnackBar(context, errorMessage, true);
+    } catch (error) {
+      final languageProvider =
+          Provider.of<LanguageProvider>(context, listen: false);
       bool isArabic = languageProvider.isArabic;
-      showSnackBar(context, isArabic ? "حدث خطأ: ${error.toString()}" : error.toString());
-        }
+      showCustomTopSnackBar(context,
+          isArabic ? "حدث خطأ: ${error.toString()}" : error.toString(), true);
+    }
     setState(() {
       isLoading = false;
     });
@@ -175,6 +202,104 @@ final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
     });
   }
 
+  // Enhanced email validation
+  String? validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return Provider.of<LanguageProvider>(context, listen: false).isArabic
+          ? "البريد الإلكتروني مطلوب"
+          : "Email is required";
+    }
+    if (!value.contains(RegExp(
+        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"))) {
+      return Provider.of<LanguageProvider>(context, listen: false).isArabic
+          ? "أدخل بريد إلكتروني صحيح"
+          : "Enter a valid email";
+    }
+    return null;
+  }
+
+  // Enhanced password validation
+  String? validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return Provider.of<LanguageProvider>(context, listen: false).isArabic
+          ? "كلمة المرور مطلوبة"
+          : "Password is required";
+    }
+    if (value.length < 8) {
+      return Provider.of<LanguageProvider>(context, listen: false).isArabic
+          ? "أدخل 8 أحرف على الأقل"
+          : "Enter at least 8 characters";
+    }
+    if (!ispassword8char ||
+        !ispassword1number ||
+        !ispassworduppercase ||
+        !ispasswordlowercase ||
+        !ispasswordspecialchar) {
+      return Provider.of<LanguageProvider>(context, listen: false).isArabic
+          ? "كلمة المرور لا تستوفي المتطلبات"
+          : "Password does not meet requirements";
+    }
+    return null;
+  }
+
+  // Enhanced confirm password validation
+  String? validateConfirmPassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return Provider.of<LanguageProvider>(context, listen: false).isArabic
+          ? "تأكيد كلمة المرور مطلوب"
+          : "Confirm password is required";
+    }
+    if (value != passwordController.text) {
+      return Provider.of<LanguageProvider>(context, listen: false).isArabic
+          ? "كلمتا المرور غير متطابقتين"
+          : "Passwords do not match";
+    }
+    return null;
+  }
+
+  // Email field onChanged handler
+  void onEmailChanged(String value) {
+    setState(() {
+      isEmailValid = value.isNotEmpty &&
+          value.contains(RegExp(
+              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"));
+    });
+  }
+
+  // Password field onChanged handler
+  void onPasswordChanged(String value) {
+    onpasswordchange(value);
+    onpasswordnumber(value);
+    onpassworduppercase(value);
+    onpasswordlowercase(value);
+    onpasswordspecialchar(value);
+
+    setState(() {
+      isPasswordValid = value.length >= 8 &&
+          ispassword8char &&
+          ispassword1number &&
+          ispassworduppercase &&
+          ispasswordlowercase &&
+          ispasswordspecialchar;
+    });
+  }
+
+  // Confirm password field onChanged handler
+  void onConfirmPasswordChanged(String value) {
+    setState(() {
+      isConfirmPasswordValid =
+          value.isNotEmpty && value == passwordController.text;
+    });
+  }
+
+  // Check if form is valid
+  bool isFormValid() {
+    return isEmailValid &&
+        isPasswordValid &&
+        isConfirmPasswordValid &&
+        termsChecked;
+  }
+
   @override
   void dispose() {
     emailController.dispose();
@@ -194,8 +319,7 @@ final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
           //app bar
           appBar: AppBar(
             centerTitle: true,
-            title: Text(
-            isArabic ? "إنشاء حساب" : "sign up",
+            title: Text(isArabic ? "إنشاء حساب" : "sign up",
                 style: TextStyle(
                   color: Color(0xFF000000),
                   // fontFamily: "eras-itc-bold",
@@ -215,26 +339,27 @@ final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
             elevation: 0,
             backgroundColor: Color(0x00),
             actions: [
-            IconButton(
-              onPressed: () {
-                final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
-                languageProvider.toggleLanguage();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      languageProvider.isArabic
-                          ? 'تم تغيير اللغة إلى العربية'
-                          : 'Language changed to English',
-                      style: TextStyle(fontFamily: 'eras-itc-bold'),
+              IconButton(
+                onPressed: () {
+                  final languageProvider =
+                      Provider.of<LanguageProvider>(context, listen: false);
+                  languageProvider.toggleLanguage();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        languageProvider.isArabic
+                            ? 'تم تغيير اللغة إلى العربية'
+                            : 'Language changed to English',
+                        style: TextStyle(fontFamily: 'eras-itc-bold'),
+                      ),
+                      duration: Duration(seconds: 2),
+                      backgroundColor: mainColor,
                     ),
-                    duration: Duration(seconds: 2),
-                    backgroundColor: mainColor,
-                  ),
-                );
-              },
-              icon: Icon(Icons.language, color: Color.fromARGB(255, 0, 0, 0)),
-            ),
-          ],
+                  );
+                },
+                icon: Icon(Icons.language, color: Color.fromARGB(255, 0, 0, 0)),
+              ),
+            ],
           ),
           body: SingleChildScrollView(
             child: Stack(
@@ -245,28 +370,24 @@ final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
                     key: _formKey,
                     child: Column(
                       children: [
-                        SizedBox(
-                          height: 44.0,
-                        ),
+                        SizedBox(height: 30.0),
                         //logo
                         add_logo(80.0),
+                        SizedBox(height: 15.0),
                         // title
                         Add_AppName(
                             font_size: 34.0,
                             align: TextAlign.center,
                             color: Colors.black),
+                        SizedBox(height: 8.0),
                         //specific user
-                        Text(
-                      isArabic ? "لاعب" : "Player",
+                        Text(isArabic ? "لاعب" : "Player",
                             style: TextStyle(
                                 color: Color.fromARGB(111, 0, 0, 0),
                                 fontWeight: FontWeight.w200,
                                 fontSize: 20.0,
                                 fontFamily: 'eras-itc-light')),
-                        //just for space
-                        SizedBox(
-                          height: 60.0,
-                        ),
+                        SizedBox(height: 40.0),
 
                         //inputs:
 
@@ -277,12 +398,8 @@ final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
                           width: double.infinity,
                           height: 60.0,
                           child: TextFormField(
-                            validator: (email) {
-                              return email!.contains(RegExp(
-                                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"))
-                                  ? null
-                              : (isArabic ? "أدخل بريد إلكتروني صحيح" : "Enter a valid email");
-                            },
+                            validator: validateEmail,
+                            onChanged: onEmailChanged,
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
                             controller: emailController,
@@ -304,7 +421,8 @@ final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
                                 color: mainColor,
                               ),
                               contentPadding: EdgeInsets.symmetric(vertical: 5),
-                          hintText: isArabic ? "البريد الإلكتروني" : "Email",
+                              hintText:
+                                  isArabic ? "البريد الإلكتروني" : "Email",
                               hintStyle: TextStyle(
                                 color: Color(0x4F000000),
                                 fontSize: 20.0,
@@ -320,9 +438,7 @@ final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
                             ),
                           ),
                         ),
-                        SizedBox(
-                          height: 10.0,
-                        ),
+                        SizedBox(height: 15.0),
 
                         //password
                         Container(
@@ -331,19 +447,8 @@ final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
                           width: double.infinity,
                           height: 60.0,
                           child: TextFormField(
-                            // change password
-                            onChanged: (password) {
-                              onpasswordchange(password);
-                              onpasswordnumber(password);
-                              onpassworduppercase(password);
-                              onpasswordlowercase(password);
-                              onpasswordspecialchar(password);
-                            },
-                            validator: (value) {
-                              return value!.length < 8
-                              ? (isArabic ? "أدخل 8 أحرف على الأقل" : "Enter at least 8 characters")
-                                  : null;
-                            },
+                            validator: validatePassword,
+                            onChanged: onPasswordChanged,
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
                             controller: passwordController,
@@ -377,7 +482,7 @@ final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
                                 color: mainColor,
                               ),
                               contentPadding: EdgeInsets.symmetric(vertical: 5),
-                          hintText: isArabic ? "كلمة المرور" : "Password",
+                              hintText: isArabic ? "كلمة المرور" : "Password",
                               hintStyle: TextStyle(
                                 color: Color(0x4F000000),
                                 fontSize: 20.0,
@@ -393,9 +498,7 @@ final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
                             ),
                           ),
                         ),
-                        SizedBox(
-                          height: 10.0,
-                        ),
+                        SizedBox(height: 15.0),
                         //confirm password
                         Container(
                           margin: EdgeInsets.symmetric(horizontal: 18.0),
@@ -403,13 +506,11 @@ final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
                           width: double.infinity,
                           height: 60.0,
                           child: TextFormField(
+                            validator: validateConfirmPassword,
+                            onChanged: onConfirmPasswordChanged,
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
                             controller: confirmPasswordController,
-                            validator: (value) {
-                              if (value != passwordController.text) {
-                            return isArabic ? "كلمتا المرور غير متطابقتين" : "Passwords do not match";
-                              }
-                              return null;
-                            },
                             keyboardType: TextInputType.text,
                             textInputAction: TextInputAction.done,
                             obscureText: confirm_passwordVisible,
@@ -441,7 +542,9 @@ final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
                                 color: mainColor,
                               ),
                               contentPadding: EdgeInsets.symmetric(vertical: 5),
-                          hintText: isArabic ? "تأكيد كلمة المرور" : "Confirm Password",
+                              hintText: isArabic
+                                  ? "تأكيد كلمة المرور"
+                                  : "Confirm Password",
                               hintStyle: TextStyle(
                                 color: Color(0x4F000000),
                                 fontSize: 20.0,
@@ -457,154 +560,48 @@ final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
                             ),
                           ),
                         ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              child: Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 15,
+                        SizedBox(height: 25.0),
+
+                        // Password requirements
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 25.0),
+                          child: Column(
+                            children: [
+                              _buildPasswordRequirement(
+                                ispassword8char,
+                                isArabic
+                                    ? "8 أحرف على الأقل"
+                                    : "At least 8 characters",
                               ),
-                              margin: EdgeInsets.only(left: 45.0),
-                              height: 20,
-                              width: 20,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: ispassword8char
-                                    ? Colors.green
-                                    : Colors.white,
-                                border: Border.all(
-                                    color: Color.fromARGB(255, 189, 189, 189)),
+                              SizedBox(height: 12.0),
+                              _buildPasswordRequirement(
+                                ispassword1number,
+                                isArabic
+                                    ? "رقم واحد على الأقل"
+                                    : "At least 1 number",
                               ),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                        Text(isArabic ? "8 أحرف على الأقل" : "At least 8 characters"),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              child: Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 15,
+                              SizedBox(height: 12.0),
+                              _buildPasswordRequirement(
+                                ispassworduppercase,
+                                isArabic ? "حرف كبير" : "Has Uppercase",
                               ),
-                              margin: EdgeInsets.only(left: 45.0),
-                              height: 20,
-                              width: 20,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: ispassword1number
-                                    ? Colors.green
-                                    : Colors.white,
-                                border: Border.all(
-                                    color: Color.fromARGB(255, 189, 189, 189)),
+                              SizedBox(height: 12.0),
+                              _buildPasswordRequirement(
+                                ispasswordlowercase,
+                                isArabic ? "حرف صغير" : "Has Lowercase",
                               ),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                        Text(isArabic ? "رقم واحد على الأقل" : "At least 1 number"),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              child: Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 15,
+                              SizedBox(height: 12.0),
+                              _buildPasswordRequirement(
+                                ispasswordspecialchar,
+                                isArabic ? "رمز خاص" : "Has Special Character",
                               ),
-                              margin: EdgeInsets.only(left: 45.0),
-                              height: 20,
-                              width: 20,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: ispassworduppercase
-                                    ? Colors.green
-                                    : Colors.white,
-                                border: Border.all(
-                                    color: Color.fromARGB(255, 189, 189, 189)),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                        Text(isArabic ? "حرف كبير" : "Has Uppercase"),
-                          ],
+                            ],
+                          ),
                         ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              child: Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 15,
-                              ),
-                              margin: EdgeInsets.only(left: 45.0),
-                              height: 20,
-                              width: 20,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: ispasswordlowercase
-                                    ? Colors.green
-                                    : Colors.white,
-                                border: Border.all(
-                                    color: Color.fromARGB(255, 189, 189, 189)),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                        Text(isArabic ? "حرف صغير" : "Has Lowercase"),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              child: Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 15,
-                              ),
-                              margin: EdgeInsets.only(left: 45.0),
-                              height: 20,
-                              width: 20,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: ispasswordspecialchar
-                                    ? Colors.green
-                                    : Colors.white,
-                                border: Border.all(
-                                    color: Color.fromARGB(255, 189, 189, 189)),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                        Text(isArabic ? "رمز خاص" : "Has Special Character"),
-                          ],
-                        ),
+
                         //check terms
                         Container(
-                          margin: EdgeInsets.only(top: 10.0, left: 30.0),
+                          margin: EdgeInsets.only(top: 25.0, left: 30.0),
                           child: Row(
                             children: [
                               IconButton(
@@ -620,7 +617,7 @@ final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
                                         Icons.check_box_outline_blank_rounded,
                                         color: Colors.grey),
                               ),
-                          Text(isArabic ? "أوافق على" : "Agree to"),
+                              Text(isArabic ? "أوافق على" : "Agree to"),
                               TextButton(
                                   onPressed: () {
                                     showDialog(
@@ -628,7 +625,9 @@ final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
                                       builder: (context) => AlertDialog(
                                         backgroundColor: Colors.white,
                                         title: Text(
-                                    isArabic ? "الشروط والأحكام" : "Terms and Conditions",
+                                          isArabic
+                                              ? "الشروط والأحكام"
+                                              : "Terms and Conditions",
                                           style: TextStyle(
                                             fontSize: 20.0,
                                             fontFamily: 'eras-itc-demi',
@@ -639,25 +638,28 @@ final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
                                           height: 300.0,
                                           child: SingleChildScrollView(
                                             child: Text(
-                                        isArabic
-                                            ? "١. المقدمة\nمرحبًا بك في تطبيق Vámonos (\"التطبيق\"). تحكم هذه الشروط والأحكام استخدامك للتطبيق المقدم من Vámonos. باستخدامك للتطبيق، فإنك توافق على الالتزام بهذه الشروط. إذا لم توافق، يجب ألا تستخدم التطبيق.\n\n٢. تعريف الخدمة\nيقدم تطبيق Vámonos منصة لمالكي المنشآت الرياضية لإدراج ملاعبهم والسماح للمستخدمين بحجزها ودفع ثمنها عبر الإنترنت. تتم جميع المعاملات المالية من خلال نظام الدفع داخل التطبيق.\n\n٣. تسجيل الحساب\nلإتمام الحجز أو إدراج ملعبك، يجب عليك إنشاء حساب شخصي. أنت مسؤول عن الحفاظ على سرية معلومات حسابك وكلمة المرور، وعن جميع الأنشطة التي تحدث ضمن حسابك.\n\n٤. مسؤوليات المستخدم\nللمستخدمين (حجز الملاعب):\nأنت مسؤول عن إدخال معلومات الحجز بدقة (مثل تاريخ الحجز، الوقت، وتفاصيل الدفع).\nيجب التأكد من أن جميع المدفوعات تتم من خلال قنوات الدفع المعتمدة داخل التطبيق.\n\nلأصحاب المنشآت:\nيجب على مالكي المنشآت تقديم معلومات دقيقة وكاملة عن ملاعبهم (مثل الحجم، الموقع، التسعير، والمرافق المتاحة).\nيجب عليك تحديث قوائمك باستمرار لضمان الدقة.\nيجب على مالكي المنشآت إدارة جميع الحجوزات والمدفوعات عبر نظام الدفع داخل التطبيق.\n\n٥. الدفع عبر الإنترنت\nتتم جميع المدفوعات من خلال نظام الدفع المدمج في التطبيق. أنت توافق على أن رسوم الحجز سيتم خصمها من حسابك عبر طرق الدفع المعتمدة داخل التطبيق.\n\n٦. سياسة الخصوصية\nنحن نقدر خصوصيتك. سيتم جمع بياناتك الشخصية واستخدامها وفقًا لسياسة الخصوصية الخاصة بنا، والتي تشرح كيفية التعامل مع معلوماتك وحمايتها. باستخدامك للتطبيق، فإنك توافق على جمع واستخدام بياناتك كما هو موضح في سياسة الخصوصية.\n\n٧. القيود القانونية\nلا يجوز لك استخدام التطبيق لأي أنشطة غير قانونية أو سلوك احتيالي.\nيجب عليك الامتثال للقوانين المحلية عند استخدام التطبيق أو التفاعل مع مستخدمين آخرين على المنصة.\n\n٨. تحديد المسؤولية\nيتم توفير التطبيق \"كما هو\" و\"كما هو متاح\". لا تضمن Vámonos أن التطبيق سيكون خاليًا من الأخطاء أو متاحًا باستمرار.\nنحن غير مسؤولين عن أي خسائر أو أضرار تنشأ عن استخدامك للتطبيق، بما في ذلك، على سبيل المثال لا الحصر، أخطاء الحجز أو فشل المعاملات المالية.\n\n٩. إنهاء الحساب\nنحتفظ بالحق في تعليق أو إنهاء حسابك إذا انتهكت هذه الشروط أو شاركت في أي أنشطة غير قانونية أو غير مصرح بها أثناء استخدام التطبيق.\n\n١٠. تعديلات على الشروط\nتحتفظ Vámonos بالحق في تحديث أو تعديل هذه الشروط في أي وقت. تسري التغييرات فور نشرها على التطبيق أو موقعنا الإلكتروني.\n\n١١. القانون الحاكم\nتخضع هذه الشروط وتفسر وفقًا لقوانين مصر. أي نزاعات تنشأ عن هذه الشروط ستكون خاضعة للاختصاص الحصري لمحاكم مصر.\n\n١٢. اتصل بنا\nإذا كان لديك أي أسئلة أو استفسارات حول هذه الشروط والأحكام، يرجى التواصل معنا عبر [معلومات الاتصال — سيتم تحديثها].\n\n"
-                                            : "1. Introduction\nWelcome to the Vámonos app (the \"App\"). These Terms and Conditions govern your use of the App, provided by Vámonos. By accessing or using the App, you agree to comply with these Terms. If you do not agree, you should not use the App.\n\n2. Service Definition\nThe Vámonos app provides a platform for sports facility owners to list their fields and allow users to book and pay for them online. All financial transactions are handled via the in-app payment system.\n\n3. Account Registration\nTo complete a booking or list your field, you must create a personal account. You are responsible for maintaining the confidentiality of your account information and password, as well as for all activities that occur under your account.\n\n4. User Responsibilities\nFor Users (Booking the Fields):\nYou are responsible for entering accurate booking information (such as booking date, time, and payment details).\nYou must ensure that all payments are made through the approved payment channels within the app.\nFor Facility Owners:\nFacility owners must provide accurate and complete information about their fields (such as size, location, pricing, and available amenities).\nYou must keep your listings updated to ensure accuracy.\nFacility owners must handle all bookings and payments via the in-app payment system.\n\n5. Online Payment\nAll payments are processed through the app's integrated payment system. You agree that charges for bookings will be deducted from your account through the approved payment methods within the app.\n\n6. Privacy Policy\nWe value your privacy. Your personal data will be collected and used in accordance with our [Privacy Policy], which explains how we handle and protect your information. By using the App, you consent to the collection and use of your data as described in the Privacy Policy.\n\n7. Legal Restrictions\nYou may not use the app for any unlawful activities or fraudulent behavior.\nYou must comply with local laws when using the app or interacting with other users on the platform.\n\n8. Limitation of Liability\nThe app is provided \"as is\" and \"as available.\" Vámonos does not guarantee that the app will be error-free or continuously available.\nWe are not responsible for any losses or damages that arise from your use of the app, including, but not limited to, booking errors or failed payment transactions.\n\n9. Account Termination\nWe reserve the right to suspend or terminate your account if you violate these Terms or engage in any illegal or unauthorized activities while using the app.\n\n10. Modifications to Terms\nVámonos reserves the right to update or modify these Terms at any time. Changes will take effect immediately once posted on the app or our website.\n\n11. Governing Law\nThese Terms are governed by and construed in accordance with the laws of Egypt. Any disputes arising from these Terms will be subject to the exclusive jurisdiction of the courts in Egypt.\n\n12. Contact Us\nIf you have any questions or concerns about these Terms and Conditions, please contact us at [Contact Information — to be updated].\n\n",
-                                      ),
-                                    ),
+                                              isArabic
+                                                  ? "١. المقدمة\nمرحبًا بك في تطبيق Vámonos (\"التطبيق\"). تحكم هذه الشروط والأحكام استخدامك للتطبيق المقدم من Vámonos. باستخدامك للتطبيق، فإنك توافق على الالتزام بهذه الشروط. إذا لم توافق، يجب ألا تستخدم التطبيق.\n\n٢. تعريف الخدمة\nيقدم تطبيق Vámonos منصة لمالكي المنشآت الرياضية لإدراج ملاعبهم والسماح للمستخدمين بحجزها ودفع ثمنها عبر الإنترنت. تتم جميع المعاملات المالية من خلال نظام الدفع داخل التطبيق.\n\n٣. تسجيل الحساب\nلإتمام الحجز أو إدراج ملعبك، يجب عليك إنشاء حساب شخصي. أنت مسؤول عن الحفاظ على سرية معلومات حسابك وكلمة المرور، وعن جميع الأنشطة التي تحدث ضمن حسابك.\n\n٤. مسؤوليات المستخدم\nللمستخدمين (حجز الملاعب):\nأنت مسؤول عن إدخال معلومات الحجز بدقة (مثل تاريخ الحجز، الوقت، وتفاصيل الدفع).\nيجب التأكد من أن جميع المدفوعات تتم من خلال قنوات الدفع المعتمدة داخل التطبيق.\n\nلأصحاب المنشآت:\nيجب على مالكي المنشآت تقديم معلومات دقيقة وكاملة عن ملاعبهم (مثل الحجم، الموقع، التسعير، والمرافق المتاحة).\nيجب عليك تحديث قوائمك باستمرار لضمان الدقة.\nيجب على مالكي المنشآت إدارة جميع الحجوزات والمدفوعات عبر نظام الدفع داخل التطبيق.\n\n٥. الدفع عبر الإنترنت\nتتم جميع المدفوعات من خلال نظام الدفع المدمج في التطبيق. أنت توافق على أن رسوم الحجز سيتم خصمها من حسابك عبر طرق الدفع المعتمدة داخل التطبيق.\n\n٦. سياسة الخصوصية\nنحن نقدر خصوصيتك. سيتم جمع بياناتك الشخصية واستخدامها وفقًا لسياسة الخصوصية الخاصة بنا، والتي تشرح كيفية التعامل مع معلوماتك وحمايتها. باستخدامك للتطبيق، فإنك توافق على جمع واستخدام بياناتك كما هو موضح في سياسة الخصوصية.\n\n٧. القيود القانونية\nلا يجوز لك استخدام التطبيق لأي أنشطة غير قانونية أو سلوك احتيالي.\nيجب عليك الامتثال للقوانين المحلية عند استخدام التطبيق أو التفاعل مع مستخدمين آخرين على المنصة.\n\n٨. تحديد المسؤولية\nيتم توفير التطبيق \"كما هو\" و\"كما هو متاح\". لا تضمن Vámonos أن التطبيق سيكون خاليًا من الأخطاء أو متاحًا باستمرار.\nنحن غير مسؤولين عن أي خسائر أو أضرار تنشأ عن استخدامك للتطبيق، بما في ذلك، على سبيل المثال لا الحصر، أخطاء الحجز أو فشل المعاملات المالية.\n\n٩. إنهاء الحساب\nنحتفظ بالحق في تعليق أو إنهاء حسابك إذا انتهكت هذه الشروط أو شاركت في أي أنشطة غير قانونية أو غير مصرح بها أثناء استخدام التطبيق.\n\n١٠. تعديلات على الشروط\nتحتفظ Vámonos بالحق في تحديث أو تعديل هذه الشروط في أي وقت. تسري التغييرات فور نشرها على التطبيق أو موقعنا الإلكتروني.\n\n١١. القانون الحاكم\nتخضع هذه الشروط وتفسر وفقًا لقوانين مصر. أي نزاعات تنشأ عن هذه الشروط ستكون خاضعة للاختصاص الحصري لمحاكم مصر.\n\n١٢. اتصل بنا\nإذا كان لديك أي أسئلة أو استفسارات حول هذه الشروط والأحكام، يرجى التواصل معنا عبر [معلومات الاتصال — سيتم تحديثها].\n\n"
+                                                  : "1. Introduction\nWelcome to the Vámonos app (the \"App\"). These Terms and Conditions govern your use of the App, provided by Vámonos. By accessing or using the App, you agree to comply with these Terms. If you do not agree, you should not use the App.\n\n2. Service Definition\nThe Vámonos app provides a platform for sports facility owners to list their fields and allow users to book and pay for them online. All financial transactions are handled via the in-app payment system.\n\n3. Account Registration\nTo complete a booking or list your field, you must create a personal account. You are responsible for maintaining the confidentiality of your account information and password, as well as for all activities that occur under your account.\n\n4. User Responsibilities\nFor Users (Booking the Fields):\nYou are responsible for entering accurate booking information (such as booking date, time, and payment details).\nYou must ensure that all payments are made through the approved payment channels within the app.\nFor Facility Owners:\nFacility owners must provide accurate and complete information about their fields (such as size, location, pricing, and available amenities).\nYou must keep your listings updated to ensure accuracy.\nFacility owners must handle all bookings and payments via the in-app payment system.\n\n5. Online Payment\nAll payments are processed through the app's integrated payment system. You agree that charges for bookings will be deducted from your account through the approved payment methods within the app.\n\n6. Privacy Policy\nWe value your privacy. Your personal data will be collected and used in accordance with our [Privacy Policy], which explains how we handle and protect your information. By using the App, you consent to the collection and use of your data as described in the Privacy Policy.\n\n7. Legal Restrictions\nYou may not use the app for any unlawful activities or fraudulent behavior.\nYou must comply with local laws when using the app or interacting with other users on the platform.\n\n8. Limitation of Liability\nThe app is provided \"as is\" and \"as available.\" Vámonos does not guarantee that the app will be error-free or continuously available.\nWe are not responsible for any losses or damages that arise from your use of the app, including, but not limited to, booking errors or failed payment transactions.\n\n9. Account Termination\nWe reserve the right to suspend or terminate your account if you violate these Terms or engage in any illegal or unauthorized activities while using the app.\n\n10. Modifications to Terms\nVámonos reserves the right to update or modify these Terms at any time. Changes will take effect immediately once posted on the app or our website.\n\n11. Governing Law\nThese Terms are governed by and construed in accordance with the laws of Egypt. Any disputes arising from these Terms will be subject to the exclusive jurisdiction of the courts in Egypt.\n\n12. Contact Us\nIf you have any questions or concerns about these Terms and Conditions, please contact us at [Contact Information — to be updated].\n\n",
+                                            ),
+                                          ),
                                         ),
                                         actions: [
                                           TextButton(
                                             onPressed: () {
                                               Navigator.of(context).pop();
                                             },
-                                      child: Text(isArabic ? "حسنًا" : "OK"),
+                                            child:
+                                                Text(isArabic ? "حسنًا" : "OK"),
                                           ),
                                         ],
                                       ),
                                     );
                                   },
-                                  child: Text(                              isArabic ? 'الشروط والأحكام' : 'terms and conditions',
-
+                                  child: Text(
+                                      isArabic
+                                          ? 'الشروط والأحكام'
+                                          : 'terms and conditions',
                                       style: TextStyle(
                                           color: Colors.blue,
                                           decoration:
@@ -665,29 +667,68 @@ final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: 60.0,
-                        ),
+                        SizedBox(height: 40.0),
+
                         //sign up
-                        SizedBox(
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 18.0),
                           height: 50.0,
                           child: Create_GradiantGreenButton(
                             onButtonPressed: () async {
-                              if (_formKey.currentState!.validate()) {
-                                await register();
+                              if (_formKey.currentState!.validate() &&
+                                  termsChecked) {
+                                if (isFormValid()) {
+                                  await register();
+                                } else {
+                                  final isArabic =
+                                      Provider.of<LanguageProvider>(context,
+                                              listen: false)
+                                          .isArabic;
+                                  String message =
+                                      isArabic ? "يرجى:" : "Please:";
+
+                                  if (!isEmailValid) {
+                                    message += isArabic
+                                        ? "\n- إدخال بريد إلكتروني صحيح"
+                                        : "\n- Enter a valid email";
+                                  }
+                                  if (!isPasswordValid) {
+                                    message += isArabic
+                                        ? "\n- إدخال كلمة مرور صحيحة"
+                                        : "\n- Enter a valid password";
+                                  }
+                                  if (!isConfirmPasswordValid) {
+                                    message += isArabic
+                                        ? "\n- تأكيد كلمة المرور"
+                                        : "\n- Confirm your password";
+                                  }
+                                  if (!termsChecked) {
+                                    message += isArabic
+                                        ? "\n- الموافقة على الشروط والأحكام"
+                                        : "\n- Agree to terms and conditions";
+                                  }
+
+                                  showCustomTopSnackBar(context, message, true);
+                                }
                               } else {
-                            showSnackBar(context, isArabic ? "خطأ" : "ERROR");
+                                final isArabic = Provider.of<LanguageProvider>(
+                                        context,
+                                        listen: false)
+                                    .isArabic;
+                                showCustomTopSnackBar(
+                                    context,
+                                    isArabic
+                                        ? "يرجى إكمال جميع الحقول المطلوبة والموافقة على الشروط"
+                                        : "Please complete all required fields and agree to terms",
+                                    true);
                               }
                             },
                             content: isLoading
-                                ? CircularProgressIndicator(
-                                    color: Colors.white,
-                                  )
+                                ? CircularProgressIndicator(color: Colors.white)
                                 : Text(
-                                isArabic ? 'إنشاء حساب' : 'sign up',
+                                    isArabic ? 'إنشاء حساب' : 'sign up',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      // color: Color(0xffffffff),
                                       fontFamily: "eras-itc-bold",
                                       fontSize: 24.0,
                                       fontWeight: FontWeight.w900,
@@ -695,6 +736,7 @@ final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
                                   ),
                           ),
                         ),
+                        SizedBox(height: 30.0),
                       ],
                     ),
                   ),
@@ -702,6 +744,62 @@ final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
               ],
             ),
           )),
+    );
+  }
+
+  // Helper method for password requirements
+  Widget _buildPasswordRequirement(bool isMet, String text) {
+    return Row(
+      children: [
+        Container(
+          child: Icon(
+            Icons.check,
+            color: Colors.white,
+            size: 15,
+          ),
+          height: 20,
+          width: 20,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isMet ? Colors.green : Colors.white,
+            border: Border.all(color: Color.fromARGB(255, 189, 189, 189)),
+          ),
+        ),
+        SizedBox(width: 12.0),
+        Text(
+          text,
+          style: TextStyle(
+            fontSize: 14.0,
+            fontFamily: 'eras-itc-light',
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Helper method to show top snackbar
+  void showCustomTopSnackBar(
+      BuildContext context, String message, bool isError) {
+    final snackBar = CustomSnackBar.info(
+      message: message,
+      backgroundColor: isError ? Colors.red : mainColor,
+      textStyle: TextStyle(
+        fontSize: 16,
+        color: Colors.white,
+      ),
+      icon: Icon(
+        isError ? Icons.error : Icons.check_circle,
+        color: Colors.white,
+      ),
+    );
+
+    showTopSnackBar(
+      Overlay.of(context),
+      snackBar,
+      persistent: false,
+      animationDuration: Duration(milliseconds: 500),
+      reverseAnimationDuration: Duration(milliseconds: 500),
+      displayDuration: Duration(seconds: 3),
     );
   }
 }

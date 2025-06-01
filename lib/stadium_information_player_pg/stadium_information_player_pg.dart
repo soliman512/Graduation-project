@@ -233,24 +233,158 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                     child: Stack(
                       alignment: Alignment.bottomCenter,
                       children: [
-                        PageView(
-                          controller: _pageController,
-                          onPageChanged: (index) {
-                            setState(() {
-                              _currentPage = index;
-                            });
-                          },
-                          children: images.isNotEmpty
-                              ? images.map((imgUrl) {
-                                  return imgUrl.startsWith('http')
-                                      ? Image.network(imgUrl, fit: BoxFit.cover)
-                                      : Image.asset(imgUrl, fit: BoxFit.cover);
-                                }).toList()
-                              : [
-                                  Image.asset(
-                                      'assets/cards_home_player/imgs/test.jpg',
-                                      fit: BoxFit.cover)
-                                ],
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: PageView(
+                            controller: _pageController,
+                            onPageChanged: (index) {
+                              setState(() {
+                                _currentPage = index;
+                              });
+                            },
+                            children: images.isNotEmpty
+                                ? images.map((imgUrl) {
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[200],
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Stack(
+                                        fit: StackFit.expand,
+                                        children: [
+                                          // Default icon while loading
+                                          Center(
+                                            child: Icon(
+                                              Icons.image,
+                                              size: 50,
+                                              color: Colors.grey[400],
+                                            ),
+                                          ),
+                                          // Actual image
+                                          ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            child: imgUrl.startsWith('http')
+                                                ? Image.network(
+                                                    imgUrl,
+                                                    fit: BoxFit.cover,
+                                                    loadingBuilder: (context,
+                                                        child,
+                                                        loadingProgress) {
+                                                      if (loadingProgress ==
+                                                          null) return child;
+                                                      return Center(
+                                                        child:
+                                                            CircularProgressIndicator(
+                                                          value: loadingProgress
+                                                                      .expectedTotalBytes !=
+                                                                  null
+                                                              ? loadingProgress
+                                                                      .cumulativeBytesLoaded /
+                                                                  loadingProgress
+                                                                      .expectedTotalBytes!
+                                                              : null,
+                                                          color: mainColor,
+                                                        ),
+                                                      );
+                                                    },
+                                                    errorBuilder: (context,
+                                                        error, stackTrace) {
+                                                      return Center(
+                                                        child: Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            Icon(
+                                                              Icons
+                                                                  .error_outline,
+                                                              size: 40,
+                                                              color: Colors
+                                                                  .red[300],
+                                                            ),
+                                                            SizedBox(height: 8),
+                                                            Text(
+                                                              'Failed to load image',
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .red[300],
+                                                                fontSize: 12,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      );
+                                                    },
+                                                  )
+                                                : Image.asset(
+                                                    imgUrl,
+                                                    fit: BoxFit.cover,
+                                                    errorBuilder: (context,
+                                                        error, stackTrace) {
+                                                      return Center(
+                                                        child: Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            Icon(
+                                                              Icons
+                                                                  .error_outline,
+                                                              size: 40,
+                                                              color: Colors
+                                                                  .red[300],
+                                                            ),
+                                                            SizedBox(height: 8),
+                                                            Text(
+                                                              'Failed to load image',
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .red[300],
+                                                                fontSize: 12,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      );
+                                                    },
+                                                  ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }).toList()
+                                : [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[200],
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons
+                                                  .image_not_supported_outlined,
+                                              size: 50,
+                                              color: Colors.grey[400],
+                                            ),
+                                            SizedBox(height: 8),
+                                            Text(
+                                              'No images available',
+                                              style: TextStyle(
+                                                color: Colors.grey[600],
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                          ),
                         ),
                         // favorite icon
                         Positioned(
@@ -331,7 +465,7 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                       children: [
                         const SizedBox(width: 20.0),
                         Text(
-                          '${widget.stadiumPrice}.00 LE',
+                          '${widget.stadiumPrice} LE',
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -420,8 +554,8 @@ class _Stadium_info_playerPGState extends State<Stadium_info_playerPG>
                               builder:
                                   (context) => /* TODO: Replace with your PaymentPage widget */
                                       Payment(
-                                          stadiumID: widget.stadiumID,
-)),
+                                        stadiumID: widget.stadiumID,
+                                      )),
                         );
                       },
                     ),
